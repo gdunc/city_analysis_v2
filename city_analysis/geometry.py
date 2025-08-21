@@ -31,35 +31,39 @@ def load_perimeter(perimeter_path: str | Path) -> MultiPolygon | Polygon:
     return shape(data)  # type: ignore[arg-type]
 
 
-def default_alps_polygon() -> Polygon | MultiPolygon:
-    """Return a geographically accurate default polygon for the Alps.
-    
-    A geographer's approach: First try to load from a proper GeoJSON file,
-    then fall back to a scientifically-based restrictive bounding box that
-    excludes lowland areas like the Po Valley.
+def default_alps_polygon_with_source() -> Tuple[Polygon | MultiPolygon, str]:
+    """Return a geographically accurate default polygon for the Alps and its source.
+
+    Returns a tuple ``(polygon, source)`` where ``source`` is ``"data_source"`` if
+    the dedicated GeoJSON perimeter file was successfully loaded or ``"fallback"``
+    if a broad bounding box was used instead.
     """
     from shapely.geometry import box
     import logging
+
     logger = logging.getLogger(__name__)
-    
-    # First, try to load from a proper Alps perimeter GeoJSON file
+
     try:
         perimeter_file = Path(__file__).parent.parent / "alps_perimeter.geojson"
         if perimeter_file.exists():
-            return load_perimeter(perimeter_file)
+            return load_perimeter(perimeter_file), "data_source"
     except Exception as e:
-        logger.info(f"Could not load Alps perimeter GeoJSON: {e}")
-    
-    # Geographic fallback: Use a broad bounding box covering the full Alpine extent
+        logger.warning(f"Could not load Alps perimeter GeoJSON: {e}")
+
     logger.info("Using geographic bounding box for the full Alpine range")
 
-    # Alpine mountain range boundaries based on geographic literature:
-    # - Western boundary: approximately 4°E (Maritime Alps in France)
-    # - Eastern boundary: approximately 17.5°E (Karawanks/Slovenian Alps)
-    # - Northern boundary: approximately 49°N (Bavarian foreland)
-    # - Southern boundary: approximately 43.5°N (Mediterranean foothills)
+    return box(4.0, 43.5, 17.5, 49.0), "fallback"
 
-    return box(4.0, 43.5, 17.5, 49.0)
+
+def default_alps_polygon() -> Polygon | MultiPolygon:
+    """Return a geographically accurate default polygon for the Alps.
+
+    This is a backwards-compatible wrapper around
+    :func:`default_alps_polygon_with_source` that discards the source
+    information.
+    """
+    polygon, _ = default_alps_polygon_with_source()
+    return polygon
 
 
 def polygon_bounds(p: Polygon | MultiPolygon) -> Tuple[float, float, float, float]:
