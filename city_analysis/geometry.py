@@ -50,24 +50,16 @@ def default_alps_polygon() -> Polygon | MultiPolygon:
     except Exception as e:
         logger.info(f"Could not load Alps perimeter GeoJSON: {e}")
     
-    # Geographic fallback: Use a scientifically-based bounding box
-    # Based on actual Alpine geography, excluding lowland areas
-    logger.info("Using geographic bounding box for Alps (excludes Po Valley and lowlands)")
-    
+    # Geographic fallback: Use a broad bounding box covering the full Alpine extent
+    logger.info("Using geographic bounding box for the full Alpine range")
+
     # Alpine mountain range boundaries based on geographic literature:
-    # - Western boundary: approximately 6°E (French Alps near Nice)
-    # - Eastern boundary: approximately 16°E (Slovenian Alps)
-    # - Northern boundary: approximately 48°N (Bavarian/Austrian Alps)
-    # - Southern boundary: approximately 45.5°N (excludes Po Valley)
-    #
-    # This excludes major lowland cities:
-    # - Florence (43.77°N) - Po Valley periphery
-    # - Bologna (44.49°N) - Po Valley
-    # - Genoa (44.41°N) - Ligurian Coast
-    # - Turin (45.07°N) - Po Valley
-    # - Milan (45.46°N) - Po Valley
-    
-    return box(6.0, 45.5, 16.0, 48.0)
+    # - Western boundary: approximately 4°E (Maritime Alps in France)
+    # - Eastern boundary: approximately 17.5°E (Karawanks/Slovenian Alps)
+    # - Northern boundary: approximately 49°N (Bavarian foreland)
+    # - Southern boundary: approximately 43.5°N (Mediterranean foothills)
+
+    return box(4.0, 43.5, 17.5, 49.0)
 
 
 def polygon_bounds(p: Polygon | MultiPolygon) -> Tuple[float, float, float, float]:
