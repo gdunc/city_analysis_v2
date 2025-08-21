@@ -1,6 +1,6 @@
 # City Analysis v2 — Alpine Cities (Population + Coordinates)
 
-Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames and OSM (Overpass), clipped to the Alpine perimeter, with CSV/GeoJSON outputs and a console summary.
+Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames and OSM (Overpass), clipped to a comprehensive Alpine perimeter covering the full mountain range, with CSV/GeoJSON outputs and a console summary.
 
 ## Features
 - **Population data** from GeoNames and OpenStreetMap
@@ -50,7 +50,7 @@ pip install -r requirements.txt
 ## Configuration
 - GeoNames requires a username (free). Set `GEONAMES_USERNAME` env var or pass `--geonames-username`.
 - Google Elevation API (optional): Set `GOOGLE_API_KEY` env var or pass `--google-api-key` for enhanced elevation coverage.
-- Perimeter: provide a GeoJSON polygon/multipolygon of the Alpine Convention perimeter if you have it. Otherwise, a conservative default bbox is used.
+- Perimeter: uses an included GeoJSON perimeter covering the full Alps. You can provide a custom polygon if desired.
 
 ## Usage
 ```bash
