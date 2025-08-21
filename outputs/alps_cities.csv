@@ -1,0 +1,397 @@
+name,country,latitude,longitude,population,elevation,elevation_feet,elevation_source,elevation_confidence,source,distance_km_to_alps
+Trieste,IT,45.64953,13.77678,204338,13.0,42.7,opentopo,0.9,geonames,0.0
+Mestre,IT,45.49167,12.24538,147662,5.0,16.4,opentopo,0.9,geonames,0.0
+Innsbruck,AT,47.26266,11.39454,132493,596.0,1955.4,opentopo,0.9,geonames,0.0
+Trento,IT,46.06787,11.12108,120709,203.0,666.0,open_elevation,0.85,geonames,0.0
+Vicenza,IT,45.5488306,11.5478825,112953,43.0,141.1,opentopo,0.9,osm,0.0
+Bolzano,IT,46.49067,11.33982,107436,260.0,853.0,open_elevation,0.85,geonames,0.0
+Bolzano - Bozen,IT,46.4984781,11.3547399,105713,262.0,859.6,,,osm,0.0
+Udine,IT,46.0693,13.23715,100170,115.0,377.3,open_elevation,0.85,geonames,0.0
+Udine / Udin,IT,46.0634632,13.2358377,99169,108.0,354.3,opentopo,0.9,osm,0.0
+Treviso,IT,45.66673,12.2416,85760,20.0,65.6,open_elevation,0.85,geonames,0.0
+Villach,AT,46.61028,13.85583,58882,491.0,1610.9,open_elevation,0.85,geonames,0.0
+Venice,IT,45.43713,12.33265,51298,8.0,26.2,opentopo,0.9,geonames,0.0
+Pordenone / Pordenon,IT,45.9562503,12.6597197,51229,31.0,101.7,open_elevation,0.85,osm,0.0
+Pordenone,IT,45.95689,12.66051,49878,21.0,68.9,opentopo,0.9,geonames,0.0
+Dornbirn,AT,47.41427,9.74195,49278,441.0,1446.9,open_elevation,0.85,geonames,0.0
+Venezia,IT,45.4371908,12.3345898,43879,1.0,3.3,,,osm,0.0
+Bassano del Grappa,IT,45.7669109,11.7343469,43372,132.0,433.1,opentopo,0.9,osm,0.0
+San Donà di Piave,IT,45.63019,12.5681,41856,4.0,13.1,open_elevation,0.85,geonames,0.0
+Merano,IT,46.66817,11.15953,41051,313.0,1026.9,opentopo,0.9,geonames,0.0
+Schio,IT,45.7113511,11.3553593,39355,199.0,652.9,open_elevation,0.85,osm,0.0
+Rovereto,IT,45.886548,11.0452369,39289,204.0,669.3,,,osm,0.0
+Belluno,IT,46.1375185,12.2181711,35870,386.0,1266.4,,,osm,0.0
+Hötting,AT,47.26815,11.36868,35043,657.0,2155.5,open_elevation,0.85,geonames,0.0
+Conegliano,IT,45.8862172,12.2977566,34891,63.0,206.7,opentopo,0.9,osm,0.0
+Gorizia,IT,45.94088,13.62167,34428,85.0,278.9,open_elevation,0.85,geonames,0.0
+Merano - Meran,IT,46.6695547,11.1594185,33656,316.0,1036.7,opentopo,0.9,osm,0.0
+Feldkirch,AT,47.23306,9.6,33420,465.0,1525.6,open_elevation,0.85,geonames,0.0
+Castelfranco Veneto,IT,45.671139,11.9265624,33234,45.0,147.6,open_elevation,0.85,osm,0.0
+Mira,IT,45.4346,12.12942,32881,12.0,39.4,opentopo,0.9,geonames,0.0
+Pradl,AT,47.26539,11.4152,32588,577.0,1893.0,open_elevation,0.85,geonames,0.0
+Montebelluna,IT,45.7762844,12.0452878,31228,108.0,354.3,opentopo,0.9,osm,0.0
+Bregenz,AT,47.50311,9.7471,29806,407.0,1335.3,open_elevation,0.85,geonames,0.0
+Marghera,IT,45.45111,12.22389,28622,4.0,13.1,open_elevation,0.85,geonames,0.0
+Vittorio Veneto,IT,45.9897826,12.2957596,28232,136.0,446.2,opentopo,0.9,osm,0.0
+Spinea,IT,45.4911604,12.165018,27927,6.0,19.7,open_elevation,0.85,osm,0.0
+Mogliano Veneto,IT,45.5612886,12.2376973,27659,9.0,29.5,opentopo,0.9,osm,0.0
+Mirano,IT,45.492993,12.1094168,27045,8.0,26.2,open_elevation,0.85,osm,0.0
+Monfalcone,IT,45.80463,13.53292,26706,7.0,23.0,opentopo,0.9,geonames,0.0
+Valdagno,IT,45.6413213,11.3040596,26234,247.0,810.4,open_elevation,0.85,osm,0.0
+Jesolo,IT,45.5367094,12.6383337,26122,-1.0,-3.3,open_elevation,0.85,osm,0.0
+Garmisch-Partenkirchen,DE,47.4923741,11.0962815,26102,708.0,2322.8,,,osm,0.0
+Portogruaro,IT,45.775598,12.8374571,25142,5.0,16.4,,,osm,0.0
+Thiene,IT,45.7059893,11.4797197,24059,152.0,498.7,opentopo,0.9,osm,0.0
+Brixen - Bressanone,IT,46.716413,11.657792,23004,569.0,1866.8,open_elevation,0.85,osm,0.0
+Lustenau,AT,47.42642,9.65851,22821,406.0,1332.0,open_elevation,0.85,geonames,0.0
+Vigonza,IT,45.443016,11.983089,22748,10.0,32.8,opentopo,0.9,osm,0.0
+Paese,IT,45.6727307,12.1536106,21968,28.0,91.9,open_elevation,0.85,osm,0.0
+Martellago,IT,45.5466448,12.1576784,21528,11.0,36.1,opentopo,0.9,osm,0.0
+Sonthofen,DE,47.51821,10.28262,21285,748.0,2454.1,open_elevation,0.85,geonames,0.0
+Pergine Valsugana,IT,46.0605291,11.2406747,21280,478.0,1568.2,open_elevation,0.85,osm,0.0
+Feltre,IT,46.0163755,11.9062541,20649,272.0,892.4,opentopo,0.9,osm,0.0
+Oderzo,IT,45.7833709,12.4937783,20379,12.0,39.4,open_elevation,0.85,osm,0.0
+Cittadella,IT,45.6487941,11.7835801,20155,51.0,167.3,opentopo,0.9,osm,0.0
+Sankt Martin,AT,46.61667,14.28333,20000,443.0,1453.4,open_elevation,0.85,geonames,0.0
+Sacile / Sacîl,IT,45.9548046,12.5034415,19837,25.0,82.0,open_elevation,0.85,osm,0.0
+Cluses,FR,46.06251,6.57497,19789,476.0,1561.7,opentopo,0.9,geonames,0.0
+Sondrio,IT,46.16852,9.87134,19208,303.0,994.1,open_elevation,0.85,geonames,0.0
+Scorzè,IT,45.5713541,12.108383,18863,16.0,52.5,opentopo,0.9,osm,0.0
+Wilten,AT,47.25829,11.38808,18142,582.0,1909.4,open_elevation,0.85,geonames,0.0
+Arco,IT,45.9181327,10.8860953,17526,97.0,318.2,opentopo,0.9,osm,0.0
+Marcon,IT,45.5543521,12.2993285,17380,5.0,16.4,open_elevation,0.85,osm,0.0
+Riva del Garda,IT,45.88577,10.84117,17331,79.0,259.2,open_elevation,0.85,geonames,0.0
+Vedelago,IT,45.6867631,12.0188471,16873,43.0,141.1,opentopo,0.9,osm,0.0
+Sallanches,FR,45.94423,6.63162,16725,541.0,1774.9,open_elevation,0.85,geonames,0.0
+Preganziol,IT,45.6025304,12.2353136,16704,9.0,29.5,opentopo,0.9,osm,0.0
+Sacile,IT,45.95412,12.50274,16626,22.0,72.2,open_elevation,0.85,geonames,0.0
+Hohenems,AT,47.36121,9.68694,16317,436.0,1430.4,open_elevation,0.85,geonames,0.0
+Noale,IT,45.550156,12.0720437,15969,16.0,52.5,opentopo,0.9,osm,0.0
+Cordenons,IT,45.9836,12.70038,15962,39.0,128.0,open_elevation,0.85,geonames,0.0
+Telfs,DE,47.3046511,11.071515,15920,634.0,2080.1,,,osm,0.0
+Brixen,IT,46.71503,11.65598,15868,567.0,1860.2,open_elevation,0.85,geonames,0.0
+Lido,IT,45.4105,12.36649,15719,5.0,16.4,open_elevation,0.85,geonames,0.0
+Füssen,DE,47.57143,10.70171,15608,795.0,2608.3,opentopo,0.9,geonames,0.0
+Lancenigo-Villorba,IT,45.71289,12.25697,15265,24.0,78.7,open_elevation,0.85,geonames,0.0
+Telfs,AT,47.30707,11.06817,15229,633.0,2076.8,opentopo,0.9,geonames,0.0
+Cassola,IT,45.7327961,11.7984223,15127,91.0,298.6,open_elevation,0.85,osm,0.0
+San Vito al Tagliamento / San Vît dal Tiliment,IT,45.9145042,12.8565956,15078,31.0,101.7,open_elevation,0.85,osm,0.0
+Laives - Leifers,IT,46.422819,11.3347713,15069,244.0,800.5,opentopo,0.9,osm,0.0
+Tavagnacco,IT,46.1273936,13.2140999,14988,149.0,488.8,open_elevation,0.85,osm,0.0
+Malo,IT,45.660296,11.407493,14951,116.0,380.6,opentopo,0.9,osm,0.0
+Darfo Boario Terme,IT,45.8915,10.18879,14932,220.0,721.8,open_elevation,0.85,geonames,0.0
+Dolo,IT,45.4234356,12.0743252,14888,12.0,39.4,opentopo,0.9,osm,0.0
+Campodarsego,IT,45.502855,11.9074958,14668,18.0,59.1,open_elevation,0.85,osm,0.0
+Roncade,IT,45.6279075,12.3747797,14590,4.0,13.1,open_elevation,0.85,osm,0.0
+Rosà,IT,45.7244163,11.7626859,14499,97.0,318.2,opentopo,0.9,osm,0.0
+Romano d'Ezzelino,IT,45.7962374,11.7583907,14478,171.0,561.0,open_elevation,0.85,osm,0.0
+Immenstadt im Allgäu,DE,47.55996,10.21394,14431,732.0,2401.6,opentopo,0.9,geonames,0.0
+Codroipo / Codroip,IT,45.9611171,12.9789516,14421,42.0,137.8,open_elevation,0.85,osm,0.0
+Hall in Tirol,DE,47.2816648,11.5075337,14418,574.0,1883.2,,,osm,0.0
+Marostica,IT,45.7453924,11.6568938,13989,101.0,331.4,open_elevation,0.85,osm,0.0
+Dueville,IT,45.6355174,11.5485978,13939,58.0,190.3,open_elevation,0.85,osm,0.0
+Wörgl,AT,47.48906,12.06174,13811,508.0,1666.7,opentopo,0.9,geonames,0.0
+Wörgl,DE,47.4872718,12.0637633,13811,513.0,1683.1,,,osm,0.0
+Schwaz,AT,47.35169,11.71014,13728,534.0,1752.0,opentopo,0.9,geonames,0.0
+Bruneck - Brunico,IT,46.7963194,11.9355121,13618,832.0,2729.7,open_elevation,0.85,osm,0.0
+Bludenz,AT,47.15476,9.82255,13534,573.0,1879.9,opentopo,0.9,geonames,0.0
+Hard,AT,47.48306,9.68306,13495,398.0,1305.8,open_elevation,0.85,geonames,0.0
+Rosa,IT,45.93056,12.87083,13443,34.0,111.5,open_elevation,0.85,geonames,0.0
+Hall in Tirol,AT,47.28333,11.51667,13334,583.0,1912.7,opentopo,0.9,geonames,0.0
+San Martino di Lupari,IT,45.6486593,11.8569804,13177,40.0,131.2,open_elevation,0.85,osm,0.0
+Schwaz,DE,47.3449529,11.7084253,13058,547.0,1794.6,opentopo,0.9,osm,0.0
+Chiampo,IT,45.5445732,11.2808956,13026,172.0,564.3,open_elevation,0.85,osm,0.0
+Casale sul Sile,IT,45.5977665,12.3257335,13018,7.0,23.0,opentopo,0.9,osm,0.0
+Porcia,IT,45.96301,12.61642,12987,35.0,114.8,open_elevation,0.85,geonames,0.0
+San Stino di Livenza,IT,45.7310782,12.6800084,12928,12.0,39.4,opentopo,0.9,osm,0.0
+Spittal an der Drau,AT,46.8,13.5,12880,578.0,1896.3,open_elevation,0.85,geonames,0.0
+Azzano Decimo / Daçan di Pordenon,IT,45.8814199,12.7143145,12880,12.0,39.4,open_elevation,0.85,osm,0.0
+Trebaseleghe,IT,45.5918117,12.0509986,12840,15.0,49.2,opentopo,0.9,osm,0.0
+Tezze sul Brenta,IT,45.6861778,11.7041837,12827,71.0,232.9,open_elevation,0.85,osm,0.0
+Codroipo,IT,45.96469,12.97985,12811,42.0,137.8,opentopo,0.9,geonames,0.0
+Salzano,IT,45.521344,12.1063704,12777,12.0,39.4,opentopo,0.9,osm,0.0
+San Biagio di Callalta,IT,45.6848725,12.3773466,12676,8.0,26.2,opentopo,0.9,osm,0.0
+San Vito al Tagliamento,IT,45.9168,12.85945,12599,32.0,105.0,open_elevation,0.85,geonames,0.0
+Cervignano del Friuli / Çarvignan,IT,45.8228339,13.336382,12421,14.0,45.9,opentopo,0.9,osm,0.0
+Eraclea,IT,45.5762676,12.6729111,12396,5.0,16.4,open_elevation,0.85,osm,0.0
+Murnau am Staffelsee,DE,47.6778816,11.2011903,12395,688.0,2257.2,,,osm,0.0
+Azzano Decimo,IT,45.90937,12.6642,12320,17.0,55.8,open_elevation,0.85,geonames,0.0
+Lana,IT,46.6160189,11.1448586,12286,316.0,1036.7,opentopo,0.9,osm,0.0
+Bruneck,IT,46.79942,11.93429,12282,829.0,2719.8,open_elevation,0.85,geonames,0.0
+Pianiga,IT,45.4560955,12.0301727,12280,12.0,39.4,opentopo,0.9,osm,0.0
+Cervignano del Friuli,IT,45.82082,13.33929,12275,4.0,13.1,open_elevation,0.85,geonames,0.0
+Fontanafredda / Fontanefrede,IT,45.9733967,12.5691228,12195,42.0,137.8,open_elevation,0.85,osm,0.0
+Spresiano,IT,45.7803913,12.2593456,12176,51.0,167.3,opentopo,0.9,osm,0.0
+Camposampiero,IT,45.57176,11.9319294,12134,24.0,78.7,opentopo,0.9,osm,0.0
+Pieve di Soligo,IT,45.8997613,12.1730811,12106,135.0,442.9,open_elevation,0.85,osm,0.0
+Cornedo Vicentino,IT,45.6111057,11.3434053,12080,193.0,633.2,opentopo,0.9,osm,0.0
+Lienz,IT,46.8298662,12.7681269,12077,677.0,2221.1,open_elevation,0.85,osm,0.0
+Altavilla Vicentina,IT,45.5084288,11.4706863,12056,45.0,147.6,opentopo,0.9,osm,0.0
+Ronchi dei Legionari,IT,45.82735,13.50417,11902,10.0,32.8,open_elevation,0.85,geonames,0.0
+Rankweil,AT,47.27108,9.64308,11855,467.0,1532.2,opentopo,0.9,geonames,0.0
+Susegana,IT,45.8509126,12.2500126,11835,75.0,246.1,open_elevation,0.85,osm,0.0
+Torri di Quartesolo,IT,45.5192662,11.6171199,11809,23.0,75.5,opentopo,0.9,osm,0.0
+Maniago / Manià,IT,46.1709743,12.7073987,11708,284.0,931.8,open_elevation,0.85,osm,0.0
+Fiume Veneto / Vile di Flum,IT,45.9279427,12.7321755,11677,21.0,68.9,opentopo,0.9,osm,0.0
+Caorle,IT,45.5979147,12.8876282,11672,0.0,0.0,open_elevation,0.85,osm,0.0
+Passy,FR,45.92341,6.69562,11613,648.0,2126.0,opentopo,0.9,geonames,0.0
+Zero Branco,IT,45.601701,12.165212,11578,13.0,42.7,opentopo,0.9,osm,0.0
+Lienz,AT,46.8289,12.76903,11572,675.0,2214.6,open_elevation,0.85,geonames,0.0
+Musile di Piave,IT,45.6173586,12.5618873,11522,7.0,23.0,opentopo,0.9,osm,0.0
+Götzis,AT,47.33306,9.63306,11473,426.0,1397.6,open_elevation,0.85,geonames,0.0
+Mejaniga,IT,45.45768,11.90644,11434,11.0,36.1,open_elevation,0.85,geonames,0.0
+Carbonera,IT,45.6848378,12.2859442,11334,13.0,42.7,opentopo,0.9,osm,0.0
+Creazzo,IT,45.5320528,11.4785807,11331,37.0,121.4,open_elevation,0.85,osm,0.0
+Caldogno,IT,45.6118362,11.5075805,11301,43.0,141.1,opentopo,0.9,osm,0.0
+Noventa Padovana,IT,45.4142322,11.9507999,11265,11.0,36.1,open_elevation,0.85,osm,0.0
+Piazzola sul Brenta,IT,45.541496,11.784404,11251,26.0,85.3,opentopo,0.9,osm,0.0
+Gemona,IT,46.27405,13.12237,11141,189.0,620.1,open_elevation,0.85,geonames,0.0
+Camisano Vicentino,IT,45.5220266,11.7134998,11115,33.0,108.3,opentopo,0.9,osm,0.0
+Spilimbergo / Spilimberc,IT,46.1113355,12.9016287,11087,135.0,442.9,open_elevation,0.85,osm,0.0
+Arzl,AT,47.28333,11.43333,11082,635.0,2083.3,opentopo,0.9,geonames,0.0
+Gemona del Friuli / Glemone,IT,46.2770072,13.1401049,10964,273.0,895.7,open_elevation,0.85,osm,0.0
+Muggia,IT,45.60419,13.76754,10929,11.0,36.1,opentopo,0.9,geonames,0.0
+Motta di Livenza,IT,45.77663,12.6105482,10768,8.0,26.2,open_elevation,0.85,osm,0.0
+Favaro Veneto,IT,45.5046266,12.2820457,10720,6.0,19.7,opentopo,0.9,osm,0.0
+Laives,IT,46.42679,11.33841,10710,254.0,833.3,open_elevation,0.85,geonames,0.0
+Oriago,IT,45.4514083,12.1710686,10557,8.0,26.2,opentopo,0.9,osm,0.0
+Lido di Jesolo,IT,45.50694,12.64694,10523,7.0,23.0,open_elevation,0.85,geonames,0.0
+Imst,AT,47.24504,10.73974,10504,826.0,2710.0,opentopo,0.9,geonames,0.0
+Morbegno,IT,46.1372,9.57415,10472,241.0,790.7,opentopo,0.9,geonames,0.0
+Tolmezzo / Tumieç,IT,46.4053676,13.0158357,10440,326.0,1069.6,open_elevation,0.85,osm,0.0
+Maniago,IT,46.16644,12.70602,10395,280.0,918.6,opentopo,0.9,geonames,0.0
+Valdobbiadene,IT,45.9014131,11.9955123,10388,260.0,853.0,open_elevation,0.85,osm,0.0
+Lauterach,AT,47.47572,9.72941,10267,407.0,1335.3,opentopo,0.9,geonames,0.0
+Ponzano Veneto,IT,45.71541,12.20444,10238,35.0,114.8,open_elevation,0.85,geonames,0.0
+Ponzano,IT,45.710824,12.2237501,10238,28.0,91.9,open_elevation,0.85,osm,0.0
+Villafranca Padovana,IT,45.4948512,11.7975235,10217,24.0,78.7,opentopo,0.9,osm,0.0
+Isola Vicentina,IT,45.6286685,11.4431478,10214,82.0,269.0,open_elevation,0.85,osm,0.0
+San Giorgio delle Pertiche,IT,45.5416702,11.9112369,10214,17.0,55.8,opentopo,0.9,osm,0.0
+Mori,IT,45.8533795,10.9753961,10211,201.0,659.4,open_elevation,0.85,osm,0.0
+Silea,IT,45.6533706,12.2959606,10167,7.0,23.0,opentopo,0.9,osm,0.0
+Volpago del Montello,IT,45.7780578,12.119815,10151,95.0,311.7,opentopo,0.9,osm,0.0
+Sedico,IT,46.11098,12.0971545,10119,324.0,1063.0,open_elevation,0.85,osm,0.0
+Lenggries,DE,47.6831625,11.5763967,10077,679.0,2227.7,,,osm,0.0
+Quinto di Treviso,IT,45.6452121,12.1664816,9844,14.0,45.9,open_elevation,0.85,osm,0.0
+San Vendemiano,IT,45.8907463,12.3338437,9837,45.0,147.6,opentopo,0.9,osm,0.0
+Mareno di Piave,IT,45.8408562,12.3512554,9661,37.0,121.4,open_elevation,0.85,osm,0.0
+Oberstdorf,DE,47.40724,10.27939,9572,819.0,2687.0,opentopo,0.9,geonames,0.0
+Piombino Dese,IT,45.6075204,11.9994148,9534,25.0,82.0,open_elevation,0.85,osm,0.0
+Resana,IT,45.6345748,11.9554316,9522,30.0,98.4,opentopo,0.9,osm,0.0
+Spilimbergo,IT,46.11345,12.89241,9422,133.0,436.4,open_elevation,0.85,geonames,0.0
+Viktring,AT,46.59194,14.26917,9407,452.0,1482.9,open_elevation,0.85,geonames,0.0
+Maserada sul Piave,IT,45.7494106,12.3193327,9380,31.0,101.7,,,osm,0.0
+Marano Vicentino,IT,45.69259,11.4290346,9345,133.0,436.4,open_elevation,0.85,osm,0.0
+San Zeno-San Giuseppe,IT,45.75727,11.76208,9334,111.0,364.2,opentopo,0.9,geonames,0.0
+Fiume Veneto,IT,45.92865,12.73811,9313,18.0,59.1,open_elevation,0.85,geonames,0.0
+Loria,IT,45.7284237,11.8655848,9310,67.0,219.8,open_elevation,0.85,osm,0.0
+Istrana,IT,45.6778456,12.1033127,9299,32.0,105.0,opentopo,0.9,osm,0.0
+Cividale del Friuli,IT,46.09019,13.42861,9290,114.0,374.0,open_elevation,0.85,geonames,0.0
+Rum,AT,47.28333,11.45,9190,623.0,2044.0,opentopo,0.9,geonames,0.0
+Santa Lucia di Piave,IT,45.8491741,12.2849283,9151,54.0,177.2,open_elevation,0.85,osm,0.0
+Noventa,IT,45.41429,11.95101,9131,11.0,36.1,open_elevation,0.85,geonames,0.0
+Asolo,IT,45.8007265,11.9142444,9128,209.0,685.7,opentopo,0.9,osm,0.0
+Monticello Conte Otto,IT,45.5951803,11.5805788,9098,40.0,131.2,open_elevation,0.85,osm,0.0
+Lavis,IT,46.1397416,11.1102267,8915,229.0,751.3,opentopo,0.9,osm,0.0
+Farra di Soligo,IT,45.9053812,12.1254301,8913,161.0,528.2,open_elevation,0.85,osm,0.0
+Latisana,IT,45.76859,13.00618,8896,7.0,23.0,opentopo,0.9,geonames,0.0
+Latisana / Tisane,IT,45.7776908,12.9967006,8896,7.0,23.0,,,osm,0.0
+Trissino,IT,45.5640412,11.3748519,8784,127.0,416.7,open_elevation,0.85,osm,0.0
+Borgoricco,IT,45.5335614,11.9658789,8755,15.0,49.2,opentopo,0.9,osm,0.0
+Tarcento / Tarcint,IT,46.2156457,13.2221061,8716,226.0,741.5,opentopo,0.9,osm,0.0
+Pasian di Prato / Pasian di Prât,IT,46.0485134,13.1875972,8708,97.0,318.2,opentopo,0.9,osm,0.0
+Costa Volpino,IT,45.82768,10.10076,8705,195.0,639.8,open_elevation,0.85,geonames,0.0
+Concordia Sagittaria,IT,45.76118,12.82362,8677,8.0,26.2,opentopo,0.9,geonames,0.0
+Breganze,IT,45.7081441,11.5647668,8677,109.0,357.6,open_elevation,0.85,osm,0.0
+Sandrigo,IT,45.6606078,11.6029276,8630,69.0,226.4,open_elevation,0.85,osm,0.0
+Fiesso d'Artico,IT,45.4167857,12.0306479,8588,10.0,32.8,opentopo,0.9,osm,0.0
+San Giuseppe,IT,45.7675549,11.7593268,8508,127.0,416.7,open_elevation,0.85,osm,0.0
+Wolfurt,AT,47.46667,9.75,8446,408.0,1338.6,opentopo,0.9,geonames,0.0
+Zoppola / Sopula,IT,45.9662544,12.7715635,8430,33.0,108.3,open_elevation,0.85,osm,0.0
+Col San Martino,IT,45.9002,12.11575,8425,139.0,456.0,opentopo,0.9,geonames,0.0
+Villacher Vorstadt,AT,46.62368,14.28892,8421,445.0,1460.0,open_elevation,0.85,geonames,0.0
+Finkenstein am Faaker See,AT,46.56081,13.87115,8406,567.0,1860.2,open_elevation,0.85,geonames,0.0
+Tombolo,IT,45.6470275,11.8304219,8352,40.0,131.2,opentopo,0.9,osm,0.0
+Rum,DE,47.2867829,11.4573834,8352,621.0,2037.4,,,osm,0.0
+Tirano,IT,46.21482,10.16335,8348,421.0,1381.2,opentopo,0.9,geonames,0.0
+Piovene Rocchette,IT,45.7588257,11.4301268,8346,279.0,915.4,open_elevation,0.85,osm,0.0
+Casarsa della Delizia,IT,45.95091,12.8425,8320,37.0,121.4,open_elevation,0.85,geonames,0.0
+Ponte di Piave,IT,45.7161533,12.4652271,8309,8.0,26.2,opentopo,0.9,osm,0.0
+Sovizzo,IT,45.5280283,11.4456338,8308,47.0,154.2,open_elevation,0.85,osm,0.0
+Vigonovo-Fontanafredda,IT,45.98927,12.54707,8283,38.0,124.7,opentopo,0.9,geonames,0.0
+Aviano,IT,46.07056,12.59472,8225,158.0,518.4,open_elevation,0.85,geonames,0.0
+Aviano / Davian - Pleif,IT,46.0685438,12.5891138,8225,158.0,518.4,opentopo,0.9,osm,0.0
+Quarto d'Altino,IT,45.5804512,12.3705001,8200,3.0,9.8,open_elevation,0.85,osm,0.0
+Villach-Innere Stadt,AT,46.61275,13.84638,8189,503.0,1650.3,open_elevation,0.85,geonames,0.0
+Fontaniva,IT,45.6376293,11.7521976,8170,40.0,131.2,opentopo,0.9,osm,0.0
+Zirl,AT,47.2741,11.23961,8162,635.0,2083.3,open_elevation,0.85,geonames,0.0
+Casarsa della Delizia / Cjasarsa,IT,45.9559372,12.8426929,8135,42.0,137.8,opentopo,0.9,osm,0.0
+Brugnera / Brugnere,IT,45.9035103,12.5259887,8112,14.0,45.9,open_elevation,0.85,osm,0.0
+Rossano Veneto,IT,45.7052727,11.7997866,8102,76.0,249.3,open_elevation,0.85,osm,0.0
+Tolmezzo,IT,46.39996,13.02051,8078,306.0,1003.9,opentopo,0.9,geonames,0.0
+Mira Taglio,IT,45.4330543,12.1233467,8034,5.0,16.4,open_elevation,0.85,osm,0.0
+Clusone,IT,45.88663,9.94646,8032,601.0,1971.8,opentopo,0.9,geonames,0.0
+Caerano di San Marco,IT,45.7859102,12.0010378,8017,125.0,410.1,open_elevation,0.85,osm,0.0
+San Daniele del Friuli / San Denêl,IT,46.1600501,13.0105965,8013,244.0,800.5,opentopo,0.9,osm,0.0
+Villa Opicina,IT,45.6878,13.78861,8009,321.0,1053.1,open_elevation,0.85,geonames,0.0
+Mittenwald,DE,47.4422,11.26187,7996,916.0,3005.2,open_elevation,0.85,geonames,0.0
+Höchst,AT,47.45934,9.6405,7995,397.0,1302.5,opentopo,0.9,geonames,0.0
+Limena,IT,45.4743763,11.8449327,7952,18.0,59.1,open_elevation,0.85,osm,0.0
+Levico Terme,IT,46.0091259,11.3017774,7915,476.0,1561.7,opentopo,0.9,osm,0.0
+Ponte nelle Alpi,IT,46.18083,12.28333,7913,401.0,1315.6,open_elevation,0.85,geonames,0.0
+Pfronten,DE,47.5822,10.54962,7890,857.0,2811.7,opentopo,0.9,geonames,0.0
+Wattens,AT,47.29419,11.5907,7881,554.0,1817.6,open_elevation,0.85,geonames,0.0
+Landeck,AT,47.13988,10.56593,7725,787.0,2582.0,open_elevation,0.85,geonames,0.0
+Ugine,FR,45.75571,6.41503,7703,449.0,1473.1,opentopo,0.9,geonames,0.0
+Chirignago,IT,45.4847054,12.1888093,7670,5.0,16.4,open_elevation,0.85,osm,0.0
+Mussolente,IT,45.7789522,11.8012715,7658,111.0,364.2,opentopo,0.9,osm,0.0
+Costabissara,IT,45.5855421,11.4877438,7634,45.0,147.6,open_elevation,0.85,osm,0.0
+Loreggia,IT,45.594524,11.9446117,7598,29.0,95.1,opentopo,0.9,osm,0.0
+Faverges,FR,45.7468537,6.2934242,7581,518.0,1699.5,open_elevation,0.85,osm,0.0
+Wattens,DE,47.2935786,11.5907326,7503,564.0,1850.4,,,osm,0.0
+Stra,IT,45.4100182,12.0050219,7470,9.0,29.5,opentopo,0.9,osm,0.0
+Pederobba,IT,45.8695205,11.9695508,7451,179.0,587.3,open_elevation,0.85,osm,0.0
+Sankt Ruprecht,AT,46.6,14.31667,7442,435.0,1427.2,opentopo,0.9,geonames,0.0
+Pasiano di Pordenone / Pasian di Pordenon,IT,45.8497541,12.6265087,7422,13.0,42.7,open_elevation,0.85,osm,0.0
+San Zenone degli Ezzelini,IT,45.7790023,11.8405331,7391,108.0,354.3,open_elevation,0.85,osm,0.0
+Fiesso,IT,45.41954,12.03378,7372,6.0,19.7,opentopo,0.9,geonames,0.0
+Curtarolo,IT,45.5222551,11.832017,7325,21.0,68.9,open_elevation,0.85,osm,0.0
+San Giorgio di Nogaro / San Zorç di Noiâr,IT,45.8320236,13.2111453,7314,14.0,45.9,opentopo,0.9,osm,0.0
+Tricesimo / Tresesin,IT,46.1605618,13.2125359,7305,205.0,672.6,open_elevation,0.85,osm,0.0
+Campoformido / Cjampfuarmit,IT,46.0195268,13.1601994,7244,75.0,246.1,open_elevation,0.85,osm,0.0
+Chiavenna,IT,46.32063,9.39816,7239,330.0,1082.7,opentopo,0.9,geonames,0.0
+Santa Giustina in Colle,IT,45.563698,11.906406,7219,26.0,85.3,open_elevation,0.85,osm,0.0
+Colico,IT,46.13205,9.37714,7204,262.0,859.6,opentopo,0.9,geonames,0.0
+Oberstaufen,DE,47.55568,10.02245,7190,789.0,2588.6,open_elevation,0.85,geonames,0.0
+Maerne,IT,45.52313,12.15477,7168,11.0,36.1,opentopo,0.9,geonames,0.0
+Galliera Veneta,IT,45.6628395,11.8284875,7146,48.0,157.5,open_elevation,0.85,osm,0.0
+Jenbach,AT,47.39173,11.77245,7120,568.0,1863.5,opentopo,0.9,geonames,0.0
+Absam,AT,47.29572,11.50593,7112,631.0,2070.2,open_elevation,0.85,geonames,0.0
+Mezzolombardo,IT,46.2120936,11.0935086,7067,225.0,738.2,open_elevation,0.85,osm,0.0
+Carmignano di Brenta,IT,45.6287707,11.6998606,7027,48.0,157.5,opentopo,0.9,osm,0.0
+Jenbach,DE,47.3915387,11.7717443,7021,563.0,1847.1,,,osm,0.0
+Renon,IT,46.54152,11.45728,6993,1203.0,3946.9,opentopo,0.9,geonames,0.0
+Cles,IT,46.3652616,11.0332447,6982,671.0,2201.4,open_elevation,0.85,osm,0.0
+Prata di Pordenone / Prate,IT,45.8932811,12.5960447,6964,12.0,39.4,opentopo,0.9,osm,0.0
+Borgo Valsugana,IT,46.0533463,11.4566004,6945,388.0,1273.0,open_elevation,0.85,osm,0.0
+Altivole,IT,45.7540029,11.9553621,6912,89.0,292.0,open_elevation,0.85,osm,0.0
+Lignano Sabbiadoro / Lignan,IT,45.690161,13.1407655,6900,2.0,6.6,,,osm,0.0
+Belvedere,IT,45.69001,11.7718,6878,71.0,232.9,open_elevation,0.85,geonames,0.0
+Kaltern an der Weinstraße - Caldaro sulla Strada del Vino,IT,46.413467,11.2469106,6852,427.0,1400.9,opentopo,0.9,osm,0.0
+Santa Giustina,IT,46.0838843,12.0432384,6807,308.0,1010.5,open_elevation,0.85,osm,0.0
+Staranzano,IT,45.80233,13.50226,6803,3.0,9.8,open_elevation,0.85,geonames,0.0
+Zirl,DE,47.2733773,11.2422348,6796,622.0,2040.7,,,osm,0.0
+Grado,IT,45.67774,13.40323,6767,2.0,6.6,open_elevation,0.85,geonames,0.0
+Priula-Colfosco,IT,45.81998,12.25847,6743,54.0,177.2,opentopo,0.9,geonames,0.0
+Völs,AT,47.25,11.33333,6738,594.0,1948.8,open_elevation,0.85,geonames,0.0
+Reutte,AT,47.48333,10.71667,6704,852.0,2795.3,opentopo,0.9,geonames,0.0
+San Daniele del Friuli,IT,46.15714,13.00726,6700,213.0,698.8,open_elevation,0.85,geonames,0.0
+Salgareda,IT,45.704123,12.4925871,6688,7.0,23.0,open_elevation,0.85,osm,0.0
+Mira Porte,IT,45.4385084,12.1386165,6683,8.0,26.2,opentopo,0.9,osm,0.0
+Buja / Buie,IT,46.2066766,13.118557,6674,189.0,620.1,open_elevation,0.85,osm,0.0
+Nervesa della Battaglia,IT,45.8253685,12.2092015,6653,81.0,265.7,opentopo,0.9,osm,0.0
+Altach,AT,47.35438,9.65207,6624,412.0,1351.7,open_elevation,0.85,geonames,0.0
+Zanè,IT,45.722,11.44932,6600,174.0,570.9,open_elevation,0.85,geonames,0.0
+Auen,AT,46.59963,13.84389,6563,488.0,1601.0,opentopo,0.9,geonames,0.0
+Absam,DE,47.2965003,11.5051409,6543,632.0,2073.5,,,osm,0.0
+Weiler-Simmerberg,DE,47.58261,9.91352,6510,626.0,2053.8,opentopo,0.9,geonames,0.0
+Tarcento,IT,46.21251,13.21514,6485,225.0,738.2,open_elevation,0.85,geonames,0.0
+Recoaro Terme,IT,45.7051709,11.2249347,6453,445.0,1460.0,,,osm,0.0
+Frastanz,AT,47.21735,9.62995,6434,489.0,1604.3,opentopo,0.9,geonames,0.0
+Gradisca d'Isonzo,IT,45.8925,13.50167,6431,36.0,118.1,open_elevation,0.85,geonames,0.0
+Asiago,IT,45.8753771,11.5106998,6427,997.0,3271.0,opentopo,0.9,osm,0.0
+Vazzola,IT,45.8376705,12.3795417,6405,32.0,105.0,open_elevation,0.85,osm,0.0
+Cordignano,IT,45.9489699,12.4160204,6374,55.0,180.4,opentopo,0.9,osm,0.0
+Breda di Piave,IT,45.7237273,12.3312346,6348,24.0,78.7,open_elevation,0.85,osm,0.0
+Castello di Godego,IT,45.6923801,11.8810438,6347,57.0,187.0,open_elevation,0.85,osm,0.0
+Hörbranz,AT,47.55,9.75,6346,414.0,1358.3,opentopo,0.9,geonames,0.0
+Buia,IT,46.21222,13.11691,6327,194.0,636.5,open_elevation,0.85,geonames,0.0
+Caneva,IT,45.9686618,12.448097,6323,51.0,167.3,opentopo,0.9,osm,0.0
+Sesto al Reghena / Siest,IT,45.8476416,12.8155309,6316,12.0,39.4,open_elevation,0.85,osm,0.0
+Pozzuolo del Friuli / Puçui,IT,45.986019,13.195029,6311,59.0,193.6,open_elevation,0.85,osm,0.0
+Vigodarzere,IT,45.45751,11.88555,6278,14.0,45.9,opentopo,0.9,geonames,0.0
+San Giorgio di Nogaro,IT,45.82745,13.21088,6219,4.0,13.1,open_elevation,0.85,geonames,0.0
+Caldaro sulla Strada del Vino,IT,46.41326,11.24616,6183,428.0,1404.2,opentopo,0.9,geonames,0.0
+Zugliano,IT,45.7336727,11.5214968,6166,153.0,502.0,open_elevation,0.85,osm,0.0
+Gaiarine,IT,45.8805037,12.4815909,6161,16.0,52.5,opentopo,0.9,osm,0.0
+San Fior,IT,45.920753,12.3581506,6153,55.0,180.4,open_elevation,0.85,osm,0.0
+Giudecca,IT,45.42477,12.32906,6147,1.0,3.3,open_elevation,0.85,geonames,0.0
+Ceggia,IT,45.6864366,12.6375286,6145,10.0,32.8,opentopo,0.9,osm,0.0
+Villanova di Camposampiero,IT,45.4904556,11.9730203,6139,12.0,39.4,open_elevation,0.85,osm,0.0
+Meolo,IT,45.6194293,12.4530566,6054,6.0,19.7,opentopo,0.9,osm,0.0
+Massanzago,IT,45.5555115,12.0074344,6045,17.0,55.8,open_elevation,0.85,osm,0.0
+Fagagna / Feagne,IT,46.1134401,13.0845716,6035,180.0,590.6,opentopo,0.9,osm,0.0
+San Vendemiano-Fossamerlo,IT,45.8918,12.32992,6034,52.0,170.6,open_elevation,0.85,geonames,0.0
+Kastelruth - Ciastel - Castelrotto,IT,46.5678425,11.5596852,5994,1064.0,3490.8,open_elevation,0.85,osm,0.0
+San Michele,IT,46.45472,11.26178,5967,409.0,1341.9,opentopo,0.9,geonames,0.0
+Godega di Sant'Urbano,IT,45.9298483,12.3981101,5954,53.0,173.9,open_elevation,0.85,osm,0.0
+Noventa di Piave,IT,45.6618875,12.5299422,5952,8.0,26.2,opentopo,0.9,osm,0.0
+Colceresa,IT,45.7181164,11.6070356,5908,100.0,328.1,open_elevation,0.85,osm,0.0
+Cortina d'Ampezzo,IT,46.5383332,12.1373506,5907,1223.0,4012.5,opentopo,0.9,osm,0.0
+Saint-Gervais-les-Bains,FR,45.89126,6.71678,5882,927.0,3041.3,open_elevation,0.85,geonames,0.0
+Majano / Maian,IT,46.185205,13.0682141,5877,169.0,554.5,open_elevation,0.85,osm,0.0
+Kirchbichl,AT,47.51743,12.09629,5855,523.0,1715.9,opentopo,0.9,geonames,0.0
+Fossalta di Portogruaro,IT,45.7917474,12.9090234,5843,7.0,23.0,open_elevation,0.85,osm,0.0
+Lignano Sabbiadoro,IT,45.6759,13.11727,5837,11.0,36.1,opentopo,0.9,geonames,0.0
+San Giorgio in Bosco,IT,45.5918514,11.8059588,5834,32.0,105.0,open_elevation,0.85,osm,0.0
+Setteville,IT,45.92125,11.93109,5820,279.0,915.4,open_elevation,0.85,geonames,0.0
+Frescada,IT,45.62878,12.23671,5800,9.0,29.5,opentopo,0.9,geonames,0.0
+Sernaglia della Battaglia,IT,45.8747312,12.1331619,5799,117.0,383.9,open_elevation,0.85,osm,0.0
+Cormons,IT,45.95531,13.46683,5795,48.0,157.5,opentopo,0.9,geonames,0.0
+Sterzing - Vipiteno,IT,46.8963235,11.4319398,5785,948.0,3110.2,,,osm,0.0
+Dosson,IT,45.63605,12.25409,5783,12.0,39.4,open_elevation,0.85,geonames,0.0
+Amras,AT,47.25,11.41667,5771,774.0,2539.4,opentopo,0.9,geonames,0.0
+Lochau,AT,47.53333,9.75,5747,421.0,1381.2,open_elevation,0.85,geonames,0.0
+Ca' Savio,IT,45.45375,12.45729,5737,6.0,19.7,opentopo,0.9,geonames,0.0
+Schlanders - Silandro,IT,46.6280688,10.7734765,5733,721.0,2365.5,,,osm,0.0
+Cornuda,IT,45.8319666,12.0080268,5730,159.0,521.7,opentopo,0.9,osm,0.0
+Reutte,DE,47.4891092,10.7187955,5719,853.0,2798.6,,,osm,0.0
+Crocetta del Montello,IT,45.83667,12.03361,5709,153.0,502.0,open_elevation,0.85,geonames,0.0
+Majano,IT,46.18752,13.06162,5690,156.0,511.8,opentopo,0.9,geonames,0.0
+Blaichach,DE,47.54208,10.25846,5625,734.0,2408.1,open_elevation,0.85,geonames,0.0
+Tricesimo,IT,46.16058,13.21566,5590,185.0,607.0,opentopo,0.9,geonames,0.0
+Brugnera,IT,45.89947,12.54178,5585,16.0,52.5,open_elevation,0.85,geonames,0.0
+Remanzacco / Remanzâs,IT,46.0855837,13.3243217,5547,111.0,364.2,open_elevation,0.85,osm,0.0
+Valle Aurina - Ahrntal,IT,46.99623,11.97988,5517,1061.0,3481.0,opentopo,0.9,geonames,0.0
+Castelgomberto,IT,45.5852852,11.3944971,5482,142.0,465.9,open_elevation,0.85,osm,0.0
+Pavia di Udine / Pavie,IT,45.9963174,13.3041373,5477,61.0,200.1,opentopo,0.9,osm,0.0
+Torrebelvicino,IT,45.7188875,11.3086976,5476,275.0,902.2,open_elevation,0.85,osm,0.0
+Völkendorf,AT,46.60806,13.83153,5474,515.0,1689.6,opentopo,0.9,geonames,0.0
+Fontanelle,IT,45.8313331,12.4675458,5471,16.0,52.5,open_elevation,0.85,osm,0.0
+Aviano-Castello,IT,46.06759,12.58324,5465,161.0,528.2,open_elevation,0.85,geonames,0.0
+Bolzano Vicentino,IT,45.6007102,11.6221007,5455,35.0,114.8,opentopo,0.9,osm,0.0
+Pasian di Prato,IT,46.04667,13.1878,5447,101.0,331.4,open_elevation,0.85,geonames,0.0
+Mühlau,AT,47.28333,11.4,5435,691.0,2267.1,opentopo,0.9,geonames,0.0
+Martignacco / Martignà,IT,46.0977183,13.1347959,5405,141.0,462.6,open_elevation,0.85,osm,0.0
+Villaverla,IT,45.6511748,11.4940528,5389,77.0,252.6,opentopo,0.9,osm,0.0
+Oberammergau,DE,47.597344,11.0640664,5379,837.0,2746.1,open_elevation,0.85,osm,0.0
+Campo San Martino,IT,45.544396,11.810404,5371,22.0,72.2,open_elevation,0.85,osm,0.0
+Hopfgarten im Brixental,DE,47.4504996,12.1558791,5365,597.0,1958.7,opentopo,0.9,osm,0.0
+Longarone / Longaron,IT,46.265786,12.2999366,5359,497.0,1630.6,open_elevation,0.85,osm,0.0
+Sterzing,IT,46.89313,11.42961,5356,940.0,3084.0,opentopo,0.9,geonames,0.0
+Palmanova,IT,45.9054635,13.3099318,5352,26.0,85.3,open_elevation,0.85,osm,0.0
+Ala,IT,45.76072,11.00458,5331,178.0,584.0,open_elevation,0.85,geonames,0.0
+Roveredo in Piano,IT,46.00847,12.61938,5323,91.0,298.6,opentopo,0.9,geonames,0.0
+Axams,AT,47.2307532,11.279297,5318,874.0,2867.5,,,osm,0.0
+Vomp,DE,47.3422672,11.683269,5283,569.0,1866.8,opentopo,0.9,osm,0.0
+Povoletto / Paulêt,IT,46.1181791,13.2987971,5276,134.0,439.6,open_elevation,0.85,osm,0.0
+Santorso,IT,45.7372986,11.3903211,5272,227.0,744.8,open_elevation,0.85,osm,0.0
+Zelarino,IT,45.51508,12.2079,5260,9.0,29.5,opentopo,0.9,geonames,0.0
+Lovere,IT,45.81379,10.06995,5255,212.0,695.5,open_elevation,0.85,geonames,0.0
+Lind,AT,46.62244,13.84715,5252,506.0,1660.1,opentopo,0.9,geonames,0.0
+Pisogne,IT,45.80777,10.11023,5248,190.0,623.4,open_elevation,0.85,geonames,0.0
+Kirchberg in Tirol,AT,47.44539,12.31602,5245,823.0,2700.1,open_elevation,0.85,geonames,0.0
+Neumarkt - Egna,IT,46.3169161,11.2725698,5232,222.0,728.3,opentopo,0.9,osm,0.0
+Kirchberg in Tirol,DE,47.4475913,12.3144495,5223,816.0,2677.2,open_elevation,0.85,osm,0.0
+Mattarello,IT,46.00865,11.12984,5214,203.0,666.0,opentopo,0.9,geonames,0.0
+Manzano,IT,45.98843,13.37674,5168,66.0,216.5,open_elevation,0.85,geonames,0.0
+Cosio Valtellino,IT,46.13509,9.55164,5135,222.0,728.3,opentopo,0.9,geonames,0.0
+Megève,FR,45.85687,6.61775,5129,1104.0,3622.0,open_elevation,0.85,geonames,0.0
+Colle Umberto,IT,45.9409837,12.3409719,5111,132.0,433.1,open_elevation,0.85,osm,0.0
+Sarcedo,IT,45.7078513,11.5260472,5092,153.0,502.0,opentopo,0.9,osm,0.0
+Ponte nelle Alpi-Polpet,IT,46.18833,12.27833,5089,407.0,1335.3,open_elevation,0.85,geonames,0.0
+Naturns - Naturno,IT,46.6498856,11.0041954,5089,532.0,1745.4,opentopo,0.9,osm,0.0
+Codognè,IT,45.8667947,12.4339077,5068,27.0,88.6,open_elevation,0.85,osm,0.0
+Martignacco,IT,46.09313,13.13973,5050,130.0,426.5,open_elevation,0.85,geonames,0.0
+Baselga di Piné,IT,46.133108,11.2460028,5038,964.0,3162.7,opentopo,0.9,osm,0.0
+Villa del Conte,IT,45.586598,11.859005,5030,28.0,91.9,open_elevation,0.85,osm,0.0
