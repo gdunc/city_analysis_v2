@@ -94,3 +94,55 @@ def write_html_map(path: str | Path, records: Iterable[Dict]) -> None:
         ], popup=popup).add_to(fmap)
 
     fmap.save(str(path))
+
+
+def write_html_map_by_country_and_population(path: str | Path, records: Iterable[Dict]) -> None:
+    """Write a Folium map with circle markers colored by country and sized by population."""
+    records_list: List[Dict] = list(records)
+    if not records_list:
+        Path(path).write_text("")
+        return
+
+    center_lat = sum(float(r["latitude"]) for r in records_list) / len(records_list)
+    center_lon = sum(float(r["longitude"]) for r in records_list) / len(records_list)
+    fmap = folium.Map(location=[center_lat, center_lon], zoom_start=6)
+
+    populations = [int(r.get("population") or 0) for r in records_list if r.get("population")]
+    min_pop = min(populations) if populations else 0
+    max_pop = max(populations) if populations else 0
+
+    # Assign a color for each country
+    country_codes = sorted({r.get("country", "") for r in records_list})
+    color_palette = [
+        "red", "blue", "green", "purple", "orange", "darkred", "lightred",
+        "beige", "darkblue", "darkgreen", "cadetblue", "darkpurple",
+        "white", "pink", "lightblue", "lightgreen", "gray", "black", "lightgray",
+    ]
+    country_colors = {c: color_palette[i % len(color_palette)] for i, c in enumerate(country_codes)}
+
+    def scale_radius(pop: int) -> float:
+        if max_pop == min_pop:
+            return 5
+        # Scale radius between 5 and 20 pixels
+        return 5 + (pop - min_pop) / (max_pop - min_pop) * 15
+
+    for r in records_list:
+        pop = int(r.get("population") or 0)
+        country = r.get("country", "")
+        popup = f"{r.get('name', 'Unknown')} ({country})"
+        if pop:
+            try:
+                popup += f" — pop {pop:,}"
+            except Exception:
+                popup += f" — pop {r['population']}"
+        folium.CircleMarker(
+            location=[float(r["latitude"]), float(r["longitude"])],
+            radius=scale_radius(pop),
+            color=country_colors.get(country, "gray"),
+            fill=True,
+            fill_opacity=0.7,
+            fill_color=country_colors.get(country, "gray"),
+            popup=popup,
+        ).add_to(fmap)
+
+    fmap.save(str(path))
