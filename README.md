@@ -71,6 +71,7 @@ Optional flags:
 Outputs in `outputs/`:
 - `alps_cities.csv` - CSV with columns: name, country, latitude, longitude, population, elevation, elevation_source, elevation_confidence, source, distance_km_to_alps
 - `alps_cities.geojson` - GeoJSON with all place data including elevation and distance metrics
+- `alps_cities_map.html` - Interactive map of all places (Folium)
 
 ## Notes
 - Licensing: GeoNames (CC BY 4.0), OSM (ODbL). Validate terms before redistribution.

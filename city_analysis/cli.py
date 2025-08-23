@@ -14,7 +14,7 @@ from .geometry import default_alps_polygon, load_perimeter, polygon_bounds
 from .geonames import fetch_geonames_cities
 from .overpass import fetch_overpass_bbox_tiled
 from .normalize import filter_within_perimeter, dedupe_places, enforce_min_population
-from .io_utils import write_csv, write_geojson
+from .io_utils import write_csv, write_geojson, write_html_map
 from .analysis import top_n_by_population, summarize
 from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
@@ -116,6 +116,7 @@ def main() -> None:
     # Write outputs
     write_csv(out_dir / "alps_cities.csv", enriched)
     write_geojson(out_dir / "alps_cities.geojson", enriched)
+    write_html_map(out_dir / "alps_cities_map.html", enriched)
 
     # Console summary
     stats = summarize(enriched)

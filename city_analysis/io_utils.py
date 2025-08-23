@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Dict, Iterable, List
 
+import folium
+
 
 def write_csv(path: str | Path, records: Iterable[Dict]) -> None:
     records_list: List[Dict] = list(records)
@@ -65,3 +67,30 @@ def write_geojson(path: str | Path, records: Iterable[Dict]) -> None:
     fc = {"type": "FeatureCollection", "features": features}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(fc, f, ensure_ascii=False)
+
+
+def write_html_map(path: str | Path, records: Iterable[Dict]) -> None:
+    """Write an interactive HTML map using Folium for the given places."""
+    records_list: List[Dict] = list(records)
+    if not records_list:
+        Path(path).write_text("")
+        return
+
+    # Center map around average coordinates
+    center_lat = sum(float(r["latitude"]) for r in records_list) / len(records_list)
+    center_lon = sum(float(r["longitude"]) for r in records_list) / len(records_list)
+    fmap = folium.Map(location=[center_lat, center_lon], zoom_start=6)
+
+    for r in records_list:
+        popup = f"{r.get('name', 'Unknown')} ({r.get('country', '')})"
+        if r.get("population"):
+            try:
+                popup += f" — pop {int(r['population']):,}"
+            except Exception:
+                popup += f" — pop {r['population']}"
+        folium.Marker([
+            float(r["latitude"]),
+            float(r["longitude"]),
+        ], popup=popup).add_to(fmap)
+
+    fmap.save(str(path))
