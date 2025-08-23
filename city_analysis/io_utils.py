@@ -88,10 +88,32 @@ def write_html_map(path: str | Path, records: Iterable[Dict]) -> None:
                 popup += f" — pop {int(r['population']):,}"
             except Exception:
                 popup += f" — pop {r['population']}"
-        folium.Marker([
-            float(r["latitude"]),
-            float(r["longitude"]),
-        ], popup=popup).add_to(fmap)
+
+        pop_txt = "Unknown"
+        if r.get("population"):
+            try:
+                pop_txt = f"{int(r['population']):,}"
+            except Exception:
+                pop_txt = f"{r['population']}"
+        elev_txt = str(r.get("elevation", "Unknown"))
+        elev_ft_val = r.get("elevation_feet")
+        if elev_ft_val is None and r.get("elevation") is not None:
+            try:
+                elev_ft_val = round(float(r["elevation"]) * 3.28084, 1)
+            except Exception:
+                elev_ft_val = None
+        elev_ft_txt = str(elev_ft_val) if elev_ft_val is not None else "Unknown"
+        tooltip_html = (
+            f"{r.get('name', 'Unknown')}<br>"
+            f"Population: {pop_txt}<br>"
+            f"Elevation: {elev_txt} m<br>"
+            f"Elevation (ft): {elev_ft_txt} ft"
+        )
+        folium.Marker(
+            [float(r["latitude"]), float(r["longitude"])],
+            popup=popup,
+            tooltip=folium.Tooltip(tooltip_html, sticky=True),
+        ).add_to(fmap)
 
     fmap.save(str(path))
 
@@ -135,6 +157,26 @@ def write_html_map_by_country_and_population(path: str | Path, records: Iterable
                 popup += f" — pop {pop:,}"
             except Exception:
                 popup += f" — pop {r['population']}"
+        pop_txt = "Unknown"
+        if r.get("population"):
+            try:
+                pop_txt = f"{int(r['population']):,}"
+            except Exception:
+                pop_txt = f"{r['population']}"
+        elev_txt = str(r.get("elevation", "Unknown"))
+        elev_ft_val = r.get("elevation_feet")
+        if elev_ft_val is None and r.get("elevation") is not None:
+            try:
+                elev_ft_val = round(float(r["elevation"]) * 3.28084, 1)
+            except Exception:
+                elev_ft_val = None
+        elev_ft_txt = str(elev_ft_val) if elev_ft_val is not None else "Unknown"
+        tooltip_html = (
+            f"{r.get('name', 'Unknown')}<br>"
+            f"Population: {pop_txt}<br>"
+            f"Elevation: {elev_txt} m<br>"
+            f"Elevation (ft): {elev_ft_txt} ft"
+        )
         folium.CircleMarker(
             location=[float(r["latitude"]), float(r["longitude"])],
             radius=scale_radius(pop),
@@ -143,6 +185,7 @@ def write_html_map_by_country_and_population(path: str | Path, records: Iterable
             fill_opacity=0.7,
             fill_color=country_colors.get(country, "gray"),
             popup=popup,
+            tooltip=folium.Tooltip(tooltip_html, sticky=True),
         ).add_to(fmap)
 
     fmap.save(str(path))
