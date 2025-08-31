@@ -24,6 +24,7 @@ from .analysis import top_n_by_population, summarize
 from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
 from .elevation import enrich_places_with_elevation
+from .hospital import add_hospital_info
 
 
 def parse_args() -> argparse.Namespace:
@@ -113,6 +114,10 @@ def main() -> None:
         )
     else:
         print("Skipping elevation enrichment (using only OSM/GeoNames data)", file=sys.stderr)
+
+    # Check for hospitals using OpenAI web search
+    print("Checking for hospitals in each city...", file=sys.stderr)
+    enriched = add_hospital_info(enriched)
 
     # Ensure output directory
     out_dir = Path(args.out_dir)
