@@ -21,9 +21,10 @@ def write_csv(path: str | Path, records: Iterable[Dict]) -> None:
     
     # Use a consistent field order for better readability
     field_order = [
-        "name", "country", "latitude", "longitude", "population", 
+        "name", "country", "latitude", "longitude", "population",
         "elevation", "elevation_feet", "elevation_source", "elevation_confidence",
-        "source", "distance_km_to_alps"
+        "source", "distance_km_to_alps",
+        "has_hospital", "hospital_confidence", "hospital_reasoning"
     ]
     
     # Start with ordered fields, then add any remaining fields
