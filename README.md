@@ -16,6 +16,9 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - `city_analysis/geonames.py`: GeoNames API client with pagination, normalized records
 - `city_analysis/overpass.py`: Overpass QL builder and fetcher, normalized records (`place=city|town|village`)
 - `city_analysis/normalize.py`: Perimeter filtering and fuzzy deduplication by name/country + distance
+- `city_analysis/distance.py`: Distance-to-perimeter computation (km) for each place
+- `city_analysis/elevation.py`: Multi-source elevation enrichment (OpenTopoData → Google → Open‑Elevation)
+- `city_analysis/country_filters.py`: Country exclusions and inference for missing country codes
 - `city_analysis/io_utils.py`: CSV and GeoJSON writers
 - `city_analysis/analysis.py`: Summary metrics and top-N by population
 - `city_analysis/cli.py`: CLI orchestration
@@ -43,7 +46,7 @@ The tool now provides multi-source elevation enrichment to significantly improve
 
 ## Install
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -52,9 +55,24 @@ pip install -r requirements.txt
 - Google Elevation API (optional): Set `GOOGLE_API_KEY` env var or pass `--google-api-key` for enhanced elevation coverage.
 - Perimeter: provide a GeoJSON polygon/multipolygon of the Alpine Convention perimeter if you have it. Otherwise, a conservative default bbox is used.
 
+The CLI auto-loads a `.env` file if present (via `python-dotenv`). Example:
+```bash
+# .env
+GEONAMES_USERNAME=your_user
+GOOGLE_API_KEY=your_key   # optional
+```
+The repo includes an example perimeter file: `alps_perimeter.geojson`.
+
 ## Usage
 ```bash
 python -m city_analysis.cli --geonames-username YOUR_GEONAMES_USER --out-dir outputs
+```
+Example using the included perimeter file:
+```bash
+python -m city_analysis.cli \
+  --geonames-username YOUR_GEONAMES_USER \
+  --perimeter alps_perimeter.geojson \
+  --out-dir outputs
 ```
 Optional flags:
 - `--perimeter path/to/alpine_perimeter.geojson`
@@ -69,9 +87,10 @@ Optional flags:
 - `--skip-elevation` (skip elevation enrichment, use only OSM/GeoNames data)
 
 Outputs in `outputs/`:
-- `alps_cities.csv` - CSV with columns: name, country, latitude, longitude, population, elevation, elevation_source, elevation_confidence, source, distance_km_to_alps
+- `alps_cities.csv` - CSV with columns: name, country, latitude, longitude, population, elevation, elevation_feet, elevation_source, elevation_confidence, source, distance_km_to_alps
 - `alps_cities.geojson` - GeoJSON with all place data including elevation and distance metrics
 
 ## Notes
 - Licensing: GeoNames (CC BY 4.0), OSM (ODbL). Validate terms before redistribution.
 - Population completeness varies, especially for OSM if `population` tag is missing.
+- If `GEONAMES_USERNAME` is not provided, the tool runs in OSM-only mode (reduced completeness).

@@ -29,24 +29,12 @@ def write_csv(path: str | Path, records: Iterable[Dict]) -> None:
     remaining_fields = sorted([f for f in all_fieldnames if f not in field_order])
     fieldnames.extend(remaining_fields)
     
-    with open(path, "w", newline="", encoding="utf-8") as f:
+    # Write CSV with UTF-8 BOM so spreadsheet apps (e.g., Excel) detect encoding correctly
+    with open(path, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
-        # Ensure proper UTF-8 handling for special characters
         for record in records_list:
-            # Clean any potential encoding issues in the data
-            cleaned_record = {}
-            for key, value in record.items():
-                if isinstance(value, str):
-                    # Ensure the string is properly encoded
-                    try:
-                        cleaned_record[key] = value.encode('utf-8').decode('utf-8')
-                    except UnicodeError:
-                        # Fallback: try to fix common encoding issues
-                        cleaned_record[key] = value.encode('latin-1', errors='ignore').decode('utf-8', errors='ignore')
-                else:
-                    cleaned_record[key] = value
-            writer.writerow(cleaned_record)
+            writer.writerow(record)
 
 
 def write_geojson(path: str | Path, records: Iterable[Dict]) -> None:
