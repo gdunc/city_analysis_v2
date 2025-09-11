@@ -20,7 +20,7 @@ from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
 from .elevation import enrich_places_with_elevation
 from .map_utils import save_map, save_country_map
-from .hospital_check import enrich_records_with_hospital_presence
+from .hospital_check import enrich_records_with_hospital_presence, enrich_records_with_hospital_presence_osm
 from .airport_check import enrich_records_with_nearest_airport
 
 
@@ -43,9 +43,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-elevation", action="store_true", help="Skip elevation enrichment (use only OSM/GeoNames data)")
 
     # Hospital presence check (optional)
-    parser.add_argument("--check-hospitals", action="store_true", help="Use OpenAI web search to check if each city has a hospital; adds columns to CSV")
-    parser.add_argument("--openai-model", type=str, default=os.getenv("OPENAI_MODEL", "gpt-5"), help="OpenAI model to use for hospital check (default: gpt-5)")
-    parser.add_argument("--openai-timeout", type=float, default=float(os.getenv("OPENAI_TIMEOUT", "60")), help="Per-request timeout (seconds) for OpenAI hospital check")
+    parser.add_argument("--check-hospitals", action="store_true", help="Check if each city has a hospital; adds columns to CSV (defaults to OSM-based)")
+    parser.add_argument("--hospital-mode", type=str, choices=["osm", "openai", "hybrid"], default=os.getenv("HOSPITAL_MODE", "osm"), help="Hospital check mode: 'osm' (default), 'openai', or 'hybrid' (OSM first, then OpenAI fallback)")
+    parser.add_argument("--hospital-radius-km", type=float, default=float(os.getenv("HOSPITAL_RADIUS_KM", "3.0")), help="Radius in km around city centroid to consider OSM hospitals (default 3.0)")
+    parser.add_argument("--hospital-tile-size", type=float, default=float(os.getenv("HOSPITAL_TILE_SIZE_DEG", "1.0")), help="Overpass tile size in degrees for hospital fetch (default 1.0)")
+    parser.add_argument("--hospital-no-openai-fallback", action="store_true", help="In hybrid mode, disable OpenAI fallback (OSM only)")
+    parser.add_argument("--openai-model", type=str, default=os.getenv("OPENAI_MODEL", "gpt-5"), help="OpenAI model to use for hospital/airport checks when enabled")
+    parser.add_argument("--openai-timeout", type=float, default=float(os.getenv("OPENAI_TIMEOUT", "60")), help="Per-request timeout (seconds) for OpenAI when enabled")
 
     # Map generation options
     parser.add_argument("--make-map", action="store_true", help="Generate interactive HTML map alongside CSV/GeoJSON")
@@ -88,12 +92,25 @@ def main() -> None:
 
         # Optionally enrich CSV with hospital presence before building maps
         if args.check_hospitals:
-            print("Checking hospital presence via OpenAI web search...", file=sys.stderr)
-            records = enrich_records_with_hospital_presence(
-                records,
-                model=args.openai_model,
-                request_timeout=args.openai_timeout,
-            )
+            if args.hospital_mode == "openai":
+                print("Checking hospital presence via OpenAI (explicitly enabled)", file=sys.stderr)
+                records = enrich_records_with_hospital_presence(
+                    records,
+                    model=args.openai_model,
+                    request_timeout=args.openai_timeout,
+                )
+            else:
+                print("Checking hospital presence via OSM (default)", file=sys.stderr)
+                records = enrich_records_with_hospital_presence_osm(
+                    records,
+                    perimeter_bbox=bbox if 'bbox' in locals() else None,
+                    radius_km=args.hospital_radius_km,
+                    tile_size_deg=args.hospital_tile_size,
+                    sleep_between_tiles=0.5,
+                    fallback_to_openai=(args.hospital_mode == "hybrid" and not args.hospital_no_openai_fallback),
+                    model=args.openai_model,
+                    request_timeout=args.openai_timeout,
+                )
             csv_path = out_dir / "alps_cities.csv"
             write_csv(csv_path, records)
             print(f"Wrote CSV with hospital columns to {csv_path}")
@@ -192,14 +209,27 @@ def main() -> None:
     else:
         print("Skipping elevation enrichment (using only OSM/GeoNames data)", file=sys.stderr)
 
-    # Optional: Hospital presence check using OpenAI
+    # Optional: Hospital presence check
     if args.check_hospitals:
-        print("Checking hospital presence via OpenAI web search...", file=sys.stderr)
-        enriched = enrich_records_with_hospital_presence(
-            enriched,
-            model=args.openai_model,
-            request_timeout=args.openai_timeout,
-        )
+        if args.hospital_mode == "openai":
+            print("Checking hospital presence via OpenAI (explicitly enabled)", file=sys.stderr)
+            enriched = enrich_records_with_hospital_presence(
+                enriched,
+                model=args.openai_model,
+                request_timeout=args.openai_timeout,
+            )
+        else:
+            print("Checking hospital presence via OSM (default)", file=sys.stderr)
+            enriched = enrich_records_with_hospital_presence_osm(
+                enriched,
+                perimeter_bbox=bbox,
+                radius_km=args.hospital_radius_km,
+                tile_size_deg=args.hospital_tile_size,
+                sleep_between_tiles=0.5,
+                fallback_to_openai=(args.hospital_mode == "hybrid" and not args.hospital_no_openai_fallback),
+                model=args.openai_model,
+                request_timeout=args.openai_timeout,
+            )
 
     # Optional: Nearest international airport + driving time/distance
     if args.check_airports:

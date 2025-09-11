@@ -9,6 +9,9 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 from openai import OpenAI
 from tqdm import tqdm
+from math import radians, sin, cos, asin, sqrt
+from .geometry import default_alps_polygon, polygon_bounds
+from .overpass import fetch_overpass_hospitals_bbox_tiled
 
 
 @dataclass
@@ -219,4 +222,135 @@ def enrich_records_with_hospital_presence(
 
     return enriched
 
+
+
+# ----------------- OSM-based hospital presence check -----------------
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great-circle distance between two WGS84 points using Haversine (km)."""
+    # Convert to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 6371.0
+    return r * c
+
+
+def _load_hospitals_for_bbox(bbox: Tuple[float, float, float, float], tile_size_deg: float = 1.0, sleep_between: float = 0.5) -> List[Dict]:
+    """Fetch hospitals from Overpass within bbox using tiling, return normalized list.
+
+    Returns list of dicts with keys: name, latitude, longitude, source, _tags
+    """
+    hospitals = fetch_overpass_hospitals_bbox_tiled(
+        bbox=bbox,
+        tile_size_deg=tile_size_deg,
+        sleep_between=sleep_between,
+    )
+    return hospitals
+
+
+def enrich_records_with_hospital_presence_osm(
+    records: Iterable[Dict],
+    perimeter_bbox: Optional[Tuple[float, float, float, float]] = None,
+    radius_km: float = 3.0,
+    tile_size_deg: float = 1.0,
+    sleep_between_tiles: float = 0.5,
+    fallback_to_openai: bool = False,
+    model: str = "gpt-5",
+    request_timeout: Optional[float] = 60.0,
+    sleep_seconds_between_requests: float = 0.5,
+) -> List[Dict]:
+    """Determine hospital presence using OSM hospitals within a radius around city centroid.
+
+    - If any OSM hospital lies within radius_km of a city's (lat,lon), mark yes; else no.
+    - If fallback_to_openai is True, call the OpenAI web search method only for cities
+      where OSM found none, to potentially flip "no" to "yes" with reasoning.
+    """
+    # Determine bbox to query for hospitals
+    if perimeter_bbox is None:
+        perimeter_bbox = polygon_bounds(default_alps_polygon())
+
+    # Fetch hospitals once
+    hospitals = _load_hospitals_for_bbox(perimeter_bbox, tile_size_deg=tile_size_deg, sleep_between=sleep_between_tiles)
+
+    # Precompute for quick coarse filter
+    deg_radius = max(0.001, radius_km / 111.0)  # ~1 deg ~111 km
+
+    enriched: List[Dict] = []
+    client: Optional[OpenAI] = None
+    if fallback_to_openai:
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    for r in tqdm(list(records), desc="Checking hospitals (OSM)", unit="city"):
+        city = str(r.get("name") or r.get("city") or "").strip()
+        country = str(r.get("country") or "").strip()
+        try:
+            lat0 = float(r.get("latitude"))
+            lon0 = float(r.get("longitude"))
+        except Exception:
+            lat0, lon0 = None, None
+
+        found = False
+        nearest_km: Optional[float] = None
+        if lat0 is not None and lon0 is not None:
+            for h in hospitals:
+                hlat = float(h.get("latitude"))
+                hlon = float(h.get("longitude"))
+                if abs(hlat - lat0) > deg_radius or abs(hlon - lon0) > deg_radius:
+                    continue
+                d = _haversine_km(lat0, lon0, hlat, hlon)
+                if nearest_km is None or d < nearest_km:
+                    nearest_km = d
+                if d <= radius_km:
+                    found = True
+                    break
+
+        new_record = dict(r)
+        if found:
+            new_record["hospital_in_city"] = "yes"
+            new_record["hospital_confidence_pct"] = 95
+            reason = f"OSM hospital within {radius_km:.1f} km of centroid"
+            if nearest_km is not None:
+                reason += f" (nearest {nearest_km:.2f} km)"
+            new_record["hospital_reasoning"] = reason
+            new_record["hospital_error"] = ""
+            enriched.append(new_record)
+            continue
+
+        # Not found in OSM
+        if fallback_to_openai and client is not None:
+            result = _query_openai_with_web_search(
+                client=client,
+                model=model,
+                city=city,
+                country=country,
+                request_timeout=request_timeout,
+            )
+            if sleep_seconds_between_requests > 0:
+                time.sleep(sleep_seconds_between_requests)
+            if result.hospital_error:
+                new_record["hospital_in_city"] = ""
+                new_record["hospital_confidence_pct"] = ""
+                new_record["hospital_reasoning"] = ""
+                new_record["hospital_error"] = result.hospital_error
+            else:
+                new_record["hospital_in_city"] = result.hospital_in_city or ""
+                new_record["hospital_confidence_pct"] = (
+                    result.hospital_confidence_pct if result.hospital_confidence_pct is not None else ""
+                )
+                new_record["hospital_reasoning"] = result.hospital_reasoning or ""
+                new_record["hospital_error"] = ""
+            enriched.append(new_record)
+            continue
+
+        # No fallback; mark confidently based on OSM absence (within radius)
+        new_record["hospital_in_city"] = "no"
+        new_record["hospital_confidence_pct"] = 80
+        new_record["hospital_reasoning"] = f"No OSM hospital within {radius_km:.1f} km of centroid"
+        new_record["hospital_error"] = ""
+        enriched.append(new_record)
+
+    return enriched
 
