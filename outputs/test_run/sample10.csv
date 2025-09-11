@@ -1,0 +1,11 @@
+﻿name,country,latitude,longitude,population,elevation,source,distance_km_to_alps
+Grenoble,FR,45.17869,5.71479,158552,,geonames,0.0
+Salzburg,AT,47.79941,13.04399,157245,,geonames,0.0
+Innsbruck,AT,47.26266,11.39454,132493,,geonames,0.0
+Trento,IT,46.06787,11.12108,120709,,geonames,0.0
+Bolzano,IT,46.49067,11.33982,107436,,geonames,0.0
+Bolzano - Bozen,IT,46.4984781,11.3547399,105713,262.0,osm,0.0
+Klagenfurt,AT,46.62472,14.30528,100316,,geonames,0.0
+Rosenheim,AT,47.85637,12.12247,60167,,geonames,0.0
+Chambéry,FR,45.56628,5.92079,61640,,geonames,0.0
+Kempten (Allgäu),DE,47.72674,10.31389,61399,,geonames,0.0

@@ -21,6 +21,7 @@ from .distance import add_distance_to_perimeter_km
 from .elevation import enrich_places_with_elevation
 from .map_utils import save_map, save_country_map
 from .hospital_check import enrich_records_with_hospital_presence
+from .airport_check import enrich_records_with_nearest_airport
 
 
 def parse_args() -> argparse.Namespace:
@@ -50,6 +51,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--make-map", action="store_true", help="Generate interactive HTML map alongside CSV/GeoJSON")
     parser.add_argument("--map-file", type=str, default=None, help="Path for HTML map output (default: <out-dir>/alps_cities_map.html)")
     parser.add_argument("--map-tiles", type=str, default="OpenStreetMap", help="Folium tiles name or URL")
+
+    # Airport nearest + driving distance/time (optional)
+    parser.add_argument("--check-airports", action="store_true", help="Use OpenAI web search to find nearest international airport and OSRM for driving; adds columns to CSV")
+    parser.add_argument("--osrm-base-url", type=str, default=os.getenv("OSRM_BASE_URL", "https://router.project-osrm.org"), help="Base URL for OSRM routing service")
+    parser.add_argument("--airports-limit", type=int, default=None, help="Limit number of records to process for airport enrichment (useful for testing)")
+    parser.add_argument("--airports-resume-missing", action="store_true", help="Only process rows missing airport name or with airport_error; keep existing successes")
+    parser.add_argument("--airports-max-retries", type=int, default=int(os.getenv("AIRPORTS_MAX_RETRIES", "2")), help="Max retries for OpenAI airport lookup")
+    parser.add_argument("--airports-initial-backoff", type=float, default=float(os.getenv("AIRPORTS_INITIAL_BACKOFF", "2.0")), help="Initial backoff seconds before retry")
+    parser.add_argument("--airports-backoff-multiplier", type=float, default=float(os.getenv("AIRPORTS_BACKOFF_MULTIPLIER", "2.0")), help="Backoff multiplier between retries")
+    parser.add_argument("--airports-jitter", type=float, default=float(os.getenv("AIRPORTS_JITTER", "0.5")), help="Jitter seconds added/subtracted to backoff")
 
     # Second map style (country-colored, population-sized)
     parser.add_argument("--make-country-map", action="store_true", help="Generate country-colored, population-sized map")
@@ -86,6 +97,24 @@ def main() -> None:
             csv_path = out_dir / "alps_cities.csv"
             write_csv(csv_path, records)
             print(f"Wrote CSV with hospital columns to {csv_path}")
+        # Optionally enrich CSV with nearest airport and driving info
+        if args.check_airports:
+            print("Finding nearest international airports and driving metrics...", file=sys.stderr)
+            records = enrich_records_with_nearest_airport(
+                records,
+                model=args.openai_model,
+                request_timeout=args.openai_timeout,
+                osrm_base_url=args.osrm_base_url,
+                max_retries=args.airports_max_retries,
+                initial_backoff_seconds=args.airports_initial_backoff,
+                backoff_multiplier=args.airports_backoff_multiplier,
+                jitter_seconds=args.airports_jitter,
+                limit=args.airports_limit,
+                resume_missing_only=args.airports_resume_missing,
+            )
+            csv_path = out_dir / "alps_cities.csv"
+            write_csv(csv_path, records)
+            print(f"Wrote CSV with airport and driving columns to {csv_path}")
         if args.make_map:
             map_path = Path(args.map_file) if args.map_file else (out_dir / "alps_cities_map.html")
             save_map(records, map_path, tiles=args.map_tiles)
@@ -170,6 +199,22 @@ def main() -> None:
             enriched,
             model=args.openai_model,
             request_timeout=args.openai_timeout,
+        )
+
+    # Optional: Nearest international airport + driving time/distance
+    if args.check_airports:
+        print("Finding nearest international airports and driving metrics...", file=sys.stderr)
+        enriched = enrich_records_with_nearest_airport(
+            enriched,
+            model=args.openai_model,
+            request_timeout=args.openai_timeout,
+            osrm_base_url=args.osrm_base_url,
+            max_retries=args.airports_max_retries,
+            initial_backoff_seconds=args.airports_initial_backoff,
+            backoff_multiplier=args.airports_backoff_multiplier,
+            jitter_seconds=args.airports_jitter,
+            limit=args.airports_limit,
+            resume_missing_only=args.airports_resume_missing,
         )
 
     # Ensure output directory

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_73eb71cff429af2653a57c71c616b8b9 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    <script>
+    (function(){
+      var MAP_VAR_NAME = 'map_73eb71cff429af2653a57c71c616b8b9';
+      function getMap(){ return window[MAP_VAR_NAME]; }
+
+      function collectMarkers(layer, out){
+        if (!layer) return;
+        if (layer instanceof L.CircleMarker) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectMarkers(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectMarkers(child, out); });
+        }
+      }
+
+      function collectClusters(layer, out){
+        if (!layer) return;
+        if (typeof L.MarkerClusterGroup !== 'undefined' && (layer instanceof L.MarkerClusterGroup)) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectClusters(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectClusters(child, out); });
+        }
+      }
+
+      function readPopulation(marker){
+        var p = 0;
+        if (marker && marker.options && marker.options.population != null) {
+          var n = Number(marker.options.population);
+          if (!isNaN(n)) return n;
+        }
+        try {
+          var pop = 0;
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var htmlStr = '';
+          if (typeof content === 'string') {
+            htmlStr = content;
+          } else if (content && typeof content.innerHTML === 'string') {
+            htmlStr = content.innerHTML;
+          } else if (content && typeof content.textContent === 'string') {
+            htmlStr = content.textContent;
+          }
+          if (htmlStr) {
+            var m = htmlStr.match(/Population:\s*([0-9,.]+)/i);
+            if (m && m[1]) {
+              pop = Number(m[1].replace(/[\,\s]/g, '')) || 0;
+            }
+          }
+          return pop;
+        } catch (e) { return 0; }
+      }
+
+      var state = window.__popFilterState || { indexBuilt:false, markerToOwners:{}, markers:[], clusters:[] };
+      function buildIndex(){
+        var map = getMap();
+        state.markers = [];
+        state.clusters = [];
+        map.eachLayer(function(l){ collectMarkers(l, state.markers); });
+        map.eachLayer(function(l){ collectClusters(l, state.clusters); });
+        state.markerToOwners = {};
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var owners = [];
+          for (var j=0;j<state.clusters.length;j++){
+            var c = state.clusters[j];
+            if (c.hasLayer && c.hasLayer(m)) owners.push(c);
+          }
+          state.markerToOwners[m._leaflet_id] = owners;
+        }
+        state.indexBuilt = true;
+        window.__popFilterState = state;
+      }
+
+      function showMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (!c.hasLayer(m)) c.addLayer(m);
+          }
+        } else {
+          if (!map.hasLayer(m)) map.addLayer(m);
+        }
+        if (m._icon) m._icon.style.display = '';
+        if (m._path) m._path.style.display = '';
+      }
+
+      function hideMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (c.hasLayer(m)) c.removeLayer(m);
+          }
+        } else {
+          if (map.hasLayer(m)) map.removeLayer(m);
+        }
+        if (m._icon) m._icon.style.display = 'none';
+        if (m._path) m._path.style.display = 'none';
+      }
+
+      function applyFilter(minPop){
+        if (!state.indexBuilt) buildIndex();
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var p = readPopulation(m);
+          if (p >= minPop) showMarker(m); else hideMarker(m);
+        }
+      }
+
+      function ensureUI(){
+        // If control already present, skip
+        if (document.getElementById('pop-filter')) return;
+        var map = getMap();
+        var ctrl = L.control({position: 'topleft'});
+        ctrl.onAdd = function(map){
+          var container = L.DomUtil.create('div');
+          container.innerHTML = `
+    <div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3);">
+           <label style="font-size:12px; display:block; margin-bottom:4px;">Min population</label>
+           <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:140px;"/>
+           <button id="apply-pop-filter" style="margin-left:6px;">Apply</button>
+         </div>
+          `;
+          L.DomEvent.disableClickPropagation(container);
+          return container;
+        };
+        ctrl.addTo(map);
+      }
+
+      function hookUI(){
+        ensureUI();
+        var btn = document.getElementById('apply-pop-filter');
+        var input = document.getElementById('pop-threshold');
+        if (!btn || !input) return;
+        btn.addEventListener('click', function(){
+          var v = Number(input.value || 0) || 0;
+          applyFilter(v);
+        });
+        input.addEventListener('keypress', function(e){
+          if (e.key === 'Enter') {
+            var v = Number(input.value || 0) || 0;
+            applyFilter(v);
+          }
+        });
+      }
+
+      function whenMapReady(fn){
+        if (getMap()) { fn(); return; }
+        var tries = 0; var maxTries = 200; // ~10s
+        var iv = setInterval(function(){
+          if (getMap()){ clearInterval(iv); fn(); }
+          else if (++tries >= maxTries){ clearInterval(iv); }
+        }, 50);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function(){ whenMapReady(hookUI); });
+      } else {
+        whenMapReady(hookUI);
+      }
+    })();
+    </script>
+    
+            <div class="folium-map" id="map_73eb71cff429af2653a57c71c616b8b9" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_73eb71cff429af2653a57c71c616b8b9 = L.map(
+                "map_73eb71cff429af2653a57c71c616b8b9",
+                {
+                    center: [46.707188810000005, 10.66313899],
+                    crs: L.CRS.EPSG3857,
+                    
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+
+
+                }
+            );
+            L.control.scale().addTo(map_73eb71cff429af2653a57c71c616b8b9);
+
+            
+
+        
+    
+            var tile_layer_41ac1514b69e5306d85d9c3b4196f952 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_41ac1514b69e5306d85d9c3b4196f952.addTo(map_73eb71cff429af2653a57c71c616b8b9);
+        
+    
+            var marker_cluster_36c366025aa91948d3948c2e92f9da68 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_4be007a8d31db80310071726b50dba87 = L.circleMarker(
+                [45.17869, 5.71479],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_bb6f6e34d7dfb290b5afbc63a7e62728 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_f7c8d42a2401abf828d7cec01179352f = $(`<div id="html_f7c8d42a2401abf828d7cec01179352f" style="width: 100.0%; height: 100.0%;"><b>Grenoble</b>(FR)<br/>Population: 158,552<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_bb6f6e34d7dfb290b5afbc63a7e62728.setContent(html_f7c8d42a2401abf828d7cec01179352f);
+            
+        
+
+        circle_marker_4be007a8d31db80310071726b50dba87.bindPopup(popup_bb6f6e34d7dfb290b5afbc63a7e62728)
+        ;
+
+        
+    
+    
+            var circle_marker_2e3053fc1aef6d5796e468105a8ebd9e = L.circleMarker(
+                [47.79941, 13.04399],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_5a65ad5400c1e72b644d5bc6c3c2aa07 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a5aa0f52c545dc5fa77cad74fd2b98eb = $(`<div id="html_a5aa0f52c545dc5fa77cad74fd2b98eb" style="width: 100.0%; height: 100.0%;"><b>Salzburg</b>(AT)<br/>Population: 157,245<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_5a65ad5400c1e72b644d5bc6c3c2aa07.setContent(html_a5aa0f52c545dc5fa77cad74fd2b98eb);
+            
+        
+
+        circle_marker_2e3053fc1aef6d5796e468105a8ebd9e.bindPopup(popup_5a65ad5400c1e72b644d5bc6c3c2aa07)
+        ;
+
+        
+    
+    
+            var circle_marker_64e0c63631df3731687bfc13c650f166 = L.circleMarker(
+                [47.26266, 11.39454],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_69603d148a7f5deba4229c07dec48d08 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_fab28919da37424577b8b6c5e5a68766 = $(`<div id="html_fab28919da37424577b8b6c5e5a68766" style="width: 100.0%; height: 100.0%;"><b>Innsbruck</b>(AT)<br/>Population: 132,493<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_69603d148a7f5deba4229c07dec48d08.setContent(html_fab28919da37424577b8b6c5e5a68766);
+            
+        
+
+        circle_marker_64e0c63631df3731687bfc13c650f166.bindPopup(popup_69603d148a7f5deba4229c07dec48d08)
+        ;
+
+        
+    
+    
+            var circle_marker_bb9d5e65530cbaef9674b751048b8287 = L.circleMarker(
+                [46.06787, 11.12108],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_d3db723ebbb60b7a482b9681ac714eb0 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ba72bfe336f989001ccca335c599298e = $(`<div id="html_ba72bfe336f989001ccca335c599298e" style="width: 100.0%; height: 100.0%;"><b>Trento</b>(IT)<br/>Population: 120,709<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_d3db723ebbb60b7a482b9681ac714eb0.setContent(html_ba72bfe336f989001ccca335c599298e);
+            
+        
+
+        circle_marker_bb9d5e65530cbaef9674b751048b8287.bindPopup(popup_d3db723ebbb60b7a482b9681ac714eb0)
+        ;
+
+        
+    
+    
+            var circle_marker_dc6fe31424384d731250caa431e5177a = L.circleMarker(
+                [46.49067, 11.33982],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_e0467f089fcb9fad3089eadb32e3de7e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_d55f72ae1eb86c6d903b51cb791465c1 = $(`<div id="html_d55f72ae1eb86c6d903b51cb791465c1" style="width: 100.0%; height: 100.0%;"><b>Bolzano</b>(IT)<br/>Population: 107,436<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_e0467f089fcb9fad3089eadb32e3de7e.setContent(html_d55f72ae1eb86c6d903b51cb791465c1);
+            
+        
+
+        circle_marker_dc6fe31424384d731250caa431e5177a.bindPopup(popup_e0467f089fcb9fad3089eadb32e3de7e)
+        ;
+
+        
+    
+    
+            var circle_marker_2323b61c8ccdec974e47802e52053ce8 = L.circleMarker(
+                [46.4984781, 11.3547399],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_55706b14ec7df00b028e8db105ef5e61 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_b2c6714dac8cdaf398c0eebb2eeaa236 = $(`<div id="html_b2c6714dac8cdaf398c0eebb2eeaa236" style="width: 100.0%; height: 100.0%;"><b>Bolzano - Bozen</b>(IT)<br/>Population: 105,713<br/>Elevation: 262 m<br/>Dist to Alps: 0.0 km<br/>Source: osm</div>`)[0];
+                popup_55706b14ec7df00b028e8db105ef5e61.setContent(html_b2c6714dac8cdaf398c0eebb2eeaa236);
+            
+        
+
+        circle_marker_2323b61c8ccdec974e47802e52053ce8.bindPopup(popup_55706b14ec7df00b028e8db105ef5e61)
+        ;
+
+        
+    
+    
+            var circle_marker_91ea84e83a2d0eb5c111e45163c27ecb = L.circleMarker(
+                [46.62472, 14.30528],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_500525adf455b41d386446ed892fb009 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_f6c8bcbfb600ead556b5780b96f997d6 = $(`<div id="html_f6c8bcbfb600ead556b5780b96f997d6" style="width: 100.0%; height: 100.0%;"><b>Klagenfurt</b>(AT)<br/>Population: 100,316<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_500525adf455b41d386446ed892fb009.setContent(html_f6c8bcbfb600ead556b5780b96f997d6);
+            
+        
+
+        circle_marker_91ea84e83a2d0eb5c111e45163c27ecb.bindPopup(popup_500525adf455b41d386446ed892fb009)
+        ;
+
+        
+    
+    
+            var circle_marker_1055cb5420c910a707964f495ff94994 = L.circleMarker(
+                [47.85637, 12.12247],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_13479cc773a0de836608992a1c8da5c5 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_20969e4931e24bfc0d46139b8951b18b = $(`<div id="html_20969e4931e24bfc0d46139b8951b18b" style="width: 100.0%; height: 100.0%;"><b>Rosenheim</b>(AT)<br/>Population: 60,167<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_13479cc773a0de836608992a1c8da5c5.setContent(html_20969e4931e24bfc0d46139b8951b18b);
+            
+        
+
+        circle_marker_1055cb5420c910a707964f495ff94994.bindPopup(popup_13479cc773a0de836608992a1c8da5c5)
+        ;
+
+        
+    
+    
+            var circle_marker_71a88c07c1db7fb846017b5ca1a98e2b = L.circleMarker(
+                [45.56628, 5.92079],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_0a3c2ce7fb08806e8929ed285f29140e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_5b7e86825f38b2894f5f9cb0d8dd6c33 = $(`<div id="html_5b7e86825f38b2894f5f9cb0d8dd6c33" style="width: 100.0%; height: 100.0%;"><b>Chambéry</b>(FR)<br/>Population: 61,640<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_0a3c2ce7fb08806e8929ed285f29140e.setContent(html_5b7e86825f38b2894f5f9cb0d8dd6c33);
+            
+        
+
+        circle_marker_71a88c07c1db7fb846017b5ca1a98e2b.bindPopup(popup_0a3c2ce7fb08806e8929ed285f29140e)
+        ;
+
+        
+    
+    
+            var circle_marker_0bb01289d05db4e6be91417d94d4ab0f = L.circleMarker(
+                [47.72674, 10.31389],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_36c366025aa91948d3948c2e92f9da68);
+        
+    
+        var popup_71ae189d6309994f1888caa0bd13dc9e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a187231b49fed86749fba6f1ef1758d4 = $(`<div id="html_a187231b49fed86749fba6f1ef1758d4" style="width: 100.0%; height: 100.0%;"><b>Kempten (Allgäu)</b>(DE)<br/>Population: 61,399<br/>Elevation:  m<br/>Dist to Alps: 0.0 km<br/>Source: geonames</div>`)[0];
+                popup_71ae189d6309994f1888caa0bd13dc9e.setContent(html_a187231b49fed86749fba6f1ef1758d4);
+            
+        
+
+        circle_marker_0bb01289d05db4e6be91417d94d4ab0f.bindPopup(popup_71ae189d6309994f1888caa0bd13dc9e)
+        ;
+
+        
+    
+    
+            marker_cluster_36c366025aa91948d3948c2e92f9da68.addTo(map_73eb71cff429af2653a57c71c616b8b9);
+        
+    
+            var layer_control_dc55b17477c20e1ddad74964eac1f12c_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_41ac1514b69e5306d85d9c3b4196f952,
+                },
+                overlays :  {
+                    "Cities" : marker_cluster_36c366025aa91948d3948c2e92f9da68,
+                },
+            };
+            let layer_control_dc55b17477c20e1ddad74964eac1f12c = L.control.layers(
+                layer_control_dc55b17477c20e1ddad74964eac1f12c_layers.base_layers,
+                layer_control_dc55b17477c20e1ddad74964eac1f12c_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_73eb71cff429af2653a57c71c616b8b9);
+
+        
+</script>
+</html>
