@@ -20,6 +20,7 @@ from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
 from .elevation import enrich_places_with_elevation
 from .map_utils import save_map, save_country_map
+from .hospital_check import enrich_records_with_hospital_presence
 
 
 def parse_args() -> argparse.Namespace:
@@ -39,6 +40,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--google-api-key", default=os.getenv("GOOGLE_API_KEY"), help="Google Elevation API key (or set GOOGLE_API_KEY env var)")
     parser.add_argument("--elevation-batch-size", type=int, default=100, help="Batch size for elevation API requests")
     parser.add_argument("--skip-elevation", action="store_true", help="Skip elevation enrichment (use only OSM/GeoNames data)")
+
+    # Hospital presence check (optional)
+    parser.add_argument("--check-hospitals", action="store_true", help="Use OpenAI web search to check if each city has a hospital; adds columns to CSV")
+    parser.add_argument("--openai-model", type=str, default=os.getenv("OPENAI_MODEL", "gpt-5"), help="OpenAI model to use for hospital check (default: gpt-5)")
+    parser.add_argument("--openai-timeout", type=float, default=float(os.getenv("OPENAI_TIMEOUT", "60")), help="Per-request timeout (seconds) for OpenAI hospital check")
 
     # Map generation options
     parser.add_argument("--make-map", action="store_true", help="Generate interactive HTML map alongside CSV/GeoJSON")
@@ -68,6 +74,18 @@ def main() -> None:
         records = read_csv_records(args.from_csv)
         out_dir = Path(args.out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
+
+        # Optionally enrich CSV with hospital presence before building maps
+        if args.check_hospitals:
+            print("Checking hospital presence via OpenAI web search...", file=sys.stderr)
+            records = enrich_records_with_hospital_presence(
+                records,
+                model=args.openai_model,
+                request_timeout=args.openai_timeout,
+            )
+            csv_path = out_dir / "alps_cities.csv"
+            write_csv(csv_path, records)
+            print(f"Wrote CSV with hospital columns to {csv_path}")
         if args.make_map:
             map_path = Path(args.map_file) if args.map_file else (out_dir / "alps_cities_map.html")
             save_map(records, map_path, tiles=args.map_tiles)
@@ -144,6 +162,15 @@ def main() -> None:
         )
     else:
         print("Skipping elevation enrichment (using only OSM/GeoNames data)", file=sys.stderr)
+
+    # Optional: Hospital presence check using OpenAI
+    if args.check_hospitals:
+        print("Checking hospital presence via OpenAI web search...", file=sys.stderr)
+        enriched = enrich_records_with_hospital_presence(
+            enriched,
+            model=args.openai_model,
+            request_timeout=args.openai_timeout,
+        )
 
     # Ensure output directory
     out_dir = Path(args.out_dir)
