@@ -295,6 +295,7 @@ def enrich_records_with_hospital_presence_osm(
         found = False
         nearest_km: Optional[float] = None
         if lat0 is not None and lon0 is not None:
+            # First pass: coarse scan within a small degree window for quick positives
             for h in hospitals:
                 hlat = float(h.get("latitude"))
                 hlon = float(h.get("longitude"))
@@ -306,6 +307,14 @@ def enrich_records_with_hospital_presence_osm(
                 if d <= radius_km:
                     found = True
                     break
+            # Second pass: if nothing nearby, compute true nearest across all hospitals
+            if nearest_km is None:
+                for h in hospitals:
+                    hlat = float(h.get("latitude"))
+                    hlon = float(h.get("longitude"))
+                    d = _haversine_km(lat0, lon0, hlat, hlon)
+                    if nearest_km is None or d < nearest_km:
+                        nearest_km = d
 
         new_record = dict(r)
         if found:
@@ -316,6 +325,17 @@ def enrich_records_with_hospital_presence_osm(
                 reason += f" (nearest {nearest_km:.2f} km)"
             new_record["hospital_reasoning"] = reason
             new_record["hospital_error"] = ""
+            if nearest_km is not None:
+                try:
+                    new_record["nearest_hospital_km"] = round(float(nearest_km), 2)
+                except Exception:
+                    new_record["nearest_hospital_km"] = nearest_km
+            # Nearby within 25 km is always yes when a hospital is within radius
+            try:
+                nh = float(new_record.get("nearest_hospital_km", nearest_km if nearest_km is not None else 1e9))
+                new_record["hospital_in_city_or_nearby"] = "yes" if nh <= 25.0 else "no"
+            except Exception:
+                new_record["hospital_in_city_or_nearby"] = ""
             enriched.append(new_record)
             continue
 
@@ -342,14 +362,41 @@ def enrich_records_with_hospital_presence_osm(
                 )
                 new_record["hospital_reasoning"] = result.hospital_reasoning or ""
                 new_record["hospital_error"] = ""
+            if nearest_km is not None:
+                try:
+                    new_record["nearest_hospital_km"] = round(float(nearest_km), 2)
+                except Exception:
+                    new_record["nearest_hospital_km"] = nearest_km
+            # Set nearby column based on 25 km threshold
+            try:
+                nh = float(new_record.get("nearest_hospital_km", nearest_km if nearest_km is not None else 1e9))
+                new_record["hospital_in_city_or_nearby"] = "yes" if nh <= 25.0 else "no"
+            except Exception:
+                new_record["hospital_in_city_or_nearby"] = ""
             enriched.append(new_record)
             continue
 
         # No fallback; mark confidently based on OSM absence (within radius)
         new_record["hospital_in_city"] = "no"
         new_record["hospital_confidence_pct"] = 80
-        new_record["hospital_reasoning"] = f"No OSM hospital within {radius_km:.1f} km of centroid"
+        if nearest_km is not None:
+            new_record["hospital_reasoning"] = (
+                f"No OSM hospital within {radius_km:.1f} km of centroid; nearest {nearest_km:.2f} km"
+            )
+        else:
+            new_record["hospital_reasoning"] = f"No OSM hospital within {radius_km:.1f} km of centroid"
         new_record["hospital_error"] = ""
+        if nearest_km is not None:
+            try:
+                new_record["nearest_hospital_km"] = round(float(nearest_km), 2)
+            except Exception:
+                new_record["nearest_hospital_km"] = nearest_km
+        # Set nearby column for the no-OSM case too
+        try:
+            nh = float(new_record.get("nearest_hospital_km", nearest_km if nearest_km is not None else 1e9))
+            new_record["hospital_in_city_or_nearby"] = "yes" if nh <= 25.0 else "no"
+        except Exception:
+            new_record["hospital_in_city_or_nearby"] = ""
         enriched.append(new_record)
 
     return enriched
