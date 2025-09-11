@@ -53,3 +53,15 @@ def write_geojson(path: str | Path, records: Iterable[Dict]) -> None:
     fc = {"type": "FeatureCollection", "features": features}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(fc, f, ensure_ascii=False)
+
+
+def read_csv_records(path: str | Path) -> List[Dict]:
+    """Read records from a UTF-8 CSV file with headers and return a list of dicts.
+    Leaves value types as strings; downstream code can cast as needed.
+    """
+    records: List[Dict] = []
+    with open(path, "r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            records.append(dict(row))
+    return records

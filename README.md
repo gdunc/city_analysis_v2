@@ -6,10 +6,11 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - **Population data** from GeoNames and OpenStreetMap
 - **Coordinates** (latitude/longitude) for all places
 - **Elevation data** where available (primarily from OSM)
-- **Elevation enrichment** from multiple APIs (OpenTopoData, Google, Open-Elevation) for improved coverage
+- **Elevation enrichment** from multiple APIs (OpenTopoData, Google, Open‑Elevation) for improved coverage
 - **Distance to Alps** calculated for each place
 - **Country filtering** with automatic country code inference
 - **Population filtering** with configurable minimum thresholds
+- **Interactive HTML map** generation with Folium (optional)
 
 ## Architecture (CTO-level overview)
 - `city_analysis/geometry.py`: Perimeter handling (load GeoJSON, default Alps bbox, Overpass bbox conversion)
@@ -22,6 +23,7 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - `city_analysis/io_utils.py`: CSV and GeoJSON writers
 - `city_analysis/analysis.py`: Summary metrics and top-N by population
 - `city_analysis/cli.py`: CLI orchestration
+- `city_analysis/map_utils.py`: Folium map builder and saver
 
 ## Data Sources
 - **GeoNames**: Population data, coordinates, country codes (requires free account)
@@ -86,9 +88,28 @@ Optional flags:
 - `--elevation-batch-size 100` (batch size for elevation API requests)
 - `--skip-elevation` (skip elevation enrichment, use only OSM/GeoNames data)
 
-Outputs in `outputs/`:
+### Generate an interactive map
+Create an interactive Folium map alongside CSV/GeoJSON outputs:
+```bash
+python -m city_analysis.cli --make-map --out-dir outputs
+```
+Specify a custom HTML path and tiles:
+```bash
+python -m city_analysis.cli --make-map --map-file outputs/alps_cities_map.html --map-tiles OpenStreetMap
+```
+The map is saved as `outputs/alps_cities_map.html` by default.
+
+### Map marker colors
+- **darkred**: population ≥ 100,000
+- **red**: 50,000 ≤ population < 100,000
+- **orange**: 20,000 ≤ population < 50,000
+- **green**: 10,000 ≤ population < 20,000
+- **blue**: population < 10,000 or missing
+
+## Outputs
 - `alps_cities.csv` - CSV with columns: name, country, latitude, longitude, population, elevation, elevation_feet, elevation_source, elevation_confidence, source, distance_km_to_alps
 - `alps_cities.geojson` - GeoJSON with all place data including elevation and distance metrics
+- `alps_cities_map.html` - Interactive HTML map (when `--make-map` is used)
 
 ## Notes
 - Licensing: GeoNames (CC BY 4.0), OSM (ODbL). Validate terms before redistribution.

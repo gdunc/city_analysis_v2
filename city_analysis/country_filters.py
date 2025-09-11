@@ -73,3 +73,24 @@ def fill_missing_country(records: Iterable[Dict]) -> List[Dict]:
             pass
         filled.append(r)
     return filled
+
+
+def infer_country_by_bbox(lat: float, lon: float) -> str:
+    """Infer ISO 3166-1 alpha-2 country from rough bbox membership.
+
+    Uses a resolution order tuned for Alpine border regions to avoid
+    misclassifying Austrian/Italian places as Germany/France when bboxes
+    overlap: AT, IT, DE, FR.
+    """
+    pt = Point(lon, lat)
+    # Conflict-resolution priority for the Alps
+    resolution_priority = [
+        ("AT", AT_BOX),
+        ("IT", IT_BOX),
+        ("DE", DE_BOX),
+        ("FR", FR_BOX),
+    ]
+    for code, bbox in resolution_priority:
+        if bbox.contains(pt):
+            return code
+    return ""

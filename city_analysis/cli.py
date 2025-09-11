@@ -14,11 +14,12 @@ from .geometry import default_alps_polygon, load_perimeter, polygon_bounds
 from .geonames import fetch_geonames_cities
 from .overpass import fetch_overpass_bbox_tiled
 from .normalize import filter_within_perimeter, dedupe_places, enforce_min_population
-from .io_utils import write_csv, write_geojson
+from .io_utils import write_csv, write_geojson, read_csv_records
 from .analysis import top_n_by_population, summarize
 from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
 from .elevation import enrich_places_with_elevation
+from .map_utils import save_map, save_country_map
 
 
 def parse_args() -> argparse.Namespace:
@@ -38,6 +39,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--google-api-key", default=os.getenv("GOOGLE_API_KEY"), help="Google Elevation API key (or set GOOGLE_API_KEY env var)")
     parser.add_argument("--elevation-batch-size", type=int, default=100, help="Batch size for elevation API requests")
     parser.add_argument("--skip-elevation", action="store_true", help="Skip elevation enrichment (use only OSM/GeoNames data)")
+
+    # Map generation options
+    parser.add_argument("--make-map", action="store_true", help="Generate interactive HTML map alongside CSV/GeoJSON")
+    parser.add_argument("--map-file", type=str, default=None, help="Path for HTML map output (default: <out-dir>/alps_cities_map.html)")
+    parser.add_argument("--map-tiles", type=str, default="OpenStreetMap", help="Folium tiles name or URL")
+
+    # Second map style (country-colored, population-sized)
+    parser.add_argument("--make-country-map", action="store_true", help="Generate country-colored, population-sized map")
+    parser.add_argument("--country-map-file", type=str, default=None, help="Path for second map HTML (default: <out-dir>/alps_cities_country_map.html)")
+
+    # Build map directly from an existing CSV (skips fetching/processing)
+    parser.add_argument("--from-csv", type=str, default=None, help="Path to an existing CSV of cities to build a map from")
     return parser.parse_args()
 
 
@@ -49,6 +62,29 @@ def main() -> None:
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
+
+    # Fast path: Build map(s) directly from an existing CSV
+    if args.from_csv:
+        records = read_csv_records(args.from_csv)
+        out_dir = Path(args.out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        if args.make_map:
+            map_path = Path(args.map_file) if args.map_file else (out_dir / "alps_cities_map.html")
+            save_map(records, map_path, tiles=args.map_tiles)
+            print(f"Wrote interactive map to {map_path}")
+        if args.make_country_map:
+            country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / "alps_cities_country_map.html")
+            save_country_map(records, country_map_path, tiles=args.map_tiles)
+            print(f"Wrote country-colored map to {country_map_path}")
+        # If neither flag was given, default to generating both maps from CSV for convenience
+        if not args.make_map and not args.make_country_map:
+            map_path = out_dir / "alps_cities_map.html"
+            save_map(records, map_path, tiles=args.map_tiles)
+            print(f"Wrote interactive map to {map_path}")
+            country_map_path = out_dir / "alps_cities_country_map.html"
+            save_country_map(records, country_map_path, tiles=args.map_tiles)
+            print(f"Wrote country-colored map to {country_map_path}")
+        return
 
     if not args.geonames_username:
         print("Note: GeoNames username missing; proceeding with OSM only.", file=sys.stderr)
@@ -117,6 +153,16 @@ def main() -> None:
     write_csv(out_dir / "alps_cities.csv", enriched)
     write_geojson(out_dir / "alps_cities.geojson", enriched)
 
+    # Optionally write interactive maps
+    if args.make_map:
+        map_path = Path(args.map_file) if args.map_file else (out_dir / "alps_cities_map.html")
+        save_map(enriched, map_path, tiles=args.map_tiles)
+        print(f"Wrote interactive map to {map_path}")
+    if args.make_country_map:
+        country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / "alps_cities_country_map.html")
+        save_country_map(enriched, country_map_path, tiles=args.map_tiles)
+        print(f"Wrote country-colored map to {country_map_path}")
+
     # Console summary
     stats = summarize(enriched)
     print("Summary:")
@@ -132,7 +178,8 @@ def main() -> None:
                 confidence = r.get('elevation_confidence', 0.0)
                 source_info = f" [{r['elevation_source']}:{confidence:.1f}]"
             elevation_info = f", elev {r['elevation']}m{source_info}"
-        print(f"  {r['name']} ({r.get('country','')}) — pop {r.get('population', 0):,} @ ({r['latitude']:.4f},{r['longitude']:.4f}) [{r['source']}]{elevation_info}, {r.get('distance_km_to_alps')} km to Alps")
+        print(f"  {r['name']} ({r.get('country','')}) — pop {r.get('population', 0):,} @ ({r['latitude']:.4f},{r['longitude']:.4f}) [{r['source']}]" +
+              f"{elevation_info}, {r.get('distance_km_to_alps')} km to Alps")
 
 
 if __name__ == "__main__":

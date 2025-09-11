@@ -4,6 +4,7 @@ import math
 from typing import Dict, Iterable, List
 
 from shapely.geometry import Point, Polygon, MultiPolygon
+from .country_filters import infer_country_by_bbox
 
 
 def _normalize_name(name: str) -> str:
@@ -42,29 +43,90 @@ def dedupe_places(
     places: Iterable[Dict],
     distance_km_threshold: float = 10.0,
 ) -> List[Dict]:
-    """Dedupe by normalized name+country, preferring larger population and merging close coords.
+    """Dedupe by normalized name and proximity; resolve cross-country conflicts.
 
-    If country is empty, treat name-only as a key which may keep distinct far-apart places.
+    Rules:
+    - Group by normalized name; consider duplicates when within distance_km_threshold.
+    - Prefer GeoNames over OSM when both represent the same place.
+    - If sources disagree on country, prefer bbox-inferred country; if still tied, keep
+      the country from the preferred source (GeoNames), else fall back to the record
+      with larger population.
+    - If country is missing on one side, use bbox inference to fill before comparing.
     """
     # Sort by population descending to keep the largest first
     sorted_places = sorted(places, key=lambda r: (int(r.get("population") or 0)), reverse=True)
 
     seen: List[Dict] = []
-    for p in sorted_places:
-        name_key = _normalize_name(str(p.get("name", "")))
-        country_key = str(p.get("country", "")).upper()
-        lat = float(p["latitude"])  # type: ignore[index]
-        lon = float(p["longitude"])  # type: ignore[index]
+    for candidate in sorted_places:
+        name_key = _normalize_name(str(candidate.get("name", "")))
+        cand_country = str(candidate.get("country", "")).upper()
+        cand_lat = float(candidate["latitude"])  # type: ignore[index]
+        cand_lon = float(candidate["longitude"])  # type: ignore[index]
 
-        duplicate_found = False
-        for kept in seen:
-            same_name = _normalize_name(str(kept.get("name", ""))) == name_key
-            same_country = str(kept.get("country", "")).upper() == country_key or not country_key or not kept.get("country")
-            if same_name and same_country:
-                d = _haversine_km(lat, lon, float(kept["latitude"]), float(kept["longitude"]))
-                if d <= distance_km_threshold:
-                    duplicate_found = True
-                    break
-        if not duplicate_found:
-            seen.append(p)
+        merged = False
+        for idx, kept in enumerate(seen):
+            if _normalize_name(str(kept.get("name", ""))) != name_key:
+                continue
+            kept_country = str(kept.get("country", "")).upper()
+            d = _haversine_km(cand_lat, cand_lon, float(kept["latitude"]), float(kept["longitude"]))
+            if d > distance_km_threshold:
+                continue
+
+            # We consider these duplicates; decide which to keep and how to set country
+            cand_source = str(candidate.get("source", "")).lower()
+            kept_source = str(kept.get("source", "")).lower()
+
+            # Infer countries if missing or conflicting
+            cand_country_inferred = infer_country_by_bbox(cand_lat, cand_lon) or cand_country
+            kept_country_inferred = infer_country_by_bbox(float(kept["latitude"]), float(kept["longitude"])) or kept_country
+
+            prefer_candidate = False
+            # Prefer GeoNames over OSM
+            if kept_source != cand_source:
+                if cand_source == "geonames":
+                    prefer_candidate = True
+                elif kept_source == "geonames":
+                    prefer_candidate = False
+                else:
+                    prefer_candidate = int(candidate.get("population") or 0) > int(kept.get("population") or 0)
+            else:
+                # Same source: choose higher population
+                prefer_candidate = int(candidate.get("population") or 0) > int(kept.get("population") or 0)
+
+            # Determine the country to keep, prioritizing bbox-consistent
+            resolved_country = ""
+            if cand_country_inferred and kept_country_inferred:
+                if cand_country_inferred == kept_country_inferred:
+                    resolved_country = cand_country_inferred
+                else:
+                    # Disagreement; prefer GeoNames' country if present, else candidate/kept based on preference
+                    if cand_source == "geonames" and str(candidate.get("country", "")):
+                        resolved_country = str(candidate.get("country", "")).upper()
+                    elif kept_source == "geonames" and str(kept.get("country", "")):
+                        resolved_country = str(kept.get("country", "")).upper()
+                    else:
+                        resolved_country = cand_country_inferred if prefer_candidate else kept_country_inferred
+            else:
+                resolved_country = cand_country_inferred or kept_country_inferred or (str(candidate.get("country", "")).upper() if prefer_candidate else kept_country)
+
+            if prefer_candidate:
+                new_kept = {**candidate}
+                if resolved_country:
+                    new_kept["country"] = resolved_country
+                seen[idx] = new_kept
+            else:
+                if resolved_country:
+                    kept["country"] = resolved_country
+                # keep existing 'kept'
+            merged = True
+            break
+
+        if not merged:
+            # Ensure candidate has a sensible country if missing
+            if not cand_country:
+                inferred = infer_country_by_bbox(cand_lat, cand_lon)
+                if inferred:
+                    candidate = {**candidate, "country": inferred}
+            seen.append(candidate)
+
     return seen
