@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Any
 from pathlib import Path
 
 import folium
@@ -26,6 +26,10 @@ def _popup_html(r: Dict) -> str:
     # dist_km removed from popup per requirement
     source = r.get("source")
     airport_name = r.get("airport_nearest_name")
+    hospital_name = r.get("hospital_nearest_name")
+    # Driving times (minutes)
+    dta_val = r.get("driving_time_minutes_to_airport")
+    dth_val = r.get("driving_time_minutes_to_hospital")
     # Extra fields for filters (embed as hidden data attributes)
     dta = r.get("driving_time_minutes_to_airport", "")
     dth = r.get("driving_time_minutes_to_hospital", "")
@@ -54,6 +58,27 @@ def _popup_html(r: Dict) -> str:
             airport_str = str(airport_name)
             if airport_str.strip():
                 parts.append(f"<br/>Nearest airport: {airport_str}")
+        except Exception:
+            pass
+    # Driving time summaries
+    try:
+        if dta_val not in (None, ""):
+            mins = float(dta_val)
+            parts.append(f"<br/>Drive to nearest airport: {int(round(mins))} min")
+    except Exception:
+        pass
+    try:
+        if dth_val not in (None, ""):
+            mins = float(dth_val)
+            parts.append(f"<br/>Drive to nearest hospital: {int(round(mins))} min")
+    except Exception:
+        pass
+    # Nearest hospital name
+    if hospital_name:
+        try:
+            hosp_str = str(hospital_name).strip()
+            if hosp_str:
+                parts.append(f"<br/>Nearest hospital: {hosp_str}")
         except Exception:
             pass
     if source:
@@ -104,6 +129,14 @@ def build_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.M
         popup = folium.Popup(_popup_html(r), max_width=350)
         color = _marker_color(r.get("population"))
         # Attach population as a data attribute for client-side filtering
+        # Ensure it is a plain integer to avoid parsing issues in JS
+        def _coerce_int(v: Any) -> int:
+            try:
+                if isinstance(v, str):
+                    v = v.replace(",", "").replace(" ", "")
+                return int(float(v))
+            except Exception:
+                return 0
         folium.CircleMarker(
             location=(lat, lon),
             radius=6,
@@ -115,7 +148,7 @@ def build_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.M
             tooltip=None,
             # custom attributes passed via options; Leaflet keeps them on layer.options
             **{
-                "population": r.get("population", 0),
+                "population": _coerce_int(r.get("population", 0)),
                 # Additional attributes for filtering
                 "driving_time_to_airport_minutes": r.get("driving_time_minutes_to_airport", ""),
                 "driving_time_to_hospital_minutes": r.get("driving_time_minutes_to_hospital", ""),
@@ -219,6 +252,13 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
             radius = _scaled_radius(r.get("population"), min_pop, max_pop)
             popup = folium.Popup(_popup_html(r), max_width=350)
             # Attach population as a data attribute for client-side filtering
+            def _coerce_int(v: Any) -> int:
+                try:
+                    if isinstance(v, str):
+                        v = v.replace(",", "").replace(" ", "")
+                    return int(float(v))
+                except Exception:
+                    return 0
             folium.CircleMarker(
                 location=(lat, lon),
                 radius=radius,
@@ -229,7 +269,7 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
                 popup=popup,
                 tooltip=None,
                 **{
-                    "population": r.get("population", 0),
+                    "population": _coerce_int(r.get("population", 0)),
                     "driving_time_to_airport_minutes": r.get("driving_time_minutes_to_airport", ""),
                     "driving_time_to_hospital_minutes": r.get("driving_time_minutes_to_hospital", ""),
                     "hospital_in_city": r.get("hospital_in_city", ""),
