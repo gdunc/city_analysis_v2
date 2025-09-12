@@ -23,8 +23,14 @@ def _popup_html(r: Dict) -> str:
     population = r.get("population")
     elevation = r.get("elevation")
     elev_src = r.get("elevation_source")
-    dist_km = r.get("distance_km_to_alps")
+    # dist_km removed from popup per requirement
     source = r.get("source")
+    airport_name = r.get("airport_nearest_name")
+    # Extra fields for filters (embed as hidden data attributes)
+    dta = r.get("driving_time_minutes_to_airport", "")
+    dth = r.get("driving_time_minutes_to_hospital", "")
+    hic = (str(r.get("hospital_in_city") or "").strip().lower())
+    hcn = (str(r.get("hospital_in_city_or_nearby") or "").strip().lower())
 
     parts = [f"<b>{name}</b>"]
     if country:
@@ -38,18 +44,30 @@ def _popup_html(r: Dict) -> str:
     if elevation is not None:
         try:
             elev_num = float(elevation)
-            parts.append(f"<br/>Elevation: {elev_num:.0f} m")
+            feet = round(elev_num * 3.28084)
+            parts.append(f"<br/>Elevation: {elev_num:.0f} m / {feet:,} ft")
         except Exception:
             parts.append(f"<br/>Elevation: {elevation} m")
-    if dist_km is not None:
+    # Add nearest airport name if available
+    if airport_name:
         try:
-            parts.append(f"<br/>Dist to Alps: {float(dist_km):.1f} km")
+            airport_str = str(airport_name)
+            if airport_str.strip():
+                parts.append(f"<br/>Nearest airport: {airport_str}")
         except Exception:
-            parts.append(f"<br/>Dist to Alps: {dist_km} km")
+            pass
     if source:
         parts.append(f"<br/>Source: {source}")
     if elev_src:
         parts.append(f" <i>({elev_src})</i>")
+    # Hidden metadata carrier for client-side filters
+    try:
+        parts.append(
+            f"<span class=\"city-meta\" style=\"display:none\" "
+            f"data-dta=\"{dta}\" data-dth=\"{dth}\" data-hic=\"{hic}\" data-hcn=\"{hcn}\"></span>"
+        )
+    except Exception:
+        pass
     return "".join(parts)
 
 
@@ -96,7 +114,14 @@ def build_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.M
             popup=popup,
             tooltip=None,
             # custom attributes passed via options; Leaflet keeps them on layer.options
-            **{"population": r.get("population", 0)}
+            **{
+                "population": r.get("population", 0),
+                # Additional attributes for filtering
+                "driving_time_to_airport_minutes": r.get("driving_time_minutes_to_airport", ""),
+                "driving_time_to_hospital_minutes": r.get("driving_time_minutes_to_hospital", ""),
+                "hospital_in_city": r.get("hospital_in_city", ""),
+                "hospital_in_city_or_nearby": r.get("hospital_in_city_or_nearby", ""),
+            }
         ).add_to(cluster)
 
     folium.LayerControl().add_to(fmap)
@@ -203,7 +228,13 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
                 fill_opacity=0.85,
                 popup=popup,
                 tooltip=None,
-                **{"population": r.get("population", 0)}
+                **{
+                    "population": r.get("population", 0),
+                    "driving_time_to_airport_minutes": r.get("driving_time_minutes_to_airport", ""),
+                    "driving_time_to_hospital_minutes": r.get("driving_time_minutes_to_hospital", ""),
+                    "hospital_in_city": r.get("hospital_in_city", ""),
+                    "hospital_in_city_or_nearby": r.get("hospital_in_city_or_nearby", ""),
+                }
             ).add_to(cluster)
         group.add_to(fmap)
 
@@ -225,15 +256,48 @@ def save_country_map(records: Iterable[Dict], out_path: str | Path, tiles: str =
 # --- Client-side filter injection ---
 
 def _inject_population_filter(fmap: folium.Map) -> None:
-    """Add a minimal UI and JS to filter markers by minimum population.
+    """Add UI and JS to filter markers by population, driving times, and hospital presence.
 
-    This scans all CircleMarkers (including those inside MarkerClusters and FeatureGroups)
-    and toggles their visibility based on a user-entered threshold. It relies on each
-    marker having a numeric `population` stored in `layer.options.population`.
+    Expects markers to carry options: population, driving_time_to_airport_minutes,
+    driving_time_to_hospital_minutes, hospital_in_city, hospital_in_city_or_nearby.
     """
     # HTML control (top-left)
     html = (
-        '<div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3);">\n           <label style="font-size:12px; display:block; margin-bottom:4px;">Min population</label>\n           <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:140px;"/>\n           <button id="apply-pop-filter" style="margin-left:6px;">Apply</button>\n         </div>'
+        '<div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 260px;">\n'
+        '  <div style="font-size:12px; margin-bottom:6px;"><b>Filters</b></div>\n'
+        '  <div style="font-size:12px; margin-bottom:6px;">\n'
+        '    <label>Min population</label><br/>\n'
+        '    <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:120px;"/>\n'
+        '  </div>\n'
+        '  <div style="font-size:12px; margin-bottom:6px;">\n'
+        '    <label>Max driving time to airport (min)</label><br/>\n'
+        '    <input id="max-airport-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>\n'
+        '  </div>\n'
+        '  <div style="font-size:12px; margin-bottom:6px;">\n'
+        '    <label>Max driving time to hospital (min)</label><br/>\n'
+        '    <input id="max-hospital-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>\n'
+        '  </div>\n'
+        '  <div style="font-size:12px; margin-bottom:6px;">\n'
+        '    <label>Hospital in city?</label><br/>\n'
+        '    <select id="hospital-in-city" style="width:140px;">\n'
+        '      <option value="any" selected>any</option>\n'
+        '      <option value="yes">yes</option>\n'
+        '      <option value="no">no</option>\n'
+        '    </select>\n'
+        '  </div>\n'
+        '  <div style="font-size:12px; margin-bottom:8px;">\n'
+        '    <label>Hospital in city or nearby?</label><br/>\n'
+        '    <select id="hospital-in-city-or-nearby" style="width:140px;">\n'
+        '      <option value="any" selected>any</option>\n'
+        '      <option value="yes">yes</option>\n'
+        '      <option value="no">no</option>\n'
+        '    </select>\n'
+        '  </div>\n'
+        '  <div>\n'
+        '    <button id="apply-pop-filter" style="margin-right:6px;">Apply</button>\n'
+        '    <button id="reset-pop-filter">Reset</button>\n'
+        '  </div>\n'
+        '</div>'
     )
 
     # No MacroElement: we'll create the control entirely in JS at runtime
@@ -296,6 +360,39 @@ def _inject_population_filter(fmap: folium.Map) -> None:
         } catch (e) { return 0; }
       }
 
+      function readMeta(marker){
+        try {
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var root;
+          if (typeof content === 'string') {
+            var div = document.createElement('div');
+            div.innerHTML = content;
+            root = div;
+          } else if (content && content instanceof HTMLElement) {
+            root = content;
+          } else if (content && content.innerHTML) {
+            var d2 = document.createElement('div');
+            d2.innerHTML = content.innerHTML;
+            root = d2;
+          }
+          if (!root) return { dta:null, dth:null, hic:'', hcn:'' };
+          var meta = root.querySelector('.city-meta');
+          if (!meta) return { dta:null, dth:null, hic:'', hcn:'' };
+          var dta = meta.getAttribute('data-dta');
+          var dth = meta.getAttribute('data-dth');
+          var hic = (meta.getAttribute('data-hic') || '').toLowerCase();
+          var hcn = (meta.getAttribute('data-hcn') || '').toLowerCase();
+          var dtaNum = (dta !== null && dta !== '') ? Number(dta) : null;
+          var dthNum = (dth !== null && dth !== '') ? Number(dth) : null;
+          if (isNaN(dtaNum)) dtaNum = null;
+          if (isNaN(dthNum)) dthNum = null;
+          return { dta: dtaNum, dth: dthNum, hic: hic, hcn: hcn };
+        } catch (e) {
+          return { dta:null, dth:null, hic:'', hcn:'' };
+        }
+      }
+
       var state = window.__popFilterState || { indexBuilt:false, markerToOwners:{}, markers:[], clusters:[] };
       function buildIndex(){
         var map = getMap();
@@ -347,12 +444,26 @@ def _inject_population_filter(fmap: folium.Map) -> None:
         if (m._path) m._path.style.display = 'none';
       }
 
-      function applyFilter(minPop){
+      function applyFilter(minPop, maxAirportMins, maxHospitalMins, hospitalInCity, hospitalInCityNearby){
         if (!state.indexBuilt) buildIndex();
         for (var i=0;i<state.markers.length;i++){
           var m = state.markers[i];
           var p = readPopulation(m);
-          if (p >= minPop) showMarker(m); else hideMarker(m);
+          var show = (p >= minPop);
+          var meta = readMeta(m);
+          if (show && maxAirportMins != null){
+            if (meta.dta == null) { show = false; } else { show = show && (meta.dta <= maxAirportMins); }
+          }
+          if (show && maxHospitalMins != null){
+            if (meta.dth == null) { show = false; } else { show = show && (meta.dth <= maxHospitalMins); }
+          }
+          if (show && hospitalInCity && hospitalInCity !== 'any'){
+            show = show && (meta.hic === hospitalInCity);
+          }
+          if (show && hospitalInCityNearby && hospitalInCityNearby !== 'any'){
+            show = show && (meta.hcn === hospitalInCityNearby);
+          }
+          if (show) showMarker(m); else hideMarker(m);
         }
       }
 
@@ -377,18 +488,41 @@ def _inject_population_filter(fmap: folium.Map) -> None:
       function hookUI(){
         ensureUI();
         var btn = document.getElementById('apply-pop-filter');
+        var reset = document.getElementById('reset-pop-filter');
         var input = document.getElementById('pop-threshold');
+        var maxA = document.getElementById('max-airport-mins');
+        var maxH = document.getElementById('max-hospital-mins');
+        var hic = document.getElementById('hospital-in-city');
+        var hcn = document.getElementById('hospital-in-city-or-nearby');
         if (!btn || !input) return;
         btn.addEventListener('click', function(){
           var v = Number(input.value || 0) || 0;
-          applyFilter(v);
+          var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+          var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+          var ic = (hic && hic.value) ? hic.value : 'any';
+          var cn = (hcn && hcn.value) ? hcn.value : 'any';
+          applyFilter(v, a, h, ic, cn);
         });
         input.addEventListener('keypress', function(e){
           if (e.key === 'Enter') {
             var v = Number(input.value || 0) || 0;
-            applyFilter(v);
+            var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+            var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+            var ic = (hic && hic.value) ? hic.value : 'any';
+            var cn = (hcn && hcn.value) ? hcn.value : 'any';
+            applyFilter(v, a, h, ic, cn);
           }
         });
+        if (reset){
+          reset.addEventListener('click', function(){
+            if (input) input.value = 0;
+            if (maxA) maxA.value = '';
+            if (maxH) maxH.value = '';
+            if (hic) hic.value = 'any';
+            if (hcn) hcn.value = 'any';
+            applyFilter(0, null, null, 'any', 'any');
+          });
+        }
       }
 
       function whenMapReady(fn){
