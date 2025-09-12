@@ -114,6 +114,7 @@ def main() -> None:
                     fallback_to_openai=(args.hospital_mode == "hybrid" and not args.hospital_no_openai_fallback),
                     model=args.openai_model,
                     request_timeout=args.openai_timeout,
+                    osrm_base_url=args.osrm_base_url,
                 )
             csv_path = out_dir / "alps_cities.csv"
             write_csv(csv_path, records)
@@ -246,6 +247,7 @@ def main() -> None:
                 fallback_to_openai=(args.hospital_mode == "hybrid" and not args.hospital_no_openai_fallback),
                 model=args.openai_model,
                 request_timeout=args.openai_timeout,
+                osrm_base_url=args.osrm_base_url,
             )
 
     # Optional: Nearest international airport + driving time/distance

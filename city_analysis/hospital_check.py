@@ -11,6 +11,7 @@ from openai import OpenAI
 from tqdm import tqdm
 from math import radians, sin, cos, asin, sqrt
 from .geometry import default_alps_polygon, polygon_bounds
+from .airport_check import _osrm_route, DriveResult
 from .overpass import fetch_overpass_hospitals_bbox_tiled
 
 
@@ -261,6 +262,7 @@ def enrich_records_with_hospital_presence_osm(
     model: str = "gpt-5",
     request_timeout: Optional[float] = 60.0,
     sleep_seconds_between_requests: float = 0.5,
+    osrm_base_url: str = "https://router.project-osrm.org",
 ) -> List[Dict]:
     """Determine hospital presence using OSM hospitals within a radius around city centroid.
 
@@ -294,6 +296,7 @@ def enrich_records_with_hospital_presence_osm(
 
         found = False
         nearest_km: Optional[float] = None
+        nearest_hospital: Optional[Dict] = None
         if lat0 is not None and lon0 is not None:
             # First pass: coarse scan within a small degree window for quick positives
             for h in hospitals:
@@ -304,6 +307,7 @@ def enrich_records_with_hospital_presence_osm(
                 d = _haversine_km(lat0, lon0, hlat, hlon)
                 if nearest_km is None or d < nearest_km:
                     nearest_km = d
+                    nearest_hospital = h
                 if d <= radius_km:
                     found = True
                     break
@@ -315,8 +319,10 @@ def enrich_records_with_hospital_presence_osm(
                     d = _haversine_km(lat0, lon0, hlat, hlon)
                     if nearest_km is None or d < nearest_km:
                         nearest_km = d
+                        nearest_hospital = h
 
         new_record = dict(r)
+        # Primary presence determination
         if found:
             new_record["hospital_in_city"] = "yes"
             new_record["hospital_confidence_pct"] = 95
@@ -325,78 +331,101 @@ def enrich_records_with_hospital_presence_osm(
                 reason += f" (nearest {nearest_km:.2f} km)"
             new_record["hospital_reasoning"] = reason
             new_record["hospital_error"] = ""
-            if nearest_km is not None:
-                try:
-                    new_record["nearest_hospital_km"] = round(float(nearest_km), 2)
-                except Exception:
-                    new_record["nearest_hospital_km"] = nearest_km
-            # Nearby within 25 km is always yes when a hospital is within radius
-            try:
-                nh = float(new_record.get("nearest_hospital_km", nearest_km if nearest_km is not None else 1e9))
-                new_record["hospital_in_city_or_nearby"] = "yes" if nh <= 25.0 else "no"
-            except Exception:
-                new_record["hospital_in_city_or_nearby"] = ""
-            enriched.append(new_record)
-            continue
-
-        # Not found in OSM
-        if fallback_to_openai and client is not None:
-            result = _query_openai_with_web_search(
-                client=client,
-                model=model,
-                city=city,
-                country=country,
-                request_timeout=request_timeout,
-            )
-            if sleep_seconds_between_requests > 0:
-                time.sleep(sleep_seconds_between_requests)
-            if result.hospital_error:
-                new_record["hospital_in_city"] = ""
-                new_record["hospital_confidence_pct"] = ""
-                new_record["hospital_reasoning"] = ""
-                new_record["hospital_error"] = result.hospital_error
-            else:
-                new_record["hospital_in_city"] = result.hospital_in_city or ""
-                new_record["hospital_confidence_pct"] = (
-                    result.hospital_confidence_pct if result.hospital_confidence_pct is not None else ""
-                )
-                new_record["hospital_reasoning"] = result.hospital_reasoning or ""
-                new_record["hospital_error"] = ""
-            if nearest_km is not None:
-                try:
-                    new_record["nearest_hospital_km"] = round(float(nearest_km), 2)
-                except Exception:
-                    new_record["nearest_hospital_km"] = nearest_km
-            # Set nearby column based on 25 km threshold
-            try:
-                nh = float(new_record.get("nearest_hospital_km", nearest_km if nearest_km is not None else 1e9))
-                new_record["hospital_in_city_or_nearby"] = "yes" if nh <= 25.0 else "no"
-            except Exception:
-                new_record["hospital_in_city_or_nearby"] = ""
-            enriched.append(new_record)
-            continue
-
-        # No fallback; mark confidently based on OSM absence (within radius)
-        new_record["hospital_in_city"] = "no"
-        new_record["hospital_confidence_pct"] = 80
-        if nearest_km is not None:
-            new_record["hospital_reasoning"] = (
-                f"No OSM hospital within {radius_km:.1f} km of centroid; nearest {nearest_km:.2f} km"
-            )
         else:
-            new_record["hospital_reasoning"] = f"No OSM hospital within {radius_km:.1f} km of centroid"
-        new_record["hospital_error"] = ""
+            # Not found within radius; optionally ask OpenAI for presence only
+            if fallback_to_openai and client is not None:
+                result = _query_openai_with_web_search(
+                    client=client,
+                    model=model,
+                    city=city,
+                    country=country,
+                    request_timeout=request_timeout,
+                )
+                if sleep_seconds_between_requests > 0:
+                    time.sleep(sleep_seconds_between_requests)
+                if result.hospital_error:
+                    new_record["hospital_in_city"] = ""
+                    new_record["hospital_confidence_pct"] = ""
+                    new_record["hospital_reasoning"] = ""
+                    new_record["hospital_error"] = result.hospital_error
+                else:
+                    new_record["hospital_in_city"] = result.hospital_in_city or ""
+                    new_record["hospital_confidence_pct"] = (
+                        result.hospital_confidence_pct if result.hospital_confidence_pct is not None else ""
+                    )
+                    new_record["hospital_reasoning"] = result.hospital_reasoning or ""
+                    new_record["hospital_error"] = ""
+            else:
+                # No fallback; mark confidently based on OSM absence (within radius)
+                new_record["hospital_in_city"] = "no"
+                new_record["hospital_confidence_pct"] = 80
+                if nearest_km is not None:
+                    new_record["hospital_reasoning"] = (
+                        f"No OSM hospital within {radius_km:.1f} km of centroid; nearest {nearest_km:.2f} km"
+                    )
+                else:
+                    new_record["hospital_reasoning"] = f"No OSM hospital within {radius_km:.1f} km of centroid"
+                new_record["hospital_error"] = ""
+
+        # Populate nearest hospital info if available
         if nearest_km is not None:
             try:
                 new_record["nearest_hospital_km"] = round(float(nearest_km), 2)
             except Exception:
                 new_record["nearest_hospital_km"] = nearest_km
-        # Set nearby column for the no-OSM case too
         try:
             nh = float(new_record.get("nearest_hospital_km", nearest_km if nearest_km is not None else 1e9))
             new_record["hospital_in_city_or_nearby"] = "yes" if nh <= 25.0 else "no"
         except Exception:
             new_record["hospital_in_city_or_nearby"] = ""
+
+        if nearest_hospital is not None:
+            name_val = str(nearest_hospital.get("name") or "").strip()
+            try:
+                hlat_val = float(nearest_hospital.get("latitude"))
+            except Exception:
+                hlat_val = None
+            try:
+                hlon_val = float(nearest_hospital.get("longitude"))
+            except Exception:
+                hlon_val = None
+            new_record["hospital_nearest_name"] = name_val
+            new_record["hospital_nearest_latitude"] = hlat_val if hlat_val is not None else ""
+            new_record["hospital_nearest_longitude"] = hlon_val if hlon_val is not None else ""
+        else:
+            new_record["hospital_nearest_name"] = ""
+            new_record["hospital_nearest_latitude"] = ""
+            new_record["hospital_nearest_longitude"] = ""
+
+        # Driving distance/time via OSRM to nearest hospital when coordinates are available
+        if (
+            isinstance(lat0, (int, float))
+            and isinstance(lon0, (int, float))
+            and isinstance(new_record.get("hospital_nearest_latitude"), (int, float))
+            and isinstance(new_record.get("hospital_nearest_longitude"), (int, float))
+        ):
+            drive: DriveResult = _osrm_route(
+                city_lat=float(lat0),
+                city_lon=float(lon0),
+                airport_lat=float(new_record["hospital_nearest_latitude"]),
+                airport_lon=float(new_record["hospital_nearest_longitude"]),
+                base_url=osrm_base_url,
+                request_timeout=30.0,
+            )
+            if drive.driving_error:
+                new_record["driving_km_to_hospital"] = ""
+                new_record["driving_time_minutes_to_hospital"] = ""
+            else:
+                new_record["driving_km_to_hospital"] = (
+                    drive.driving_km_to_airport if drive.driving_km_to_airport is not None else ""
+                )
+                new_record["driving_time_minutes_to_hospital"] = (
+                    drive.driving_time_minutes_to_airport if drive.driving_time_minutes_to_airport is not None else ""
+                )
+        else:
+            new_record["driving_km_to_hospital"] = ""
+            new_record["driving_time_minutes_to_hospital"] = ""
+
         enriched.append(new_record)
 
     return enriched
