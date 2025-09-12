@@ -12,7 +12,7 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
   - Standard clustered map with color by population tier and a built-in client-side population filter UI
   - Country-colored, population-sized map
 - **Hospital presence check (optional)** via OSM by default (OpenAI only if explicitly enabled); adds `hospital_*` columns to CSV
-- **Nearest international airport + driving (optional)** using OpenAI web search (trusted sources) and OSRM routing; adds `airport_*` and `driving_*` columns to CSV
+- **Nearest international airport + driving (optional)** offline-first using OurAirports dataset + OSRM; optional OpenAI web search mode; adds `airport_*` and `driving_*` columns to CSV
 - **CSV-to-map mode**: build maps directly from an existing CSV without refetching data
 
 ## Architecture (CTO-level overview)
@@ -34,6 +34,8 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - **GeoNames**: Population, coordinates, country codes (requires free account)
 - **OpenStreetMap (OSM)**: Population, coordinates, country codes, elevation tags (`ele`/`height`)
 - **Elevation enrichment**: OpenTopoData, Google Elevation API, Open‑Elevation
+- **OurAirports**: Airport metadata (large/medium; scheduled service; IATA/ICAO; coordinates) for offline nearest-airport lookup
+- **OSRM**: Routing for driving distance/time
 
 ## Elevation Data Coverage
 Multi-source enrichment can significantly improve elevation coverage:
@@ -107,15 +109,20 @@ python -m city_analysis.cli \
 - **--check-hospitals**: Use OpenAI web search to determine if each city has a hospital; writes `hospital_*` columns. Include when assessing local healthcare presence; omit to save API calls/time.
 - **--openai-model MODEL**: OpenAI model for hospital/airport checks (default `gpt-5`). Use a different model if you have constraints or preferences.
 - **--openai-timeout SECS**: Per-request timeout for OpenAI calls. Increase if you see timeouts; decrease to fail fast in testing.
+- **--hospital-no-openai-fallback**: In `hybrid` mode, disable OpenAI fallback (stay OSM-only).
 
-- **--check-airports**: Use OpenAI web search to find the nearest international airport and compute driving via OSRM; writes `airport_*` and `driving_*` columns. Include for travel/accessibility analysis; omit to save API calls and routing requests.
+- **--check-airports**: Find nearest international airport and driving via OSRM. Defaults to offline OurAirports dataset (no OpenAI). Use with `--airports-use-openai` to opt into OpenAI web search mode.
+- **--airports-use-openai**: Opt-in to OpenAI web search mode (requires `OPENAI_API_KEY`).
+- **--airports-dataset PATH**: Path to OurAirports CSV. If omitted, auto-downloads and caches to `ignore/airports_ourairports.csv`.
+- **--airports-topk N**: Offline mode: consider top‑K nearest airports by crow‑flies before OSRM refinement (default 3).
+- **--airports-max-radius-km KM**: Offline mode: only attempt OSRM for airports within this radius (default 400 km).
 - **--osrm-base-url URL**: OSRM routing endpoint. Use your own OSRM for reliability/privacy; omit to use the public server.
 - **--airports-limit N**: Process only N rows for airport enrichment. Use for quick tests or cost control.
 - **--airports-resume-missing**: Only process rows that are missing airport data or had prior errors. Use to resume/continue long runs without redoing successful rows.
-- **--airports-max-retries N**: Max retries for OpenAI airport lookup. Increase to improve success under intermittent issues; decrease to save time.
-- **--airports-initial-backoff SECS**: Initial backoff before retry. Increase when hitting rate limits.
-- **--airports-backoff-multiplier X**: Exponential factor for backoff. Increase to be gentler under load.
-- **--airports-jitter SECS**: Random jitter added/subtracted to backoff. Helps avoid thundering herd; keep small but non-zero.
+- **--airports-max-retries N**: OpenAI mode: max retries for airport lookup.
+- **--airports-initial-backoff SECS**: OpenAI mode: initial backoff before retry.
+- **--airports-backoff-multiplier X**: OpenAI mode: exponential factor for backoff.
+- **--airports-jitter SECS**: OpenAI mode: random jitter added/subtracted to backoff.
 
 - **--from-csv FILE.csv**: Build maps and/or run optional enrichments from an existing CSV (skips fetching/processing). Use to iterate quickly, resume runs, or enrich third-party CSVs.
 
@@ -178,28 +185,36 @@ OPENAI_API_KEY=sk-... python -m city_analysis.cli --check-hospitals --hospital-m
 ```
 
 ### Nearest international airport + driving (optional)
-Adds columns based on OpenAI web search (trusted sources only) and OSRM driving route:
+Adds columns for nearest airport and driving metrics. Defaults to an offline workflow using the OurAirports dataset; OpenAI web search mode is available if explicitly enabled.
 - `airport_nearest_name`, `airport_nearest_iata`, `airport_nearest_icao`
 - `airport_nearest_latitude`, `airport_nearest_longitude`
 - `airport_confidence_pct` (0–100), `airport_reasoning` (brief rationale + links), `airport_error`
 - `driving_km_to_airport`, `driving_time_minutes_to_airport`
 - `driving_confidence_pct`, `driving_reasoning`, `driving_error`
 
-Usage (from full pipeline results or any existing CSV):
+Offline default (from full pipeline results or any existing CSV):
+```bash
+python -m city_analysis.cli \
+  --from-csv outputs/alps_cities.csv \
+  --check-airports \
+  --out-dir outputs
+```
+
+Opt-in OpenAI mode:
 ```bash
 OPENAI_API_KEY=sk-... python -m city_analysis.cli \
   --from-csv outputs/alps_cities.csv \
   --check-airports \
+  --airports-use-openai \
   --out-dir outputs \
   --openai-model gpt-5 \
   --openai-timeout 90
 ```
 
 Controls:
-- Limit for testing: `--airports-limit 5`
-- Resume only rows missing airports or with prior errors: `--airports-resume-missing`
-- Reliability: `--airports-max-retries`, `--airports-initial-backoff`, `--airports-backoff-multiplier`, `--airports-jitter`
-- Routing backend: `--osrm-base-url https://router.project-osrm.org`
+- Offline mode: dataset path `--airports-dataset PATH` (auto-downloads if omitted to `ignore/airports_ourairports.csv`), top‑K `--airports-topk`, radius `--airports-max-radius-km`, routing backend `--osrm-base-url`.
+- OpenAI mode: reliability/backoff `--airports-max-retries`, `--airports-initial-backoff`, `--airports-backoff-multiplier`, `--airports-jitter`.
+- General: limits and resume `--airports-limit`, `--airports-resume-missing`.
 
 ## Outputs
 - `alps_cities.csv` — Columns include: `name, country, latitude, longitude, population, elevation, elevation_feet, elevation_source, elevation_confidence, source, distance_km_to_alps` plus optional `hospital_*`, `airport_*`, and `driving_*` columns when enabled

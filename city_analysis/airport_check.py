@@ -11,6 +11,9 @@ import requests
 from openai import OpenAI
 from tqdm import tqdm
 import random
+import pandas as pd
+import numpy as np
+from pathlib import Path
 
 
 @dataclass
@@ -403,4 +406,257 @@ def enrich_records_with_nearest_airport(
 
     return enriched
 
+
+
+def _download_ourairports_csv(cache_path: Path) -> Path:
+    url = "https://ourairports.com/data/airports.csv"
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    headers = {"User-Agent": "city-analysis/1.0"}
+    try:
+        # Try with default cert verification (requests+certifi)
+        resp = requests.get(url, timeout=60, headers=headers)
+        resp.raise_for_status()
+        cache_path.write_bytes(resp.content)
+        return cache_path
+    except Exception:
+        # Fallback: attempt with verify=False if local cert store is misconfigured
+        try:
+            resp = requests.get(url, timeout=60, headers=headers, verify=False)
+            resp.raise_for_status()
+            cache_path.write_bytes(resp.content)
+            return cache_path
+        except Exception as e:
+            raise e
+
+
+def _load_airports_dataframe(local_csv: Optional[str]) -> pd.DataFrame:
+    """Load and filter the OurAirports dataset to likely international airports.
+
+    Filters:
+      - type in {large_airport, medium_airport}
+      - scheduled_service == yes
+      - iata_code present
+      - latitude/longitude present
+    """
+    if local_csv:
+        path = Path(local_csv)
+        if not path.exists():
+            raise FileNotFoundError(f"Airports dataset not found at {local_csv}")
+    else:
+        # Cache under ignore/ by default
+        path = Path("ignore/airports_ourairports.csv")
+        if not path.exists():
+            _download_ourairports_csv(path)
+
+    df = pd.read_csv(path)
+    # Normalize columns we need
+    needed_cols = [
+        "name",
+        "iata_code",
+        "ident",
+        "type",
+        "latitude_deg",
+        "longitude_deg",
+        "scheduled_service",
+        "iso_country",
+    ]
+    missing = [c for c in needed_cols if c not in df.columns]
+    if missing:
+        raise ValueError(f"Airports CSV missing columns: {missing}")
+
+    df = df[
+        (df["type"].isin(["large_airport", "medium_airport"]))
+        & (df["scheduled_service"].astype(str).str.lower() == "yes")
+        & (df["iata_code"].astype(str).str.len() > 0)
+        & (df["latitude_deg"].notna())
+        & (df["longitude_deg"].notna())
+    ][["name", "iata_code", "ident", "latitude_deg", "longitude_deg", "iso_country"]].copy()
+
+    # OurAirports ident is often ICAO for airports. Keep as ICAO when 4 letters.
+    df["icao_code"] = df["ident"].where(df["ident"].astype(str).str.len() == 4, None)
+    df.rename(columns={"latitude_deg": "lat", "longitude_deg": "lon"}, inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    return df
+
+
+def _haversine_km_vec(lat1: float, lon1: float, lat2: np.ndarray, lon2: np.ndarray) -> np.ndarray:
+    # Vectorized Haversine: inputs in degrees
+    r = 6371.0
+    lat1r = np.radians(lat1)
+    lon1r = np.radians(lon1)
+    lat2r = np.radians(lat2)
+    lon2r = np.radians(lon2)
+    dlat = lat2r - lat1r
+    dlon = lon2r - lon1r
+    a = np.sin(dlat / 2.0) ** 2 + np.cos(lat1r) * np.cos(lat2r) * np.sin(dlon / 2.0) ** 2
+    c = 2.0 * np.arcsin(np.sqrt(a))
+    return r * c
+
+
+def enrich_records_with_nearest_airport_offline(
+    records: Iterable[Dict],
+    dataset_csv: Optional[str] = None,
+    osrm_base_url: str = "https://router.project-osrm.org",
+    topk: int = 3,
+    max_radius_km: float = 400.0,
+    sleep_seconds_between_requests: float = 0.1,
+    limit: Optional[int] = None,
+    resume_missing_only: bool = False,
+) -> List[Dict]:
+    """Offline method using OurAirports dataset + OSRM refinement.
+
+    Strategy:
+      1) Load airports once and pre-extract numpy arrays for fast distance calcs.
+      2) For each city, select top-K nearest by great-circle distance.
+      3) If any within max_radius_km, query OSRM for those and pick min driving time.
+         Otherwise, pick nearest by great-circle and skip OSRM.
+    """
+    airports = _load_airports_dataframe(dataset_csv)
+    if airports.empty:
+        return [
+            {
+                **r,
+                "airport_nearest_name": "",
+                "airport_nearest_iata": "",
+                "airport_nearest_icao": "",
+                "airport_nearest_latitude": "",
+                "airport_nearest_longitude": "",
+                "airport_confidence_pct": "",
+                "airport_reasoning": "",
+                "airport_error": "No airports available after filtering",
+                "driving_km_to_airport": "",
+                "driving_time_minutes_to_airport": "",
+                "driving_confidence_pct": "",
+                "driving_reasoning": "",
+                "driving_error": "",
+            }
+            for r in records
+        ]
+
+    airport_lats = airports["lat"].to_numpy(dtype=float)
+    airport_lons = airports["lon"].to_numpy(dtype=float)
+
+    enriched: List[Dict] = []
+    processed = 0
+    for r in tqdm(list(records), desc="Nearest airports (offline)", unit="city"):
+        if limit is not None and processed >= limit:
+            enriched.append(dict(r))
+            continue
+
+        if resume_missing_only:
+            existing_name = str(r.get("airport_nearest_name") or "").strip()
+            existing_err = str(r.get("airport_error") or "").strip()
+            if existing_name and not existing_err:
+                enriched.append(dict(r))
+                continue
+
+        # Parse inputs
+        try:
+            city = str(r.get("name") or r.get("city") or "").strip()
+            country = str(r.get("country") or "").strip()
+            lat = float(r.get("latitude")) if r.get("latitude") not in (None, "") else None
+            lon = float(r.get("longitude")) if r.get("longitude") not in (None, "") else None
+        except Exception:
+            lat = None
+            lon = None
+
+        new_record = dict(r)
+
+        if not isinstance(lat, (int, float)) or not isinstance(lon, (int, float)):
+            # Missing city coordinates
+            new_record["airport_nearest_name"] = ""
+            new_record["airport_nearest_iata"] = ""
+            new_record["airport_nearest_icao"] = ""
+            new_record["airport_nearest_latitude"] = ""
+            new_record["airport_nearest_longitude"] = ""
+            new_record["airport_confidence_pct"] = ""
+            new_record["airport_reasoning"] = ""
+            new_record["airport_error"] = "Missing city coordinates"
+            new_record["driving_km_to_airport"] = ""
+            new_record["driving_time_minutes_to_airport"] = ""
+            new_record["driving_confidence_pct"] = ""
+            new_record["driving_reasoning"] = ""
+            new_record["driving_error"] = ""
+            enriched.append(new_record)
+            processed += 1
+            continue
+
+        # Top-K by crow-flies
+        dists = _haversine_km_vec(lat, lon, airport_lats, airport_lons)
+        k = max(1, min(topk, dists.shape[0]))
+        idxs = np.argpartition(dists, k - 1)[:k]
+        # Sort those K by distance
+        idxs = idxs[np.argsort(dists[idxs])]
+
+        # Filter by radius for OSRM
+        within = [i for i in idxs.tolist() if float(dists[i]) <= float(max_radius_km)]
+
+        chosen_idx = None
+        drive: Optional[DriveResult] = None
+        driving_attempted = False
+        if within:
+            best = None
+            for i in within:
+                a_lat = float(airport_lats[i])
+                a_lon = float(airport_lons[i])
+                dr = _osrm_route(
+                    city_lat=lat,
+                    city_lon=lon,
+                    airport_lat=a_lat,
+                    airport_lon=a_lon,
+                    base_url=osrm_base_url,
+                    request_timeout=30.0,
+                )
+                driving_attempted = True
+                if dr.driving_error:
+                    continue
+                if best is None or (dr.driving_time_minutes_to_airport or 0) < (best[1].driving_time_minutes_to_airport or 0):
+                    best = (i, dr)
+                if sleep_seconds_between_requests > 0:
+                    time.sleep(sleep_seconds_between_requests)
+            if best is not None:
+                chosen_idx, drive = best
+        # Fallback to nearest by crow-flies if no OSRM success
+        if chosen_idx is None:
+            chosen_idx = int(idxs[0])
+
+        a = airports.iloc[chosen_idx]
+        new_record["airport_nearest_name"] = str(a["name"]) if pd.notna(a["name"]) else ""
+        new_record["airport_nearest_iata"] = str(a["iata_code"]) if pd.notna(a["iata_code"]) else ""
+        new_record["airport_nearest_icao"] = str(a["icao_code"]) if pd.notna(a["icao_code"]) else ""
+        new_record["airport_nearest_latitude"] = float(a["lat"]) if pd.notna(a["lat"]) else ""
+        new_record["airport_nearest_longitude"] = float(a["lon"]) if pd.notna(a["lon"]) else ""
+        new_record["airport_confidence_pct"] = 90 if within else 75
+        method = "OSRM driving among top-K" if drive and not drive.driving_error else "crow-flies nearest"
+        new_record["airport_reasoning"] = (
+            f"Selected by {method} from OurAirports dataset (scheduled service)."
+        )
+        new_record["airport_error"] = "" if (within or not driving_attempted) else "OSRM failed for all candidates"
+
+        # Driving fields
+        if drive and not drive.driving_error:
+            new_record["driving_km_to_airport"] = drive.driving_km_to_airport if drive.driving_km_to_airport is not None else ""
+            new_record["driving_time_minutes_to_airport"] = (
+                drive.driving_time_minutes_to_airport if drive.driving_time_minutes_to_airport is not None else ""
+            )
+            new_record["driving_confidence_pct"] = (
+                drive.driving_confidence_pct if drive.driving_confidence_pct is not None else ""
+            )
+            new_record["driving_reasoning"] = drive.driving_reasoning or ""
+            new_record["driving_error"] = ""
+        else:
+            # No OSRM driving if beyond radius or OSRM failed
+            new_record["driving_km_to_airport"] = ""
+            new_record["driving_time_minutes_to_airport"] = ""
+            new_record["driving_confidence_pct"] = ""
+            new_record["driving_reasoning"] = ""
+            if not within:
+                new_record["driving_error"] = "No airport within max_radius_km; driving not computed"
+            else:
+                new_record["driving_error"] = "OSRM failed for all candidates"
+
+        enriched.append(new_record)
+        processed += 1
+
+    return enriched
 

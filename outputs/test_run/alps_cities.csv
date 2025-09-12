@@ -1,6 +1,432 @@
-﻿name,country,latitude,longitude,population,elevation,source,distance_km_to_alps,hospital_confidence_pct,hospital_error,hospital_in_city,hospital_in_city_or_nearby,hospital_reasoning,nearest_hospital_km
-Grenoble,FR,45.17869,5.71479,158552,,geonames,0.0,95,,yes,yes,OSM hospital within 3.0 km of centroid (nearest 2.12 km),2.12
-Salzburg,AT,47.79941,13.04399,157245,,geonames,0.0,95,,yes,yes,OSM hospital within 3.0 km of centroid (nearest 1.14 km),1.14
-Innsbruck,AT,47.26266,11.39454,132493,,geonames,0.0,95,,yes,yes,OSM hospital within 3.0 km of centroid (nearest 2.07 km),2.07
-Trento,IT,46.06787,11.12108,120709,,geonames,0.0,95,,yes,yes,OSM hospital within 3.0 km of centroid (nearest 0.87 km),0.87
-Bolzano,IT,46.49067,11.33982,107436,,geonames,0.0,80,,no,yes,No OSM hospital within 3.0 km of centroid; nearest 2.39 km,2.39
+﻿name,country,latitude,longitude,population,elevation,elevation_feet,elevation_source,elevation_confidence,source,distance_km_to_alps,airport_confidence_pct,airport_error,airport_nearest_iata,airport_nearest_icao,airport_nearest_latitude,airport_nearest_longitude,airport_nearest_name,airport_reasoning,driving_confidence_pct,driving_error,driving_km_to_airport,driving_reasoning,driving_time_minutes_to_airport,hospital_confidence_pct,hospital_error,hospital_in_city,hospital_reasoning
+Grenoble,FR,45.17869,5.71479,158552,222.0,728.3,opentopo,0.9,geonames,0.0,90,,GNB,LFLS,45.3629,5.32937,Grenoble Alpes Isère Airport,Selected by OSRM driving among top-K from OurAirports dataset (scheduled service).,95,,45.577,"Driving route via OSRM. Distance and time derived from OSRM API. Source: https://router.project-osrm.org/route/v1/driving/5.714790,45.178690;5.329370,45.362900?overview=false&annotations=duration,distance&alternatives=false",34.9,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.12 km)
+Salzburg,AT,47.79941,13.04399,157245,423.0,1387.8,opentopo,0.9,geonames,0.0,90,,SZG,LOWS,47.793301,13.0043,Salzburg Airport,Selected by OSRM driving among top-K from OurAirports dataset (scheduled service).,95,,4.786,"Driving route via OSRM. Distance and time derived from OSRM API. Source: https://router.project-osrm.org/route/v1/driving/13.043990,47.799410;13.004300,47.793301?overview=false&annotations=duration,distance&alternatives=false",9.0,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.14 km)
+Innsbruck,AT,47.26266,11.39454,132493,596.0,1955.4,opentopo,0.9,geonames,0.0,90,,INN,LOWI,47.260201,11.344,Innsbruck Airport,Selected by OSRM driving among top-K from OurAirports dataset (scheduled service).,95,,4.218,"Driving route via OSRM. Distance and time derived from OSRM API. Source: https://router.project-osrm.org/route/v1/driving/11.394540,47.262660;11.344000,47.260201?overview=false&annotations=duration,distance&alternatives=false",6.9,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.07 km)
+Trento,IT,46.06787,11.12108,120709,203.0,666.0,open_elevation,0.85,geonames,0.0,90,,BZO,LIPB,46.460201,11.3264,Bolzano Airport,Selected by OSRM driving among top-K from OurAirports dataset (scheduled service).,95,,57.998,"Driving route via OSRM. Distance and time derived from OSRM API. Source: https://router.project-osrm.org/route/v1/driving/11.121080,46.067870;11.326400,46.460201?overview=false&annotations=duration,distance&alternatives=false",42.7,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.87 km)
+Bolzano,IT,46.49067,11.33982,107436,263.0,862.9,opentopo,0.9,geonames,0.0,90,,BZO,LIPB,46.460201,11.3264,Bolzano Airport,Selected by OSRM driving among top-K from OurAirports dataset (scheduled service).,95,,5.733,"Driving route via OSRM. Distance and time derived from OSRM API. Source: https://router.project-osrm.org/route/v1/driving/11.339820,46.490670;11.326400,46.460201?overview=false&annotations=duration,distance&alternatives=false",10.2,80,,no,No OSM hospital within 3.0 km of centroid
+Bolzano - Bozen,IT,46.4984781,11.3547399,105713,262.0,859.6,,,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Klagenfurt,AT,46.62472,14.30528,100316,459.0,1505.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.05 km)
+Rosenheim,AT,47.85637,12.12247,60167,448.0,1469.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.86 km)
+Chambéry,FR,45.56628,5.92079,61640,280.0,918.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.80 km)
+Kempten (Allgäu),DE,47.72674,10.31389,61399,674.0,2211.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.14 km)
+Villach,AT,46.61028,13.85583,58882,491.0,1610.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.61 km)
+Dornbirn,AT,47.41427,9.74195,49278,434.0,1423.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.90 km)
+Annecy,FR,45.90878,6.12565,49232,452.0,1482.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.83 km)
+Biella,IT,45.56304,8.05796,43030,427.0,1400.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.34 km)
+Bassano del Grappa,IT,45.76656,11.72739,38224,113.0,370.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.27 km)
+Gap,FR,44.55858,6.07868,42715,742.0,2434.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.31 km)
+Kaufbeuren,AT,47.88238,10.62192,42505,676.0,2217.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.78 km)
+Merano,IT,46.66817,11.15953,41051,310.0,1017.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.13 km)
+Draguignan,FR,43.53692,6.46458,38573,192.0,629.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.05 km)
+Schio,IT,45.71262,11.35671,33740,202.0,662.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.94 km)
+Rovereto,IT,45.8904,11.04053,34152,199.0,652.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.93 km)
+Saint-Martin-d'Hères,FR,45.1787,5.76281,35528,217.0,711.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.01 km)
+Échirolles,FR,45.14603,5.71441,33088,231.0,757.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.61 km)
+Belluno,IT,46.14262,12.2156,25064,397.0,1302.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.22 km)
+Aosta,IT,45.73764,7.31722,35261,586.0,1922.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.95 km)
+Hötting,AT,47.26815,11.36868,35043,660.0,2165.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.51 km)
+Gorizia,IT,45.94088,13.62167,34428,85.0,278.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.42 km)
+Merano - Meran,IT,46.6713536,11.1646348,33656,344.0,1128.6,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.14 km)
+Pinerolo,IT,44.88534,7.33135,30866,380.0,1246.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.92 km)
+Feldkirch,AT,47.23306,9.6,33420,465.0,1525.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.40 km)
+Pradl,AT,47.26539,11.4152,32588,591.0,1939.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.68 km)
+Aix-les-Bains,FR,45.69173,5.90863,27651,249.0,816.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.68 km)
+Thonon-les-Bains,FR,46.37049,6.47985,31684,445.0,1460.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.33 km)
+Verbania,IT,45.92136,8.55183,31070,208.0,682.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.55 km)
+Aosta - Aoste,IT,45.7370885,7.3196649,30000,583.0,1912.7,,,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.80 km)
+Bregenz,AT,47.50311,9.7471,29806,407.0,1335.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.67 km)
+Pallanza-Intra-Suna,IT,45.93778,8.57088,28911,213.0,698.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.17 km)
+Annemasse,FR,46.19439,6.23775,28275,447.0,1466.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.72 km)
+Vittorio Veneto,IT,45.98026,12.30065,24789,128.0,419.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.60 km)
+Klosterneuburg,AT,48.30521,16.32522,15614,194.0,636.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.31 km)
+Baden,AT,48.00543,16.23264,26286,231.0,757.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.76 km)
+Valdagno,IT,45.64498,11.29886,22555,270.0,885.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.71 km)
+Garmisch-Partenkirchen,AT,47.49209,11.09576,26022,698.0,2290.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.75 km)
+Geretsried,AT,47.85775,11.48054,23364,608.0,1994.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Leoben,AT,47.3765,15.09144,8264,544.0,1784.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.64 km)
+Fontaine,FR,45.19275,5.68821,24588,209.0,685.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.05 km)
+Lindau,DE,47.54612,9.68431,24518,405.0,1328.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.93 km)
+Lumezzane,IT,45.64789,10.26487,23712,462.0,1515.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.09 km)
+Weilheim,DE,47.84147,11.15484,23378,572.0,1876.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.93 km)
+San Sebastiano,IT,45.65192,10.25681,23228,459.0,1505.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.37 km)
+Brixen - Bressanone,IT,46.716413,11.657792,23004,569.0,1866.8,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.12 km)
+Kapfenberg,AT,47.4405481,15.2901669,23004,493.0,1617.5,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.57 km)
+Manosque,FR,43.82883,5.78688,21351,363.0,1190.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.53 km)
+Lustenau,AT,47.42642,9.65851,22821,401.0,1315.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Voiron,FR,45.36471,5.5856,22114,305.0,1000.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.86 km)
+Annecy-le-Vieux,FR,45.91971,6.14393,21521,498.0,1633.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.59 km)
+Sonthofen,DE,47.51821,10.28262,21285,741.0,2431.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.14 km)
+Pergine Valsugana,IT,46.06434,11.23758,11538,476.0,1561.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.88 km)
+Traunreut,AT,47.96269,12.59231,21244,555.0,1820.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Hallein,AT,47.68333,13.1,7208,445.0,1460.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.97 km)
+Feltre,IT,46.02085,11.90031,13643,277.0,908.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.68 km)
+Mödling,AT,48.08605,16.28921,20555,223.0,731.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.70 km)
+Sankt Peter,AT,46.62978,14.34016,20320,438.0,1437.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.50 km)
+Meylan,FR,45.20978,5.77762,20267,230.0,754.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.93 km)
+Pertuis,FR,43.69415,5.50291,19926,218.0,715.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.29 km)
+Sankt Martin,AT,46.61667,14.28333,20000,438.0,1437.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.55 km)
+Bad Tölz,AT,47.76111,11.5589,17434,664.0,2178.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.37 km)
+Albertville,FR,45.67452,6.39061,19113,345.0,1131.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.79 km)
+Cluses,FR,46.06251,6.57497,19789,476.0,1561.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.82 km)
+Vence,IT,43.72254,7.11183,18668,324.0,1063.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Cran-Gevrier,FR,45.9,6.1,19354,506.0,1660.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.04 km)
+Kufstein,AT,47.58333,12.16667,9848,488.0,1601.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.83 km)
+Sondrio,IT,46.16852,9.87134,19208,303.0,994.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.81 km)
+Digne-les-Bains,FR,44.09252,6.23199,18986,599.0,1965.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Seynod,FR,45.88549,6.08831,18590,540.0,1771.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Marktoberdorf,AT,47.77964,10.61713,18505,729.0,2391.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.55 km)
+Traunstein,AT,47.86825,12.64335,18422,595.0,1952.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.05 km)
+Wilten,AT,47.25829,11.38808,18142,589.0,1932.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.73 km)
+Kolbermoor,AT,47.84965,12.06696,17941,460.0,1509.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Weilheim in Oberbayern,DE,47.8395072,11.1416355,18000,563.0,1847.1,,,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.34 km)
+Albino,IT,45.76444,9.79904,13263,373.0,1223.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Domodossola,IT,46.1165,8.29313,17778,280.0,918.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.46 km)
+Bad Aibling,AT,47.8638,12.01055,17672,483.0,1584.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.62 km)
+Arco,IT,45.91772,10.88672,12072,92.0,301.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.28 km)
+Bad Reichenhall,AT,47.72947,12.87819,16910,464.0,1522.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.49 km)
+Wolfratshausen,AT,47.91289,11.42166,17191,575.0,1886.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.52 km)
+Riva del Garda,IT,45.88577,10.84117,17331,78.0,255.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Negrar di Valpolicella,IT,45.5296706,10.9400217,17093,186.0,610.2,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.28 km)
+Saint-Égrève,FR,45.2325079,5.681781,16995,215.0,705.4,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.56 km)
+Piossasco,IT,44.98802,7.4601,16904,307.0,1007.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Saalfelden am Steinernen Meer,AT,47.42681,12.848,16790,744.0,2440.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Holzkirchen,AT,47.87663,11.70181,16770,694.0,2276.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Giaveno,IT,45.04435,7.34722,11540,538.0,1765.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.76 km)
+Sallanches,FR,45.94423,6.63162,16725,541.0,1774.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.45 km)
+Erba,IT,45.8088,9.22609,16431,283.0,928.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.86 km)
+Hohenems,AT,47.36121,9.68694,16317,436.0,1430.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.46 km)
+Penzberg,AT,47.75293,11.377,16079,606.0,1988.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.21 km)
+Rumilly,FR,45.86116,5.94513,13077,349.0,1145.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.75 km)
+Telfs,AT,47.30707,11.06817,15229,637.0,2089.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Freilassing,AT,47.84085,12.98114,15909,417.0,1368.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.80 km)
+St. Egreve,FR,45.23313,5.68154,15904,215.0,705.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.56 km)
+Bruckmühl,AT,47.87859,11.91098,15851,508.0,1666.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Brixen,IT,46.71503,11.65598,15868,567.0,1860.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.16 km)
+Füssen,AT,47.57143,10.70171,15608,799.0,2621.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.55 km)
+Cossato,IT,45.57032,8.18471,13931,253.0,830.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Laives - Leifers,IT,46.422819,11.3347713,15069,249.0,816.9,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Perchtoldsdorf,AT,48.11935,16.26607,15047,250.0,820.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Darfo Boario Terme,IT,45.8915,10.18879,14932,220.0,721.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Omegna,IT,45.88002,8.40665,14868,306.0,1003.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.88 km)
+Ternitz,AT,47.71565,16.03575,7378,393.0,1289.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gussago,IT,45.58358,10.15717,14502,158.0,518.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.71 km)
+Romano d'Ezzelino,IT,45.77902,11.76657,12700,127.0,416.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Immenstadt im Allgäu,DE,47.55996,10.21394,14431,733.0,2404.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.14 km)
+Hall in Tirol,AT,47.28333,11.51667,13334,583.0,1912.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.20 km)
+Bad Ischl,DE,47.7115299,13.6239333,14088,470.0,1542.0,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.60 km)
+Marostica,IT,45.74541,11.66237,9264,97.0,318.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.93 km)
+Borgosesia,IT,45.72045,8.27466,10967,382.0,1253.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.20 km)
+Wörgl,AT,47.48906,12.06174,13811,508.0,1666.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Schwaz,AT,47.35169,11.71014,13728,534.0,1752.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.95 km)
+Alzano Lombardo,IT,45.73681,9.72638,12750,322.0,1056.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.58 km)
+Bruneck - Brunico,IT,46.7963194,11.9355121,13618,842.0,2762.5,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.40 km)
+Bludenz,AT,47.15476,9.82255,13534,566.0,1857.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.56 km)
+Piazza,IT,45.58725,10.15526,13507,163.0,534.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.30 km)
+La Motte-Servolex,FR,45.59702,5.86724,13499,272.0,892.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Hard,AT,47.48306,9.68306,13495,398.0,1305.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Seyssinet-Pariset,FR,45.17675,5.69387,13473,214.0,702.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.31 km)
+Sarezzo,IT,45.66067,10.1969,13295,276.0,905.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.03 km)
+Carros,IT,43.79246,7.18745,10883,389.0,1276.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gmunden,AT,47.91839,13.79933,13191,433.0,1420.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.43 km)
+Chiampo,IT,45.54746,11.28285,10857,192.0,629.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gratwein-Straßengel,AT,47.1231264,15.3304611,13000,388.0,1273.0,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Spittal an der Drau,AT,46.8,13.5,12880,578.0,1896.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.71 km)
+Concesio,IT,45.60518,10.21697,11262,214.0,702.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Valbonne,IT,43.63292,6.99911,12633,229.0,751.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.82 km)
+Peißenberg,AT,47.80466,11.0699,12689,584.0,1916.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Wasserburg am Inn,AT,48.0525,12.22341,12662,455.0,1492.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.67 km)
+Knittelfeld,AT,47.21667,14.81667,11521,655.0,2149.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.31 km)
+Schongau,AT,47.8124,10.89664,12442,723.0,2372.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.33 km)
+Murnau am Staffelsee,AT,47.68085,11.20125,11958,693.0,2273.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.62 km)
+Bruneck,IT,46.79942,11.93429,12282,831.0,2726.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.17 km)
+Gavardo,IT,45.58939,10.44257,8323,205.0,672.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.25 km)
+Luino,IT,46.00185,8.74512,12146,206.0,675.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.60 km)
+Peiting,AT,47.79549,10.92951,12106,715.0,2345.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Pieve di Soligo,IT,45.89836,12.17128,9516,135.0,442.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.36 km)
+Cornedo Vicentino,IT,45.61626,11.33225,7654,194.0,636.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Lienz,AT,46.8289,12.76903,11572,675.0,2214.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.77 km)
+Miesbach,AT,47.78903,11.83382,11354,702.0,2303.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.41 km)
+Buchloe,AT,48.03719,10.72548,11978,619.0,2030.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.39 km)
+Le Pont-de-Claix,FR,45.12321,5.69782,11963,244.0,800.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.55 km)
+Rankweil,AT,47.27108,9.64308,11855,467.0,1532.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.24 km)
+Sant'Ambrogio di Valpolicella,IT,45.52089,10.83618,10384,158.0,518.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Bonneville,FR,46.0802,6.40726,11722,449.0,1473.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.10 km)
+Maniago / Manià,IT,46.1709743,12.7073987,11708,275.0,902.2,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.49 km)
+Trostberg an der Alz,DE,48.02802,12.55804,11676,483.0,1584.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.09 km)
+Gaillard,FR,46.1853,6.20693,11660,426.0,1397.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.51 km)
+Sassenage,FR,45.21266,5.6629,10641,204.0,669.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.30 km)
+Passy,FR,45.92341,6.69562,11613,648.0,2126.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.31 km)
+Apt,FR,43.87638,5.39635,11609,234.0,767.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.07 km)
+Valmadrera,IT,45.84628,9.35824,11609,234.0,767.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Briançon,IT,44.89978,6.64201,11577,1284.0,4212.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.98 km)
+Nembro,IT,45.74411,9.76127,9617,324.0,1063.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Götzis,AT,47.33306,9.63306,11473,426.0,1397.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Raubling,AT,47.7905,12.11088,11382,458.0,1502.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Annabichl,AT,46.65,14.31667,11374,450.0,1476.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.98 km)
+Borgo San Dalmazzo,IT,44.33785,7.4931,11128,631.0,2070.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.87 km)
+Bad Vöslau,AT,47.96533,16.21359,7469,260.0,853.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gemona,IT,46.27405,13.12237,11141,186.0,610.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.57 km)
+Arzl,AT,47.28333,11.43333,11082,632.0,2073.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.07 km)
+Gemona del Friuli / Glemone,IT,46.2770072,13.1401049,10964,269.0,882.5,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.67 km)
+Gardone Val Trompia,IT,45.69137,10.18635,10113,322.0,1056.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.67 km)
+Prien am Chiemsee,AT,47.85602,12.34623,10872,525.0,1722.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.51 km)
+Nave,IT,45.5848,10.27947,10848,219.0,718.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Sankt Veit an der Glan,AT,46.76806,14.36028,10841,486.0,1594.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.54 km)
+Grezzana,IT,45.5185311,11.0161587,10772,176.0,577.4,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.99 km)
+Laives,IT,46.42679,11.33841,10710,254.0,833.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Villa Carcina,IT,45.63329,10.19556,10695,239.0,784.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Chamonix,FR,45.92375,6.86933,10614,1044.0,3425.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.21 km)
+Salò,IT,45.60685,10.5205,10576,80.0,262.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.24 km)
+Sankt Johann im Pongau,DE,47.3475782,13.2026049,10566,598.0,1961.9,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Imst,AT,47.24504,10.73974,10504,821.0,2693.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Avigliana,IT,45.07978,7.39647,9099,399.0,1309.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.73 km)
+Morbegno,IT,46.1372,9.57415,10472,244.0,800.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.39 km)
+Tolmezzo / Tumieç,IT,46.4053676,13.0158357,10440,323.0,1059.7,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.75 km)
+Feldkirchen-Westerham,AT,47.90748,11.84266,10399,552.0,1811.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Maniago,IT,46.16644,12.70602,10395,286.0,938.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.87 km)
+Valdobbiadene,IT,45.89689,11.98245,6307,225.0,738.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.35 km)
+Lauterach,AT,47.47572,9.72941,10267,411.0,1348.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.68 km)
+Induno Olona,IT,45.84571,8.84056,10258,398.0,1305.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.95 km)
+Mandello del Lario,IT,45.92199,9.31974,10255,238.0,780.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.48 km)
+Voreppe,FR,45.29484,5.63192,10214,224.0,734.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Mori,IT,45.85187,10.98052,7660,208.0,682.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.10 km)
+Eybens,FR,45.14771,5.75014,10195,246.0,807.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.10 km)
+Busca,IT,44.51625,7.47662,5588,495.0,1624.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.25 km)
+Zell am See,AT,47.32306,12.79839,7619,762.0,2500.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.19 km)
+Sedico,IT,46.10563,12.0933,5478,309.0,1013.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Saint-Julien-en-Genevois,FR,46.14434,6.08256,10108,470.0,1542.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.45 km)
+Lenggries,AT,47.68333,11.56667,9432,678.0,2224.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Ainring,DE,47.81311,12.94048,10028,437.0,1433.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+La Roche-sur-Foron,FR,46.07111,6.3045,10026,557.0,1827.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.92 km)
+Altusried,DE,47.8041,10.21429,9950,719.0,2358.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Cuorgnè,IT,45.39341,7.65015,8581,401.0,1315.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.73 km)
+Botticino,IT,45.52972,10.31085,9837,140.0,459.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.58 km)
+Bruck an der Mur,AT,47.41667,15.28333,9093,570.0,1870.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.38 km)
+Purkersdorf,AT,48.20769,16.17539,9701,246.0,807.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Oberstdorf,DE,47.40724,10.27939,9572,819.0,2687.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.70 km)
+Stephanskirchen,DE,47.85389,12.1856,9554,477.0,1565.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Saint-Jean-de-Maurienne,FR,45.27534,6.35293,9536,539.0,1768.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.96 km)
+Judenburg,AT,47.16667,14.66667,8481,739.0,2424.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.84 km)
+Sankt Johann in Tirol,AT,47.5233,12.4232,9428,658.0,2158.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.57 km)
+Viktring,AT,46.59194,14.26917,9407,455.0,1492.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Voitsberg,AT,47.04445,15.15313,9403,390.0,1279.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.31 km)
+Cividale del Friuli,IT,46.09019,13.42861,9290,114.0,374.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.79 km)
+Lana,IT,46.61209,11.15653,9244,285.0,935.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gavirate,IT,45.83707,8.72619,9206,244.0,800.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.28 km)
+Rum,AT,47.28333,11.45,9190,623.0,2044.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Teisendorf,AT,47.84921,12.81919,9019,499.0,1637.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Berndorf,AT,47.94567,16.10973,9064,312.0,1023.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Waltenhofen,DE,47.67319,10.30703,9045,710.0,2329.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+La Ravoire,FR,45.56266,5.95826,6768,318.0,1043.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.17 km)
+Crolles,FR,45.27724,5.87837,9026,246.0,807.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Castellamonte,IT,45.38267,7.70886,7215,347.0,1138.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.19 km)
+Tarcento / Tarcint,IT,46.2156457,13.2221061,8716,226.0,741.5,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.21 km)
+Costa Volpino,IT,45.82768,10.10076,8705,195.0,639.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.22 km)
+Sorisole,IT,45.7314,9.63715,8614,298.0,977.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Kitzbühel,AT,47.44637,12.39215,8272,756.0,2480.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Meythet,FR,45.91836,6.09422,8538,452.0,1482.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.44 km)
+Trescore Balneario,IT,45.69409,9.84173,8479,269.0,882.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.26 km)
+Wolfurt,AT,47.46667,9.75,8446,419.0,1374.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Col San Martino,IT,45.9002,12.11575,8425,150.0,492.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Villacher Vorstadt,AT,46.62368,14.28892,8421,447.0,1466.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.69 km)
+Finkenstein am Faaker See,AT,46.56081,13.87115,8406,567.0,1860.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Trofaiach,AT,47.42524,15.00681,7728,656.0,2152.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Siegsdorf,AT,47.82278,12.64277,8230,604.0,1981.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Tirano,IT,46.21482,10.16335,8348,421.0,1381.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.59 km)
+Hausham,AT,47.7466,11.84069,8177,770.0,2526.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.56 km)
+Aviano,IT,46.07056,12.59472,8225,158.0,518.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Évian-les-Bains,FR,46.40111,6.58793,8207,375.0,1230.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.29 km)
+Villach-Innere Stadt,AT,46.61275,13.84638,8189,503.0,1650.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.91 km)
+Zirl,AT,47.2741,11.23961,8162,633.0,2076.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.12 km)
+Laveno-Mombello,IT,45.90888,8.62036,8130,200.0,656.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.25 km)
+Claix,FR,45.11994,5.67292,8127,283.0,928.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Bourg-Saint-Maurice,IT,45.61463,6.76845,8114,833.0,2732.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.40 km)
+Tolmezzo,IT,46.39996,13.02051,8078,312.0,1023.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.29 km)
+Piovene Rocchette,IT,45.75601,11.43273,8069,255.0,836.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.70 km)
+Dietmannsried,DE,47.80787,10.28948,8044,678.0,2224.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Clusone,IT,45.88663,9.94646,8032,601.0,1971.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Mittenwald,AT,47.4422,11.26187,7996,916.0,3005.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Höchst,AT,47.45934,9.6405,7995,402.0,1318.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Vizille,FR,45.07819,5.77074,7962,277.0,908.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Levico Terme,IT,46.01217,11.30427,6171,518.0,1699.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Ponte nelle Alpi,IT,46.18083,12.28333,7913,398.0,1305.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Vigliano Biellese,IT,45.56317,8.10509,7898,322.0,1056.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Farra di Soligo,IT,45.90528,12.12444,7892,163.0,534.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Pfronten,DE,47.5822,10.54962,7890,857.0,2811.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.54 km)
+Moirans,FR,45.3314,5.55432,7886,242.0,794.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.09 km)
+Wattens,AT,47.29419,11.5907,7881,553.0,1814.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Berchtesgaden,AT,47.63236,13.00187,7698,572.0,1876.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.30 km)
+Landeck,AT,47.13988,10.56593,7725,786.0,2578.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Ugine,FR,45.75571,6.41503,7703,458.0,1502.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Sisteron,FR,44.19002,5.94643,7605,483.0,1584.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.39 km)
+Tullins,FR,45.30239,5.49077,7689,204.0,669.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.17 km)
+Arcisate,IT,45.85578,8.86823,7645,381.0,1250.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.94 km)
+Saint-Marcellin,FR,45.14914,5.31673,7592,283.0,928.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.64 km)
+Maderno,IT,45.6405622,10.6067422,7554,91.0,298.6,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Bischofswiesen,DE,47.63115,12.98305,7535,623.0,2044.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.33 km)
+Bovezzo,IT,45.58998,10.24184,7469,189.0,620.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.92 km)
+Peymeinade,FR,43.64244,6.87583,7465,211.0,692.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Bad Endorf,DE,47.90901,12.29795,7465,524.0,1719.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.79 km)
+Bischofshofen,AT,47.41667,13.21667,7457,553.0,1814.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Sankt Ruprecht,AT,46.6,14.31667,7442,435.0,1427.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.56 km)
+Villongo,IT,45.66939,9.93076,7436,223.0,731.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.84 km)
+Seyssins,FR,45.16224,5.68673,7408,284.0,931.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.45 km)
+Villard-Bonnot,FR,45.2346,5.88323,7400,234.0,767.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Nyons,FR,44.36082,5.14052,7330,277.0,908.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.31 km)
+Zeltweg,AT,47.1912045,14.7549244,7327,659.0,2162.1,,,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.27 km)
+Chiavenna,IT,46.32063,9.39816,7239,324.0,1063.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.15 km)
+Colico,IT,46.13205,9.37714,7204,263.0,862.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Bad Feilnbach,AT,47.77331,12.00973,7203,517.0,1696.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.69 km)
+Oberstaufen,DE,47.55568,10.02245,7190,789.0,2588.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.46 km)
+Mattersburg,AT,47.73333,16.4,6577,259.0,849.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+La Tronche,FR,45.20507,5.74629,7125,242.0,794.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.71 km)
+Jenbach,AT,47.39173,11.77245,7120,568.0,1863.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Absam,AT,47.29572,11.50593,7112,635.0,2083.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.46 km)
+Boves,IT,44.32985,7.54733,7089,587.0,1925.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.09 km)
+Gravellona Toce,IT,45.92859,8.43209,7077,216.0,708.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Embrun,FR,44.56387,6.49526,7069,868.0,2847.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.33 km)
+Dronero,IT,44.46476,7.36242,5454,600.0,1968.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Ville-la-Grand,FR,46.203,6.2501,7033,445.0,1460.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.48 km)
+Toscolano-Maderno,IT,45.63977,10.6076,7025,90.0,295.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Trostberg,DE,48.0277272,12.5530162,7000,501.0,1643.7,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.74 km)
+Renon,IT,46.54152,11.45728,6993,1196.0,3923.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Pontcharra,FR,45.43588,6.01782,6948,267.0,876.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Borgo Valsugana,IT,46.05119,11.45756,6587,395.0,1295.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.81 km)
+Vif,FR,45.05654,5.67204,6942,308.0,1010.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Kiefersfelden,DE,47.61409,12.19096,6912,484.0,1587.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Waging am See,AT,47.93414,12.73392,6291,464.0,1522.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Domène,FR,45.20289,5.83335,6882,228.0,748.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Laufen,DE,47.93568,12.92856,6869,415.0,1361.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.38 km)
+Großkarolinenfeld,DE,47.89102,12.08101,6865,470.0,1542.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Contes,FR,43.81278,7.31444,6864,277.0,908.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Mürzzuschlag,AT,47.6066,15.67226,5975,679.0,2227.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.78 km)
+Allières-et-Risset,FR,45.09934,5.67924,6815,262.0,859.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gratkorn,AT,47.13333,15.35,6806,381.0,1250.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Liezen,AT,47.56667,14.23333,6587,644.0,2112.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Cernobbio,IT,45.84307,9.07194,6790,275.0,902.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.33 km)
+Scionzier,FR,46.0601,6.55271,6766,488.0,1601.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Mezzolombardo,IT,46.20774,11.09636,6754,221.0,725.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Völs,AT,47.25,11.33333,6738,594.0,1948.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Bad Hofgastein,AT,47.1703104,13.1060635,6726,848.0,2782.2,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Reutte,AT,47.48333,10.71667,6704,852.0,2795.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.13 km)
+Durach,DE,47.6944,10.34449,6675,715.0,2345.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Frohnleiten,AT,47.2715315,15.3260206,6655,442.0,1450.1,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.18 km)
+Bernau am Chiemsee,DE,47.81167,12.37566,6645,538.0,1765.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.13 km)
+Tuntenhausen,DE,47.93509,12.01518,6642,503.0,1650.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Villadossola,IT,46.0708,8.26709,6633,250.0,820.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Saint-Ismier,FR,45.25227,5.83073,6630,375.0,1230.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+La Gaude,FR,43.72209,7.15296,6626,260.0,853.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Altach,AT,47.35438,9.65207,6624,412.0,1351.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Faverges,FR,45.75116,6.29151,6580,516.0,1692.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Cognin,FR,45.55952,5.89113,6577,302.0,990.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.64 km)
+Pressbaum,AT,48.18333,16.08333,6237,313.0,1026.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Auen,AT,46.59963,13.84389,6563,488.0,1601.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.06 km)
+Wilhelmsburg,AT,48.10571,15.60539,6557,319.0,1046.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Schladming,DE,47.3940415,13.6867878,6538,745.0,2444.2,,,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.81 km)
+Weiler-Simmerberg,DE,47.58261,9.91352,6510,625.0,2050.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Hafendorf,AT,47.45653,15.31837,6506,528.0,1732.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Tarcento,IT,46.21251,13.21514,6485,225.0,738.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.46 km)
+Obergünzburg,AT,47.84545,10.41821,6424,739.0,2424.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Negrar,IT,45.52918,10.93899,6464,181.0,593.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.23 km)
+Ponteranica,IT,45.73248,9.65175,6463,327.0,1072.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Frastanz,AT,47.21735,9.62995,6434,489.0,1604.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.99 km)
+Ruhpolding,DE,47.76667,12.65,6419,651.0,2135.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Schliersee,DE,47.73621,11.85936,6416,783.0,2568.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Lavis,IT,46.14131,11.10931,6404,231.0,757.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Villa di Serio,IT,45.7226,9.73522,6404,280.0,918.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.24 km)
+Poisy,FR,45.92142,6.06356,6399,513.0,1683.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Schlanders - Silandro,IT,46.6280688,10.7734765,6371,721.0,2365.5,,,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.39 km)
+Hörbranz,AT,47.55,9.75,6346,414.0,1358.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Grassau,DE,47.78099,12.45359,6323,536.0,1758.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gières,FR,45.17997,5.78935,6299,229.0,751.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Trissino,IT,45.55994,11.37678,6255,118.0,387.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.61 km)
+Vill'Albese,IT,45.79684,9.18859,6242,402.0,1318.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Caneva,IT,45.97078,12.45261,6224,36.0,118.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Villa d'Almè,IT,45.74843,9.61702,6208,309.0,1013.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Caldaro sulla Strada del Vino,IT,46.41326,11.24616,6183,428.0,1404.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Sarnico,IT,45.67099,9.96152,6177,200.0,656.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.59 km)
+Gmund am Tegernsee,DE,47.75119,11.7381,6086,744.0,2440.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Tittmoning,AT,48.06164,12.7676,6084,386.0,1266.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Rives,FR,45.35326,5.50084,6067,393.0,1289.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.11 km)
+Gloggnitz,AT,47.6757858,15.9374085,6062,449.0,1473.1,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Thônes,FR,45.88123,6.32572,6032,628.0,2060.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Pollau,AT,47.3,15.83333,6014,414.0,1358.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Vétraz-Monthoux,FR,46.1743,6.25852,5991,495.0,1624.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.07 km)
+San Michele,IT,46.45472,11.26178,5967,407.0,1335.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Albavilla,IT,45.80038,9.18504,5938,423.0,1387.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Ranica,IT,45.72328,9.71335,5920,288.0,944.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.77 km)
+Cortina d'Ampezzo,AT,46.5369,12.13903,5423,1210.0,3969.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.03 km)
+Cles,IT,46.36294,11.03276,5903,668.0,2191.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.23 km)
+Reignier-Ésery,FR,46.13333,6.26667,5892,487.0,1597.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Marignier,FR,46.09014,6.50004,5883,474.0,1555.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Saint-Gervais-les-Bains,FR,45.89126,6.71678,5882,927.0,3041.3,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.53 km)
+Kirchbichl,AT,47.51743,12.09629,5855,523.0,1715.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Micheldorf in Oberösterreich,AT,47.87764,14.13357,5854,458.0,1502.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Breitenfurt bei Wien,AT,48.13333,16.15,5853,379.0,1243.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Setteville,IT,45.92125,11.93109,5820,269.0,882.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Kirchenviertel,AT,47.13124,15.34764,5791,377.0,1236.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Sterzing - Vipiteno,IT,46.8963235,11.4319398,5785,948.0,3110.2,,,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.51 km)
+Amras,AT,47.25,11.41667,5771,730.0,2395.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Lochau,AT,47.53333,9.75,5747,421.0,1381.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Tacherting,DE,48.07825,12.57008,5704,476.0,1561.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Zogno,IT,45.79378,9.65992,5694,351.0,1151.6,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.15 km)
+Almenno San Salvatore,IT,45.74971,9.59699,5670,293.0,961.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Brannenburg,DE,47.73996,12.09166,5646,520.0,1706.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.10 km)
+Blaichach,DE,47.54208,10.25846,5625,722.0,2368.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Airali,IT,44.8167,7.25157,5619,477.0,1565.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Susa,IT,45.13677,7.05809,5596,484.0,1587.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.56 km)
+Saint-Martin-le-Vinoux,FR,45.20297,5.7163,5589,251.0,823.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.74 km)
+Saint-Jorioz,FR,45.83074,6.15792,5571,476.0,1561.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Tavernerio,IT,45.80068,9.14054,5569,418.0,1371.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Kindberg,AT,47.5,15.45,5197,589.0,1932.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Gandino,IT,45.81088,9.89767,5541,529.0,1735.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Publier,FR,46.38773,6.54356,5525,481.0,1578.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Valle Aurina - Ahrntal,IT,46.99623,11.97988,5517,1061.0,3481.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Deuchendorf,AT,47.46593,15.32172,5507,544.0,1784.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Cumiana,IT,44.97629,7.37761,5498,350.0,1148.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Judendorf,AT,47.4,15.1,5475,673.0,2208.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.46 km)
+Völkendorf,AT,46.60806,13.83153,5474,515.0,1689.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.16 km)
+Fischbachau,DE,47.71952,11.95081,5471,774.0,2539.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Breganze,IT,45.70489,11.56074,5470,117.0,383.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.55 km)
+Aviano-Castello,IT,46.06759,12.58324,5465,161.0,528.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.59 km)
+Waakirchen,DE,47.7725,11.67315,5464,767.0,2516.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Rohrdorf,DE,47.79713,12.1701,5460,473.0,1551.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Saint-Alban-Leysse,FR,45.58333,5.95,5452,298.0,977.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.02 km)
+Mühlau,AT,47.28333,11.4,5435,691.0,2267.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.66 km)
+Varallo Sesia,IT,45.81383,8.25814,5427,454.0,1489.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.54 km)
+Aschau im Chiemgau,DE,47.77689,12.32297,5410,598.0,1961.9,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.73 km)
+Bussoleno,IT,45.1397,7.14432,5396,449.0,1473.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.76 km)
+Vobarno,IT,45.64153,10.49866,5395,256.0,839.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Thyez,FR,46.08249,6.53777,5383,470.0,1542.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Oberammergau,AT,47.59812,11.06692,5344,844.0,2769.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.01 km)
+Hopfgarten im Brixental,DE,47.4504996,12.1558791,5365,597.0,1958.7,opentopo,0.9,osm,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Sterzing,IT,46.89313,11.42961,5356,945.0,3100.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.63 km)
+Ala,IT,45.76072,11.00458,5331,178.0,584.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Schönau am Königssee,DE,47.60055,12.98704,5319,567.0,1860.2,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.60 km)
+Wölfnitz,AT,46.66639,14.25806,5316,456.0,1496.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Riedering,DE,47.83874,12.20778,5315,482.0,1581.4,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Iseo,IT,45.65883,10.05024,5311,193.0,633.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.52 km)
+Lavena Ponte Tresa,IT,45.9671,8.85725,5268,278.0,912.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Piding,DE,47.76667,12.91667,5259,447.0,1466.5,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Lovere,IT,45.81379,10.06995,5255,211.0,692.3,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.71 km)
+Lind,AT,46.62244,13.84715,5252,514.0,1686.4,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.10 km)
+Dietramszell,DE,47.84871,11.5953,5252,686.0,2250.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Pisogne,IT,45.80777,10.11023,5248,184.0,603.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Kirchberg in Tirol,AT,47.44539,12.31602,5245,823.0,2700.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Santorso,IT,45.73383,11.38785,5236,202.0,662.7,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 2.22 km)
+Mattarello,IT,46.00865,11.12984,5214,202.0,662.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Trans-en-Provence,FR,43.50326,6.48641,5209,149.0,488.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+La Mure,FR,44.90145,5.78874,5190,855.0,2805.1,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.61 km)
+Arbizzano-Santa Maria,IT,45.49489,10.93831,5148,89.0,292.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Weitnau,DE,47.64171,10.12732,5143,789.0,2588.6,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Cosio Valtellino,IT,46.13509,9.55164,5135,225.0,738.2,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.70 km)
+Axams,AT,47.23111,11.27892,5130,880.0,2887.1,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Megève,FR,45.85687,6.61775,5129,1104.0,3622.0,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Rottenmann,DE,47.524226,14.3585643,5111,691.0,2267.1,open_elevation,0.85,osm,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 0.65 km)
+Canzo,IT,45.84867,9.27063,5109,397.0,1302.5,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Rottach-Egern,DE,47.68966,11.77065,5106,736.0,2414.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Ponte nelle Alpi-Polpet,IT,46.18833,12.27833,5089,398.0,1305.8,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Villanuova sul Clisi,IT,45.59938,10.45275,5067,216.0,708.7,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.60 km)
+Egling,DE,47.92316,11.50517,5061,609.0,1998.0,opentopo,0.9,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid
+Barberaz,FR,45.56179,5.94306,5059,281.0,921.9,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,95,,yes,OSM hospital within 3.0 km of centroid (nearest 1.75 km)
+Almese,IT,45.11915,7.40111,5009,430.0,1410.8,open_elevation,0.85,geonames,0.0,,,,,,,,,,,,,,80,,no,No OSM hospital within 3.0 km of centroid

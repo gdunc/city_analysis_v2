@@ -21,7 +21,7 @@ from .distance import add_distance_to_perimeter_km
 from .elevation import enrich_places_with_elevation
 from .map_utils import save_map, save_country_map
 from .hospital_check import enrich_records_with_hospital_presence, enrich_records_with_hospital_presence_osm
-from .airport_check import enrich_records_with_nearest_airport
+from .airport_check import enrich_records_with_nearest_airport, enrich_records_with_nearest_airport_offline
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,7 +57,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--map-tiles", type=str, default="OpenStreetMap", help="Folium tiles name or URL")
 
     # Airport nearest + driving distance/time (optional)
-    parser.add_argument("--check-airports", action="store_true", help="Use OpenAI web search to find nearest international airport and OSRM for driving; adds columns to CSV")
+    parser.add_argument("--check-airports", action="store_true", help="Find nearest international airport and OSRM driving; offline dataset by default (no OpenAI)")
+    parser.add_argument("--airports-use-openai", action="store_true", help="Opt-in: use OpenAI web search instead of offline dataset")
+    parser.add_argument("--airports-dataset", type=str, default=os.getenv("AIRPORTS_DATASET", None), help="Path to OurAirports CSV; if omitted, auto-download and cache")
+    parser.add_argument("--airports-topk", type=int, default=int(os.getenv("AIRPORTS_TOPK", "3")), help="Top-K nearest airports to consider for OSRM refinement (offline mode)")
+    parser.add_argument("--airports-max-radius-km", type=float, default=float(os.getenv("AIRPORTS_MAX_RADIUS_KM", "400")), help="Max crow-flies radius to attempt OSRM driving (offline mode)")
     parser.add_argument("--osrm-base-url", type=str, default=os.getenv("OSRM_BASE_URL", "https://router.project-osrm.org"), help="Base URL for OSRM routing service")
     parser.add_argument("--airports-limit", type=int, default=None, help="Limit number of records to process for airport enrichment (useful for testing)")
     parser.add_argument("--airports-resume-missing", action="store_true", help="Only process rows missing airport name or with airport_error; keep existing successes")
@@ -117,18 +121,31 @@ def main() -> None:
         # Optionally enrich CSV with nearest airport and driving info
         if args.check_airports:
             print("Finding nearest international airports and driving metrics...", file=sys.stderr)
-            records = enrich_records_with_nearest_airport(
-                records,
-                model=args.openai_model,
-                request_timeout=args.openai_timeout,
-                osrm_base_url=args.osrm_base_url,
-                max_retries=args.airports_max_retries,
-                initial_backoff_seconds=args.airports_initial_backoff,
-                backoff_multiplier=args.airports_backoff_multiplier,
-                jitter_seconds=args.airports_jitter,
-                limit=args.airports_limit,
-                resume_missing_only=args.airports_resume_missing,
-            )
+            if args.airports_use_openai:
+                print("Using OpenAI mode (explicitly opted in)", file=sys.stderr)
+                records = enrich_records_with_nearest_airport(
+                    records,
+                    model=args.openai_model,
+                    request_timeout=args.openai_timeout,
+                    osrm_base_url=args.osrm_base_url,
+                    max_retries=args.airports_max_retries,
+                    initial_backoff_seconds=args.airports_initial_backoff,
+                    backoff_multiplier=args.airports_backoff_multiplier,
+                    jitter_seconds=args.airports_jitter,
+                    limit=args.airports_limit,
+                    resume_missing_only=args.airports_resume_missing,
+                )
+            else:
+                print("Using offline dataset mode (default; no OpenAI)", file=sys.stderr)
+                records = enrich_records_with_nearest_airport_offline(
+                    records,
+                    dataset_csv=args.airports_dataset,
+                    osrm_base_url=args.osrm_base_url,
+                    topk=args.airports_topk,
+                    max_radius_km=args.airports_max_radius_km,
+                    limit=args.airports_limit,
+                    resume_missing_only=args.airports_resume_missing,
+                )
             csv_path = out_dir / "alps_cities.csv"
             write_csv(csv_path, records)
             print(f"Wrote CSV with airport and driving columns to {csv_path}")
@@ -234,18 +251,31 @@ def main() -> None:
     # Optional: Nearest international airport + driving time/distance
     if args.check_airports:
         print("Finding nearest international airports and driving metrics...", file=sys.stderr)
-        enriched = enrich_records_with_nearest_airport(
-            enriched,
-            model=args.openai_model,
-            request_timeout=args.openai_timeout,
-            osrm_base_url=args.osrm_base_url,
-            max_retries=args.airports_max_retries,
-            initial_backoff_seconds=args.airports_initial_backoff,
-            backoff_multiplier=args.airports_backoff_multiplier,
-            jitter_seconds=args.airports_jitter,
-            limit=args.airports_limit,
-            resume_missing_only=args.airports_resume_missing,
-        )
+        if args.airports_use_openai:
+            print("Using OpenAI mode (explicitly opted in)", file=sys.stderr)
+            enriched = enrich_records_with_nearest_airport(
+                enriched,
+                model=args.openai_model,
+                request_timeout=args.openai_timeout,
+                osrm_base_url=args.osrm_base_url,
+                max_retries=args.airports_max_retries,
+                initial_backoff_seconds=args.airports_initial_backoff,
+                backoff_multiplier=args.airports_backoff_multiplier,
+                jitter_seconds=args.airports_jitter,
+                limit=args.airports_limit,
+                resume_missing_only=args.airports_resume_missing,
+            )
+        else:
+            print("Using offline dataset mode (default; no OpenAI)", file=sys.stderr)
+            enriched = enrich_records_with_nearest_airport_offline(
+                enriched,
+                dataset_csv=args.airports_dataset,
+                osrm_base_url=args.osrm_base_url,
+                topk=args.airports_topk,
+                max_radius_km=args.airports_max_radius_km,
+                limit=args.airports_limit,
+                resume_missing_only=args.airports_resume_missing,
+            )
 
     # Ensure output directory
     out_dir = Path(args.out_dir)
