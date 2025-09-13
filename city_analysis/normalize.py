@@ -5,6 +5,7 @@ from typing import Dict, Iterable, List
 
 from shapely.geometry import Point, Polygon, MultiPolygon
 from .country_filters import infer_country_by_bbox
+from .country_lookup import infer_country_iso_a2
 
 
 def _normalize_name(name: str) -> str:
@@ -42,6 +43,7 @@ def enforce_min_population(places: Iterable[Dict], min_population: int) -> List[
 def dedupe_places(
     places: Iterable[Dict],
     distance_km_threshold: float = 10.0,
+    allowed_countries: Iterable[str] | None = None,
 ) -> List[Dict]:
     """Dedupe by normalized name and proximity; resolve cross-country conflicts.
 
@@ -76,9 +78,17 @@ def dedupe_places(
             cand_source = str(candidate.get("source", "")).lower()
             kept_source = str(kept.get("source", "")).lower()
 
-            # Infer countries if missing or conflicting
-            cand_country_inferred = infer_country_by_bbox(cand_lat, cand_lon) or cand_country
-            kept_country_inferred = infer_country_by_bbox(float(kept["latitude"]), float(kept["longitude"])) or kept_country
+            # Infer countries using boundary lookup with region-allowed constraint; fallback to bbox heuristic
+            cand_country_inferred = (
+                infer_country_iso_a2(cand_lat, cand_lon, allowed=allowed_countries)
+                or infer_country_by_bbox(cand_lat, cand_lon)
+                or cand_country
+            )
+            kept_country_inferred = (
+                infer_country_iso_a2(float(kept["latitude"]), float(kept["longitude"]), allowed=allowed_countries)
+                or infer_country_by_bbox(float(kept["latitude"]), float(kept["longitude"]))
+                or kept_country
+            )
 
             prefer_candidate = False
             # Prefer GeoNames over OSM
@@ -93,19 +103,14 @@ def dedupe_places(
                 # Same source: choose higher population
                 prefer_candidate = int(candidate.get("population") or 0) > int(kept.get("population") or 0)
 
-            # Determine the country to keep, prioritizing bbox-consistent
+            # Determine the country to keep, prioritizing boundary/bbox-consistent over source tag
             resolved_country = ""
             if cand_country_inferred and kept_country_inferred:
                 if cand_country_inferred == kept_country_inferred:
                     resolved_country = cand_country_inferred
                 else:
-                    # Disagreement; prefer GeoNames' country if present, else candidate/kept based on preference
-                    if cand_source == "geonames" and str(candidate.get("country", "")):
-                        resolved_country = str(candidate.get("country", "")).upper()
-                    elif kept_source == "geonames" and str(kept.get("country", "")):
-                        resolved_country = str(kept.get("country", "")).upper()
-                    else:
-                        resolved_country = cand_country_inferred if prefer_candidate else kept_country_inferred
+                    # Disagreement; prefer boundary-inferred for the preferred record
+                    resolved_country = cand_country_inferred if prefer_candidate else kept_country_inferred
             else:
                 resolved_country = cand_country_inferred or kept_country_inferred or (str(candidate.get("country", "")).upper() if prefer_candidate else kept_country)
 
@@ -124,7 +129,7 @@ def dedupe_places(
         if not merged:
             # Ensure candidate has a sensible country if missing
             if not cand_country:
-                inferred = infer_country_by_bbox(cand_lat, cand_lon)
+                inferred = infer_country_iso_a2(cand_lat, cand_lon, allowed=allowed_countries) or infer_country_by_bbox(cand_lat, cand_lon)
                 if inferred:
                     candidate = {**candidate, "country": inferred}
             seen.append(candidate)

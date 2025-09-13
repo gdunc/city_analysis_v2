@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Iterable, Optional, Any
 from pathlib import Path
+from urllib.parse import quote_plus
 
 import folium
 from folium.plugins import MarkerCluster
@@ -85,6 +86,14 @@ def _popup_html(r: Dict) -> str:
         parts.append(f"<br/>Source: {source}")
     if elev_src:
         parts.append(f" <i>({elev_src})</i>")
+    # Add Google search link for the city name
+    try:
+        name_str = str(name).strip()
+        if name_str and name_str.lower() != "unknown":
+            q = quote_plus(name_str)
+            parts.append(f'<br/><a href="https://www.google.com/search?q={q}" target="_blank" rel="noopener noreferrer">Search on Google</a>')
+    except Exception:
+        pass
     # Hidden metadata carrier for client-side filters
     try:
         parts.append(

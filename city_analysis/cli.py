@@ -220,14 +220,14 @@ def main() -> None:
     # Combine
     combined: List[dict] = geonames_records + osm_records
 
-    # Exclude configured countries (legacy Alps behavior), fill missing countries, filter within perimeter
-    combined = filter_excluded_countries(combined)
-    combined = fill_missing_country(combined)
+    # Exclude configured countries (region-aware), fill missing countries using boundary lookup limited to region
+    combined = filter_excluded_countries(combined, excluded_codes=(settings.excluded_countries or []))
+    combined = fill_missing_country(combined, allowed_countries=(args.countries or settings.countries))
     filtered = filter_within_perimeter(combined, perimeter=perimeter)
 
     # Enforce min population on merged results and dedupe
     filtered = enforce_min_population(filtered, min_population=(args.min_population or settings.min_population))
-    deduped = dedupe_places(filtered)
+    deduped = dedupe_places(filtered, allowed_countries=(args.countries or settings.countries))
 
     # Add distance to region perimeter
     enriched = add_distance_to_perimeter_km(deduped, perimeter=perimeter, region_slug=settings.slug)

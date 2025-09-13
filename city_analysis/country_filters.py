@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, List, Set
+from typing import Dict, Iterable, List, Optional, Set
 
 from shapely.geometry import Point, Polygon, box
+from .country_lookup import infer_country_iso_a2
 
 # Countries to exclude from results
 EXCLUDED_COUNTRY_CODES: Set[str] = {"CH", "SI", "LI"}
@@ -29,9 +30,10 @@ COUNTRY_BBOXES = [
 ]
 
 
-def should_exclude_record(record: Dict) -> bool:
+def should_exclude_record(record: Dict, excluded_codes: Optional[Iterable[str]] = None) -> bool:
     country = str(record.get("country", "")).upper()
-    if country in EXCLUDED_COUNTRY_CODES:
+    excluded: Set[str] = set(EXCLUDED_COUNTRY_CODES if excluded_codes is None else [str(c).upper() for c in excluded_codes])
+    if country in excluded:
         return True
     # Fallback: if no country, use rough bbox to filter
     if not country:
@@ -47,11 +49,11 @@ def should_exclude_record(record: Dict) -> bool:
     return False
 
 
-def filter_excluded_countries(records: Iterable[Dict]) -> List[Dict]:
-    return [r for r in records if not should_exclude_record(r)]
+def filter_excluded_countries(records: Iterable[Dict], excluded_codes: Optional[Iterable[str]] = None) -> List[Dict]:
+    return [r for r in records if not should_exclude_record(r, excluded_codes=excluded_codes)]
 
 
-def fill_missing_country(records: Iterable[Dict]) -> List[Dict]:
+def fill_missing_country(records: Iterable[Dict], allowed_countries: Optional[Iterable[str]] = None) -> List[Dict]:
     filled: List[Dict] = []
     for r in records:
         country = str(r.get("country", "")).upper()
@@ -61,18 +63,39 @@ def fill_missing_country(records: Iterable[Dict]) -> List[Dict]:
         try:
             lat = float(r["latitude"])  # type: ignore[index]
             lon = float(r["longitude"])  # type: ignore[index]
-            pt = Point(lon, lat)
-            inferred = ""
-            for code, bbox in COUNTRY_BBOXES:
-                if bbox.contains(pt):
-                    inferred = code
-                    break
+            inferred = infer_country_iso_a2(lat, lon, allowed=allowed_countries)
             if inferred:
                 r = {**r, "country": inferred}
         except Exception:
             pass
         filled.append(r)
     return filled
+
+
+def enforce_country_by_boundary(records: Iterable[Dict], allowed_countries: Optional[Iterable[str]] = None) -> List[Dict]:
+    """Force country to match boundary-inferred ISO A2 for each record.
+
+    If allowed_countries is provided, restrict inference to that set. If inference
+    fails, keep the existing country value.
+    """
+    fixed: List[Dict] = []
+    for r in records:
+        try:
+            lat = float(r["latitude"])  # type: ignore[index]
+            lon = float(r["longitude"])  # type: ignore[index]
+        except Exception:
+            fixed.append(r)
+            continue
+        inferred = ""
+        try:
+            inferred = infer_country_iso_a2(lat, lon, allowed=allowed_countries)
+        except Exception:
+            inferred = ""
+        if inferred:
+            if str(r.get("country", "")).upper() != inferred:
+                r = {**r, "country": inferred}
+        fixed.append(r)
+    return fixed
 
 
 def infer_country_by_bbox(lat: float, lon: float) -> str:
