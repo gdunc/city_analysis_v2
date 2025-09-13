@@ -1,0 +1,216 @@
+2025-09-13 09:54:17,539 - root - INFO - Overpass tiling: bbox=(41.823640401993686, -2.030439754871649, 43.38624212792713, 3.284694913285449) tile_size=0.5 approx_tiles=44
+2025-09-13 09:54:17,539 - root - INFO - Overpass tile 1/44: (41.823640401993686, -2.030439754871649, 42.323640401993686, -1.530439754871649)
+2025-09-13 09:54:17,539 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:17,992 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=5
+2025-09-13 09:54:17,992 - root - INFO - Overpass tile 1: received 5 elements
+2025-09-13 09:54:18,497 - root - INFO - Overpass tile 2/44: (41.823640401993686, -1.530439754871649, 42.323640401993686, -1.030439754871649)
+2025-09-13 09:54:18,498 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:18,811 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:18,811 - root - INFO - Overpass tile 2: received 1 elements
+2025-09-13 09:54:19,316 - root - INFO - Overpass tile 3/44: (41.823640401993686, -1.030439754871649, 42.323640401993686, -0.5304397548716491)
+2025-09-13 09:54:19,317 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:19,750 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:19,750 - root - INFO - Overpass tile 3: received 1 elements
+2025-09-13 09:54:20,255 - root - INFO - Overpass tile 4/44: (41.823640401993686, -0.5304397548716491, 42.323640401993686, -0.030439754871649072)
+2025-09-13 09:54:20,255 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:20,961 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:20,961 - root - INFO - Overpass tile 4: received 1 elements
+2025-09-13 09:54:21,466 - root - INFO - Overpass tile 5/44: (41.823640401993686, -0.030439754871649072, 42.323640401993686, 0.46956024512835093)
+2025-09-13 09:54:21,466 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:21,884 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=5
+2025-09-13 09:54:21,884 - root - INFO - Overpass tile 5: received 5 elements
+2025-09-13 09:54:22,386 - root - INFO - Overpass tile 6/44: (41.823640401993686, 0.46956024512835093, 42.323640401993686, 0.9695602451283509)
+2025-09-13 09:54:22,386 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:22,905 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:22,905 - root - INFO - Overpass tile 6: received 1 elements
+2025-09-13 09:54:23,408 - root - INFO - Overpass tile 7/44: (41.823640401993686, 0.9695602451283509, 42.323640401993686, 1.469560245128351)
+2025-09-13 09:54:23,409 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:24,084 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:54:24,084 - root - INFO - Overpass tile 7: received 0 elements
+2025-09-13 09:54:24,589 - root - INFO - Overpass tile 8/44: (41.823640401993686, 1.469560245128351, 42.323640401993686, 1.969560245128351)
+2025-09-13 09:54:24,590 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:25,522 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-13 09:54:25,522 - root - INFO - Overpass tile 8: received 2 elements
+2025-09-13 09:54:26,028 - root - INFO - Overpass tile 9/44: (41.823640401993686, 1.969560245128351, 42.323640401993686, 2.469560245128351)
+2025-09-13 09:54:26,028 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:26,798 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=5
+2025-09-13 09:54:26,798 - root - INFO - Overpass tile 9: received 5 elements
+2025-09-13 09:54:27,303 - root - INFO - Overpass tile 10/44: (41.823640401993686, 2.469560245128351, 42.323640401993686, 2.969560245128351)
+2025-09-13 09:54:27,304 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:28,314 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=7
+2025-09-13 09:54:28,314 - root - INFO - Overpass tile 10: received 7 elements
+2025-09-13 09:54:28,817 - root - INFO - Overpass tile 11/44: (41.823640401993686, 2.969560245128351, 42.323640401993686, 3.284694913285449)
+2025-09-13 09:54:28,817 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:29,508 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=6
+2025-09-13 09:54:29,508 - root - INFO - Overpass tile 11: received 6 elements
+2025-09-13 09:54:30,013 - root - INFO - Overpass tile 12/44: (42.323640401993686, -2.030439754871649, 42.823640401993686, -1.530439754871649)
+2025-09-13 09:54:30,014 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:30,549 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=9
+2025-09-13 09:54:30,549 - root - INFO - Overpass tile 12: received 9 elements
+2025-09-13 09:54:31,050 - root - INFO - Overpass tile 13/44: (42.323640401993686, -1.530439754871649, 42.823640401993686, -1.030439754871649)
+2025-09-13 09:54:31,051 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:31,440 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-13 09:54:31,441 - root - INFO - Overpass tile 13: received 2 elements
+2025-09-13 09:54:31,942 - root - INFO - Overpass tile 14/44: (42.323640401993686, -1.030439754871649, 42.823640401993686, -0.5304397548716491)
+2025-09-13 09:54:31,942 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:32,370 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:32,370 - root - INFO - Overpass tile 14: received 1 elements
+2025-09-13 09:54:32,875 - root - INFO - Overpass tile 15/44: (42.323640401993686, -0.5304397548716491, 42.823640401993686, -0.030439754871649072)
+2025-09-13 09:54:32,876 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:33,329 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:33,330 - root - INFO - Overpass tile 15: received 1 elements
+2025-09-13 09:54:33,835 - root - INFO - Overpass tile 16/44: (42.323640401993686, -0.030439754871649072, 42.823640401993686, 0.46956024512835093)
+2025-09-13 09:54:33,835 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:34,282 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:34,283 - root - INFO - Overpass tile 16: received 1 elements
+2025-09-13 09:54:34,786 - root - INFO - Overpass tile 17/44: (42.323640401993686, 0.46956024512835093, 42.823640401993686, 0.9695602451283509)
+2025-09-13 09:54:34,786 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:35,252 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-13 09:54:35,253 - root - INFO - Overpass tile 17: received 2 elements
+2025-09-13 09:54:35,758 - root - INFO - Overpass tile 18/44: (42.323640401993686, 0.9695602451283509, 42.823640401993686, 1.469560245128351)
+2025-09-13 09:54:35,758 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:36,285 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-13 09:54:36,285 - root - INFO - Overpass tile 18: received 2 elements
+2025-09-13 09:54:36,787 - root - INFO - Overpass tile 19/44: (42.323640401993686, 1.469560245128351, 42.823640401993686, 1.969560245128351)
+2025-09-13 09:54:36,787 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:37,442 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=10
+2025-09-13 09:54:37,442 - root - INFO - Overpass tile 19: received 10 elements
+2025-09-13 09:54:37,945 - root - INFO - Overpass tile 20/44: (42.323640401993686, 1.969560245128351, 42.823640401993686, 2.469560245128351)
+2025-09-13 09:54:37,945 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:38,625 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:54:38,626 - root - INFO - Overpass tile 20: received 0 elements
+2025-09-13 09:54:39,131 - root - INFO - Overpass tile 21/44: (42.323640401993686, 2.469560245128351, 42.823640401993686, 2.969560245128351)
+2025-09-13 09:54:39,131 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:40,213 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=4
+2025-09-13 09:54:40,214 - root - INFO - Overpass tile 21: received 4 elements
+2025-09-13 09:54:40,714 - root - INFO - Overpass tile 22/44: (42.323640401993686, 2.969560245128351, 42.823640401993686, 3.284694913285449)
+2025-09-13 09:54:40,714 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:41,310 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=4
+2025-09-13 09:54:41,310 - root - INFO - Overpass tile 22: received 4 elements
+2025-09-13 09:54:41,813 - root - INFO - Overpass tile 23/44: (42.823640401993686, -2.030439754871649, 43.323640401993686, -1.530439754871649)
+2025-09-13 09:54:41,814 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:42,775 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=10
+2025-09-13 09:54:42,775 - root - INFO - Overpass tile 23: received 10 elements
+2025-09-13 09:54:43,276 - root - INFO - Overpass tile 24/44: (42.823640401993686, -1.530439754871649, 43.323640401993686, -1.030439754871649)
+2025-09-13 09:54:43,276 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:46,012 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-13 09:54:46,012 - root - INFO - Overpass tile 24: received 2 elements
+2025-09-13 09:54:46,516 - root - INFO - Overpass tile 25/44: (42.823640401993686, -1.030439754871649, 43.323640401993686, -0.5304397548716491)
+2025-09-13 09:54:46,517 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:47,263 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:47,263 - root - INFO - Overpass tile 25: received 1 elements
+2025-09-13 09:54:47,768 - root - INFO - Overpass tile 26/44: (42.823640401993686, -0.5304397548716491, 43.323640401993686, -0.030439754871649072)
+2025-09-13 09:54:47,768 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:48,993 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=4
+2025-09-13 09:54:48,993 - root - INFO - Overpass tile 26: received 4 elements
+2025-09-13 09:54:49,498 - root - INFO - Overpass tile 27/44: (42.823640401993686, -0.030439754871649072, 43.323640401993686, 0.46956024512835093)
+2025-09-13 09:54:49,498 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:50,658 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:50,658 - root - INFO - Overpass tile 27: received 1 elements
+2025-09-13 09:54:51,164 - root - INFO - Overpass tile 28/44: (42.823640401993686, 0.46956024512835093, 43.323640401993686, 0.9695602451283509)
+2025-09-13 09:54:51,164 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:53,386 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:53,386 - root - INFO - Overpass tile 28: received 1 elements
+2025-09-13 09:54:53,891 - root - INFO - Overpass tile 29/44: (42.823640401993686, 0.9695602451283509, 43.323640401993686, 1.469560245128351)
+2025-09-13 09:54:53,892 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:55,877 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:55,878 - root - INFO - Overpass tile 29: received 1 elements
+2025-09-13 09:54:56,383 - root - INFO - Overpass tile 30/44: (42.823640401993686, 1.469560245128351, 43.323640401993686, 1.969560245128351)
+2025-09-13 09:54:56,384 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:57,105 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=3
+2025-09-13 09:54:57,105 - root - INFO - Overpass tile 30: received 3 elements
+2025-09-13 09:54:57,611 - root - INFO - Overpass tile 31/44: (42.823640401993686, 1.969560245128351, 43.323640401993686, 2.469560245128351)
+2025-09-13 09:54:57,611 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:58,413 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-13 09:54:58,413 - root - INFO - Overpass tile 31: received 2 elements
+2025-09-13 09:54:58,916 - root - INFO - Overpass tile 32/44: (42.823640401993686, 2.469560245128351, 43.323640401993686, 2.969560245128351)
+2025-09-13 09:54:58,916 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:54:59,707 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:54:59,707 - root - INFO - Overpass tile 32: received 1 elements
+2025-09-13 09:55:00,213 - root - INFO - Overpass tile 33/44: (42.823640401993686, 2.969560245128351, 43.323640401993686, 3.284694913285449)
+2025-09-13 09:55:00,213 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:01,501 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:55:01,502 - root - INFO - Overpass tile 33: received 1 elements
+2025-09-13 09:55:02,007 - root - INFO - Overpass tile 34/44: (43.323640401993686, -2.030439754871649, 43.38624212792713, -1.530439754871649)
+2025-09-13 09:55:02,007 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:02,517 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=4
+2025-09-13 09:55:02,517 - root - INFO - Overpass tile 34: received 4 elements
+2025-09-13 09:55:03,022 - root - INFO - Overpass tile 35/44: (43.323640401993686, -1.530439754871649, 43.38624212792713, -1.030439754871649)
+2025-09-13 09:55:03,023 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:03,356 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:03,356 - root - INFO - Overpass tile 35: received 0 elements
+2025-09-13 09:55:03,862 - root - INFO - Overpass tile 36/44: (43.323640401993686, -1.030439754871649, 43.38624212792713, -0.5304397548716491)
+2025-09-13 09:55:03,862 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:04,159 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:04,159 - root - INFO - Overpass tile 36: received 0 elements
+2025-09-13 09:55:04,662 - root - INFO - Overpass tile 37/44: (43.323640401993686, -0.5304397548716491, 43.38624212792713, -0.030439754871649072)
+2025-09-13 09:55:04,663 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:05,096 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:05,096 - root - INFO - Overpass tile 37: received 0 elements
+2025-09-13 09:55:05,599 - root - INFO - Overpass tile 38/44: (43.323640401993686, -0.030439754871649072, 43.38624212792713, 0.46956024512835093)
+2025-09-13 09:55:05,599 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:06,022 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:06,023 - root - INFO - Overpass tile 38: received 0 elements
+2025-09-13 09:55:06,527 - root - INFO - Overpass tile 39/44: (43.323640401993686, 0.46956024512835093, 43.38624212792713, 0.9695602451283509)
+2025-09-13 09:55:06,527 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:06,904 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:06,904 - root - INFO - Overpass tile 39: received 0 elements
+2025-09-13 09:55:07,409 - root - INFO - Overpass tile 40/44: (43.323640401993686, 0.9695602451283509, 43.38624212792713, 1.469560245128351)
+2025-09-13 09:55:07,410 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:07,860 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:07,860 - root - INFO - Overpass tile 40: received 0 elements
+2025-09-13 09:55:08,365 - root - INFO - Overpass tile 41/44: (43.323640401993686, 1.469560245128351, 43.38624212792713, 1.969560245128351)
+2025-09-13 09:55:08,366 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:08,779 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:55:08,779 - root - INFO - Overpass tile 41: received 1 elements
+2025-09-13 09:55:09,283 - root - INFO - Overpass tile 42/44: (43.323640401993686, 1.969560245128351, 43.38624212792713, 2.469560245128351)
+2025-09-13 09:55:09,284 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:09,626 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:09,627 - root - INFO - Overpass tile 42: received 0 elements
+2025-09-13 09:55:10,131 - root - INFO - Overpass tile 43/44: (43.323640401993686, 2.469560245128351, 43.38624212792713, 2.969560245128351)
+2025-09-13 09:55:10,131 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:11,212 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-13 09:55:11,212 - root - INFO - Overpass tile 43: received 0 elements
+2025-09-13 09:55:11,716 - root - INFO - Overpass tile 44/44: (43.323640401993686, 2.969560245128351, 43.38624212792713, 3.284694913285449)
+2025-09-13 09:55:11,716 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-13 09:55:12,188 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-13 09:55:12,189 - root - INFO - Overpass tile 44: received 1 elements
+2025-09-13 09:55:12,694 - root - INFO - Overpass complete: total unique places 103
+2025-09-13 09:55:12,809 - city_analysis.distance - INFO - Calculating distances using perimeter with bounds: (-2.030439754871649, 41.823640401993686, 3.284694913285449, 43.38624212792713)
+2025-09-13 09:55:12,810 - city_analysis.distance - INFO - Distance calculation complete: 26 successful, 0 fallbacks, 0 errors
+Enriching places with elevation data...
+2025-09-13 09:55:12,810 - city_analysis.elevation - INFO - Fetching elevation data for 26 places...
+2025-09-13 09:55:23,095 - city_analysis.elevation - INFO - Elevation enrichment complete. Stats: {'total_requests': 26, 'cache_hits': 0, 'cache_size': 26, 'opentopo': 13, 'google': 0, 'open_elevation': 13}
+Checking hospital presence via OSM (default)
+Checking hospitals (OSM):   0%|          | 0/26 [00:00<?, ?city/s]Checking hospitals (OSM):   8%|▊         | 2/26 [00:01<00:13,  1.81city/s]Checking hospitals (OSM):  12%|█▏        | 3/26 [00:02<00:16,  1.36city/s]Checking hospitals (OSM):  15%|█▌        | 4/26 [00:03<00:18,  1.17city/s]Checking hospitals (OSM):  19%|█▉        | 5/26 [00:04<00:19,  1.10city/s]Checking hospitals (OSM):  23%|██▎       | 6/26 [00:05<00:19,  1.05city/s]Checking hospitals (OSM):  27%|██▋       | 7/26 [00:06<00:17,  1.06city/s]Checking hospitals (OSM):  31%|███       | 8/26 [00:07<00:17,  1.05city/s]Checking hospitals (OSM):  35%|███▍      | 9/26 [00:08<00:16,  1.04city/s]Checking hospitals (OSM):  38%|███▊      | 10/26 [00:09<00:16,  1.01s/city]Checking hospitals (OSM):  42%|████▏     | 11/26 [00:10<00:14,  1.02city/s]Checking hospitals (OSM):  46%|████▌     | 12/26 [00:11<00:13,  1.02city/s]Checking hospitals (OSM):  50%|█████     | 13/26 [00:12<00:12,  1.01city/s]Checking hospitals (OSM):  54%|█████▍    | 14/26 [00:13<00:11,  1.01city/s]Checking hospitals (OSM):  58%|█████▊    | 15/26 [00:14<00:10,  1.00city/s]Checking hospitals (OSM):  62%|██████▏   | 16/26 [00:15<00:09,  1.01city/s]Checking hospitals (OSM):  65%|██████▌   | 17/26 [00:16<00:08,  1.00city/s]Checking hospitals (OSM):  69%|██████▉   | 18/26 [00:17<00:07,  1.00city/s]Checking hospitals (OSM):  73%|███████▎  | 19/26 [00:18<00:06,  1.00city/s]Checking hospitals (OSM):  77%|███████▋  | 20/26 [00:19<00:06,  1.00s/city]Checking hospitals (OSM):  81%|████████  | 21/26 [00:20<00:05,  1.01s/city]Checking hospitals (OSM):  85%|████████▍ | 22/26 [00:21<00:04,  1.02s/city]Checking hospitals (OSM):  88%|████████▊ | 23/26 [00:22<00:03,  1.02s/city]Checking hospitals (OSM):  92%|█████████▏| 24/26 [00:23<00:01,  1.02city/s]Checking hospitals (OSM):  96%|█████████▌| 25/26 [00:24<00:01,  1.00s/city]Checking hospitals (OSM): 100%|██████████| 26/26 [00:25<00:00,  1.01city/s]Checking hospitals (OSM): 100%|██████████| 26/26 [00:25<00:00,  1.04city/s]
+Finding nearest international airports and driving metrics...
+Using offline dataset mode (default; no OpenAI)
+Nearest airports (offline):   0%|          | 0/26 [00:00<?, ?city/s]Nearest airports (offline):   4%|▍         | 1/26 [00:02<01:13,  2.96s/city]Nearest airports (offline):   8%|▊         | 2/26 [00:05<01:11,  2.97s/city]Nearest airports (offline):  12%|█▏        | 3/26 [00:08<01:09,  3.00s/city]Nearest airports (offline):  15%|█▌        | 4/26 [00:11<01:05,  3.00s/city]Nearest airports (offline):  19%|█▉        | 5/26 [00:14<01:02,  2.99s/city]Nearest airports (offline):  23%|██▎       | 6/26 [00:18<01:00,  3.01s/city]Nearest airports (offline):  27%|██▋       | 7/26 [00:20<00:56,  2.99s/city]Nearest airports (offline):  31%|███       | 8/26 [00:23<00:53,  2.99s/city]Nearest airports (offline):  35%|███▍      | 9/26 [00:27<00:51,  3.02s/city]Nearest airports (offline):  38%|███▊      | 10/26 [00:29<00:47,  2.99s/city]Nearest airports (offline):  42%|████▏     | 11/26 [00:32<00:44,  3.00s/city]Nearest airports (offline):  46%|████▌     | 12/26 [00:36<00:42,  3.02s/city]Nearest airports (offline):  50%|█████     | 13/26 [00:38<00:38,  2.98s/city]Nearest airports (offline):  54%|█████▍    | 14/26 [00:41<00:35,  2.99s/city]Nearest airports (offline):  58%|█████▊    | 15/26 [00:44<00:32,  2.99s/city]Nearest airports (offline):  62%|██████▏   | 16/26 [00:48<00:30,  3.03s/city]Nearest airports (offline):  65%|██████▌   | 17/26 [00:50<00:27,  3.00s/city]Nearest airports (offline):  69%|██████▉   | 18/26 [00:53<00:23,  2.99s/city]Nearest airports (offline):  73%|███████▎  | 19/26 [00:57<00:21,  3.02s/city]Nearest airports (offline):  77%|███████▋  | 20/26 [00:59<00:17,  2.98s/city]Nearest airports (offline):  81%|████████  | 21/26 [01:02<00:14,  3.00s/city]Nearest airports (offline):  85%|████████▍ | 22/26 [01:06<00:12,  3.02s/city]Nearest airports (offline):  88%|████████▊ | 23/26 [01:08<00:08,  3.00s/city]Nearest airports (offline):  92%|█████████▏| 24/26 [01:11<00:05,  2.99s/city]Nearest airports (offline):  96%|█████████▌| 25/26 [01:14<00:02,  2.99s/city]Nearest airports (offline): 100%|██████████| 26/26 [01:17<00:00,  2.99s/city]Nearest airports (offline): 100%|██████████| 26/26 [01:17<00:00,  3.00s/city]
+Wrote interactive map to /Users/grantduncan/Documents/coding/city_analysis_v2/outputs/pyrenees/pyrenees_cities_map.html
+Wrote country-colored map to /Users/grantduncan/Documents/coding/city_analysis_v2/outputs/pyrenees/pyrenees_cities_country_map.html
+Summary:
+  total_places: 26
+  with_population: 26
+  missing_population: 0
+
+Top 20 by population:
+  Olot (FR) — pop 33,524 @ (42.1810,2.4901) [geonames], elev 437.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Andorra la Vella (FR) — pop 20,430 @ (42.5078,1.5211) [geonames], elev 1040.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Oria (ES) — pop 17,842 @ (43.2554,-2.0187) [geonames], elev 35.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Berga (FR) — pop 17,160 @ (42.1043,1.8463) [geonames], elev 742.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Les Escaldes (AD) — pop 15,853 @ (42.5073,1.5341) [geonames], elev 1028.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Lourdes (FR) — pop 15,786 @ (43.0946,-0.0461) [geonames], elev 411.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Jaca (FR) — pop 13,396 @ (42.5690,-0.5499) [geonames], elev 823.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Andoain (FR) — pop 13,111 @ (43.2183,-2.0199) [osm], elev 69.0m, 0.0 km to Pyrenees
+  La Seu d'Urgell (FR) — pop 12,041 @ (42.3588,1.4614) [geonames], elev 700.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Encamp (AD) — pop 11,223 @ (42.5347,1.5801) [geonames], elev 1255.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Ripoll (FR) — pop 11,057 @ (42.2006,2.1903) [geonames], elev 689.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Ansoáin / Antsoain (FR) — pop 10,573 @ (42.8338,-1.6397) [osm], elev 427.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Sabiñánigo (FR) — pop 10,378 @ (42.5192,-0.3661) [geonames], elev 816.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Foix (FR) — pop 9,860 @ (42.9654,1.6071) [geonames], elev 391.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Bagnères-de-Bigorre (FR) — pop 8,967 @ (43.0650,0.1488) [geonames], elev 547.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Puigcerdà (FR) — pop 8,845 @ (42.4316,1.9282) [geonames], elev 1213.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Sant Cristòfol de les Fonts (ES) — pop 8,791 @ (42.1696,2.4994) [geonames], elev 463.0m [opentopo:0.9], 0.0 km to Pyrenees
+  Ceret (FR) — pop 8,171 @ (42.4853,2.7480) [geonames], elev 183.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Sant Julià de Lòria (FR) — pop 8,022 @ (42.4637,1.4913) [geonames], elev 908.0m [open_elevation:0.8], 0.0 km to Pyrenees
+  Lavelanet (FR) — pop 7,382 @ (42.9327,1.8484) [geonames], elev 531.0m [open_elevation:0.8], 0.0 km to Pyrenees

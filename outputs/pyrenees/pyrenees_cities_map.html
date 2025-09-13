@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_e358180af0ac4a1aed5bc7b13c52c7f0 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    <script>
+    (function(){
+      var MAP_VAR_NAME = 'map_e358180af0ac4a1aed5bc7b13c52c7f0';
+      function getMap(){ return window[MAP_VAR_NAME]; }
+
+      function collectMarkers(layer, out){
+        if (!layer) return;
+        if (layer instanceof L.CircleMarker) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectMarkers(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectMarkers(child, out); });
+        }
+      }
+
+      function collectClusters(layer, out){
+        if (!layer) return;
+        if (typeof L.MarkerClusterGroup !== 'undefined' && (layer instanceof L.MarkerClusterGroup)) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectClusters(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectClusters(child, out); });
+        }
+      }
+
+      function readPopulation(marker){
+        var p = 0;
+        if (marker && marker.options && marker.options.population != null) {
+          var n = Number(marker.options.population);
+          if (!isNaN(n)) return n;
+        }
+        try {
+          var pop = 0;
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var htmlStr = '';
+          if (typeof content === 'string') {
+            htmlStr = content;
+          } else if (content && typeof content.innerHTML === 'string') {
+            htmlStr = content.innerHTML;
+          } else if (content && typeof content.textContent === 'string') {
+            htmlStr = content.textContent;
+          }
+          if (htmlStr) {
+            var m = htmlStr.match(/Population:\s*([0-9,.]+)/i);
+            if (m && m[1]) {
+              pop = Number(m[1].replace(/[\,\s]/g, '')) || 0;
+            }
+          }
+          return pop;
+        } catch (e) { return 0; }
+      }
+
+      function readMeta(marker){
+        try {
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var root;
+          if (typeof content === 'string') {
+            var div = document.createElement('div');
+            div.innerHTML = content;
+            root = div;
+          } else if (content && content instanceof HTMLElement) {
+            root = content;
+          } else if (content && content.innerHTML) {
+            var d2 = document.createElement('div');
+            d2.innerHTML = content.innerHTML;
+            root = d2;
+          }
+          if (!root) return { dta:null, dth:null, hic:'', hcn:'' };
+          var meta = root.querySelector('.city-meta');
+          if (!meta) return { dta:null, dth:null, hic:'', hcn:'' };
+          var dta = meta.getAttribute('data-dta');
+          var dth = meta.getAttribute('data-dth');
+          var hic = (meta.getAttribute('data-hic') || '').toLowerCase();
+          var hcn = (meta.getAttribute('data-hcn') || '').toLowerCase();
+          var dtaNum = (dta !== null && dta !== '') ? Number(dta) : null;
+          var dthNum = (dth !== null && dth !== '') ? Number(dth) : null;
+          if (isNaN(dtaNum)) dtaNum = null;
+          if (isNaN(dthNum)) dthNum = null;
+          return { dta: dtaNum, dth: dthNum, hic: hic, hcn: hcn };
+        } catch (e) {
+          return { dta:null, dth:null, hic:'', hcn:'' };
+        }
+      }
+
+      var state = window.__popFilterState || { indexBuilt:false, markerToOwners:{}, markers:[], clusters:[] };
+      function buildIndex(){
+        var map = getMap();
+        state.markers = [];
+        state.clusters = [];
+        map.eachLayer(function(l){ collectMarkers(l, state.markers); });
+        map.eachLayer(function(l){ collectClusters(l, state.clusters); });
+        state.markerToOwners = {};
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var owners = [];
+          for (var j=0;j<state.clusters.length;j++){
+            var c = state.clusters[j];
+            if (c.hasLayer && c.hasLayer(m)) owners.push(c);
+          }
+          state.markerToOwners[m._leaflet_id] = owners;
+        }
+        state.indexBuilt = true;
+        window.__popFilterState = state;
+      }
+
+      function showMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (!c.hasLayer(m)) c.addLayer(m);
+          }
+        } else {
+          if (!map.hasLayer(m)) map.addLayer(m);
+        }
+        if (m._icon) m._icon.style.display = '';
+        if (m._path) m._path.style.display = '';
+      }
+
+      function hideMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (c.hasLayer(m)) c.removeLayer(m);
+          }
+        } else {
+          if (map.hasLayer(m)) map.removeLayer(m);
+        }
+        if (m._icon) m._icon.style.display = 'none';
+        if (m._path) m._path.style.display = 'none';
+      }
+
+      function applyFilter(minPop, maxAirportMins, maxHospitalMins, hospitalInCity, hospitalInCityNearby){
+        if (!state.indexBuilt) buildIndex();
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var p = readPopulation(m);
+          var show = (p >= minPop);
+          var meta = readMeta(m);
+          if (show && maxAirportMins != null){
+            if (meta.dta == null) { show = false; } else { show = show && (meta.dta <= maxAirportMins); }
+          }
+          if (show && maxHospitalMins != null){
+            if (meta.dth == null) { show = false; } else { show = show && (meta.dth <= maxHospitalMins); }
+          }
+          if (show && hospitalInCity && hospitalInCity !== 'any'){
+            show = show && (meta.hic === hospitalInCity);
+          }
+          if (show && hospitalInCityNearby && hospitalInCityNearby !== 'any'){
+            show = show && (meta.hcn === hospitalInCityNearby);
+          }
+          if (show) showMarker(m); else hideMarker(m);
+        }
+      }
+
+      function ensureUI(){
+        // If control already present, skip
+        if (document.getElementById('pop-filter')) return;
+        var map = getMap();
+        var ctrl = L.control({position: 'topleft'});
+        ctrl.onAdd = function(map){
+          var container = L.DomUtil.create('div');
+          container.innerHTML = `
+    <div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 260px;">
+  <div style="font-size:12px; margin-bottom:6px;"><b>Filters</b></div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Min population</label><br/>
+    <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to airport (min)</label><br/>
+    <input id="max-airport-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to hospital (min)</label><br/>
+    <input id="max-hospital-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Hospital in city?</label><br/>
+    <select id="hospital-in-city" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div style="font-size:12px; margin-bottom:8px;">
+    <label>Hospital in city or nearby?</label><br/>
+    <select id="hospital-in-city-or-nearby" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div>
+    <button id="apply-pop-filter" style="margin-right:6px;">Apply</button>
+    <button id="reset-pop-filter">Reset</button>
+  </div>
+</div>
+          `;
+          L.DomEvent.disableClickPropagation(container);
+          return container;
+        };
+        ctrl.addTo(map);
+      }
+
+      function hookUI(){
+        ensureUI();
+        var btn = document.getElementById('apply-pop-filter');
+        var reset = document.getElementById('reset-pop-filter');
+        var input = document.getElementById('pop-threshold');
+        var maxA = document.getElementById('max-airport-mins');
+        var maxH = document.getElementById('max-hospital-mins');
+        var hic = document.getElementById('hospital-in-city');
+        var hcn = document.getElementById('hospital-in-city-or-nearby');
+        if (!btn || !input) return;
+        btn.addEventListener('click', function(){
+          var v = Number(input.value || 0) || 0;
+          var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+          var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+          var ic = (hic && hic.value) ? hic.value : 'any';
+          var cn = (hcn && hcn.value) ? hcn.value : 'any';
+          applyFilter(v, a, h, ic, cn);
+        });
+        input.addEventListener('keypress', function(e){
+          if (e.key === 'Enter') {
+            var v = Number(input.value || 0) || 0;
+            var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+            var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+            var ic = (hic && hic.value) ? hic.value : 'any';
+            var cn = (hcn && hcn.value) ? hcn.value : 'any';
+            applyFilter(v, a, h, ic, cn);
+          }
+        });
+        if (reset){
+          reset.addEventListener('click', function(){
+            if (input) input.value = 0;
+            if (maxA) maxA.value = '';
+            if (maxH) maxH.value = '';
+            if (hic) hic.value = 'any';
+            if (hcn) hcn.value = 'any';
+            applyFilter(0, null, null, 'any', 'any');
+          });
+        }
+      }
+
+      function whenMapReady(fn){
+        if (getMap()) { fn(); return; }
+        var tries = 0; var maxTries = 200; // ~10s
+        var iv = setInterval(function(){
+          if (getMap()){ clearInterval(iv); fn(); }
+          else if (++tries >= maxTries){ clearInterval(iv); }
+        }, 50);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function(){ whenMapReady(hookUI); });
+      } else {
+        whenMapReady(hookUI);
+      }
+    })();
+    </script>
+    
+            <div class="folium-map" id="map_e358180af0ac4a1aed5bc7b13c52c7f0" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_e358180af0ac4a1aed5bc7b13c52c7f0 = L.map(
+                "map_e358180af0ac4a1aed5bc7b13c52c7f0",
+                {
+                    center: [42.653783119230766, 0.7689663923076923],
+                    crs: L.CRS.EPSG3857,
+                    
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+
+
+                }
+            );
+            L.control.scale().addTo(map_e358180af0ac4a1aed5bc7b13c52c7f0);
+
+            
+
+        
+    
+            var tile_layer_841d9f696a8027259c1b8f402da33cf7 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_841d9f696a8027259c1b8f402da33cf7.addTo(map_e358180af0ac4a1aed5bc7b13c52c7f0);
+        
+    
+            var marker_cluster_0e4b1c0055064617bba95b2c1a1ded54 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_a173030f0b3cf5164ded7c38dd75a204 = L.circleMarker(
+                [42.18096, 2.49012],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_3014a7e37d8f3414457afdf1ab5f9459 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ce3fe4974e092b72b832a519103ff3d2 = $(`<div id="html_ce3fe4974e092b72b832a519103ff3d2" style="width: 100.0%; height: 100.0%;"><b>Olot</b>(FR)<br/>Population: 33,524<br/>Elevation: 437 m / 1,434 ft<br/>Nearest airport: Girona-Costa Brava Airport<br/>Drive to nearest airport: 60 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Hospital d'Olot i comarcal de la Garrotxa<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="60.0" data-dth="3.8" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_3014a7e37d8f3414457afdf1ab5f9459.setContent(html_ce3fe4974e092b72b832a519103ff3d2);
+            
+        
+
+        circle_marker_a173030f0b3cf5164ded7c38dd75a204.bindPopup(popup_3014a7e37d8f3414457afdf1ab5f9459)
+        ;
+
+        
+    
+    
+            var circle_marker_264fb48a95b216ca11edeeb57fb86ea4 = L.circleMarker(
+                [42.50779, 1.52109],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_e9816c1f5fda5a88f081e51f2790947d = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_3b74acd0a3b26305f53d7545f1acfa2a = $(`<div id="html_3b74acd0a3b26305f53d7545f1acfa2a" style="width: 100.0%; height: 100.0%;"><b>Andorra la Vella</b>(FR)<br/>Population: 20,430<br/>Elevation: 1040 m / 3,412 ft<br/>Nearest airport: Lleida-Alguaire Airport<br/>Drive to nearest airport: 152 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Hospital de Nostra Senyora de Meritxell<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="152.1" data-dth="4.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_e9816c1f5fda5a88f081e51f2790947d.setContent(html_3b74acd0a3b26305f53d7545f1acfa2a);
+            
+        
+
+        circle_marker_264fb48a95b216ca11edeeb57fb86ea4.bindPopup(popup_e9816c1f5fda5a88f081e51f2790947d)
+        ;
+
+        
+    
+    
+            var circle_marker_eb26600a4e565cd668084c89046ff241 = L.circleMarker(
+                [43.25541, -2.01873],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_847e82b63759dda89d64904c01e3cd24 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ee7002ac6228f46eff26c9640824ca4b = $(`<div id="html_ee7002ac6228f46eff26c9640824ca4b" style="width: 100.0%; height: 100.0%;"><b>Oria</b>(ES)<br/>Population: 17,842<br/>Elevation: 35 m / 115 ft<br/>Nearest airport: San Sebastián Airport<br/>Drive to nearest airport: 23 min<br/>Drive to nearest hospital: 11 min<br/>Nearest hospital: Policlinica Gipuzkoa<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="22.7" data-dth="11.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_847e82b63759dda89d64904c01e3cd24.setContent(html_ee7002ac6228f46eff26c9640824ca4b);
+            
+        
+
+        circle_marker_eb26600a4e565cd668084c89046ff241.bindPopup(popup_847e82b63759dda89d64904c01e3cd24)
+        ;
+
+        
+    
+    
+            var circle_marker_0bd4c21f864eaac80cb01980fabcfdc7 = L.circleMarker(
+                [42.10429, 1.84628],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_9286d8d63617ddc57e959d7aff2de0fd = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_27e9d02a3355caee0c370a44d4bf96e1 = $(`<div id="html_27e9d02a3355caee0c370a44d4bf96e1" style="width: 100.0%; height: 100.0%;"><b>Berga</b>(FR)<br/>Population: 17,160<br/>Elevation: 742 m / 2,434 ft<br/>Nearest airport: Josep Tarradellas Barcelona-El Prat Airport<br/>Drive to nearest airport: 84 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Hospital Sant Bernabé<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="83.7" data-dth="3.2" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_9286d8d63617ddc57e959d7aff2de0fd.setContent(html_27e9d02a3355caee0c370a44d4bf96e1);
+            
+        
+
+        circle_marker_0bd4c21f864eaac80cb01980fabcfdc7.bindPopup(popup_9286d8d63617ddc57e959d7aff2de0fd)
+        ;
+
+        
+    
+    
+            var circle_marker_8c515a53064daaf0e96cdedbab9a3205 = L.circleMarker(
+                [42.50729, 1.53414],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_1e334b2cf1c88a7758fe86dc0131c158 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_4414036be2cbf71233dab6a16bcaa63e = $(`<div id="html_4414036be2cbf71233dab6a16bcaa63e" style="width: 100.0%; height: 100.0%;"><b>Les Escaldes</b>(AD)<br/>Population: 15,853<br/>Elevation: 1028 m / 3,373 ft<br/>Nearest airport: Lleida-Alguaire Airport<br/>Drive to nearest airport: 153 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Hospital de Nostra Senyora de Meritxell<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="152.6" data-dth="2.4" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_1e334b2cf1c88a7758fe86dc0131c158.setContent(html_4414036be2cbf71233dab6a16bcaa63e);
+            
+        
+
+        circle_marker_8c515a53064daaf0e96cdedbab9a3205.bindPopup(popup_1e334b2cf1c88a7758fe86dc0131c158)
+        ;
+
+        
+    
+    
+            var circle_marker_1fe801cf6ec0f8da5747d4aaeea203de = L.circleMarker(
+                [43.09461, -0.04611],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_cd3922429c3d55b0d6f6344c3c4303d6 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_aa71cfeeaf7fa110b25c09aca60226f1 = $(`<div id="html_aa71cfeeaf7fa110b25c09aca60226f1" style="width: 100.0%; height: 100.0%;"><b>Lourdes</b>(FR)<br/>Population: 15,786<br/>Elevation: 411 m / 1,348 ft<br/>Nearest airport: Tarbes-Lourdes-Pyrénées Airport<br/>Drive to nearest airport: 12 min<br/>Drive to nearest hospital: 1 min<br/>Nearest hospital: Centre hospitalier de Lourdes<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="12.3" data-dth="1.4" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_cd3922429c3d55b0d6f6344c3c4303d6.setContent(html_aa71cfeeaf7fa110b25c09aca60226f1);
+            
+        
+
+        circle_marker_1fe801cf6ec0f8da5747d4aaeea203de.bindPopup(popup_cd3922429c3d55b0d6f6344c3c4303d6)
+        ;
+
+        
+    
+    
+            var circle_marker_98f356c42007b24dd5469331a2e64cc9 = L.circleMarker(
+                [42.56898, -0.54987],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_5fab7290d94e440c6da7d4f5355988ef = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_cf04fc206df2f2f2aa00b3f3823d471a = $(`<div id="html_cf04fc206df2f2f2aa00b3f3823d471a" style="width: 100.0%; height: 100.0%;"><b>Jaca</b>(FR)<br/>Population: 13,396<br/>Elevation: 823 m / 2,700 ft<br/>Nearest airport: Pamplona Airport<br/>Drive to nearest airport: 84 min<br/>Drive to nearest hospital: 6 min<br/>Nearest hospital: Hospital de Jaca<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="83.6" data-dth="5.5" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_5fab7290d94e440c6da7d4f5355988ef.setContent(html_cf04fc206df2f2f2aa00b3f3823d471a);
+            
+        
+
+        circle_marker_98f356c42007b24dd5469331a2e64cc9.bindPopup(popup_5fab7290d94e440c6da7d4f5355988ef)
+        ;
+
+        
+    
+    
+            var circle_marker_cdf6f65108c1ffcee6b020d28c412221 = L.circleMarker(
+                [43.2183411, -2.0199432],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_0d74a625cdb8795a26171b966ca4408c = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_7e8ec84dcf4464c248a5ee02afb5288b = $(`<div id="html_7e8ec84dcf4464c248a5ee02afb5288b" style="width: 100.0%; height: 100.0%;"><b>Andoain</b>(FR)<br/>Population: 13,111<br/>Elevation: 69 m / 226 ft<br/>Nearest airport: San Sebastián Airport<br/>Drive to nearest airport: 26 min<br/>Drive to nearest hospital: 15 min<br/>Nearest hospital: Policlinica Gipuzkoa<br/>Source: osm<span class="city-meta" style="display:none" data-dta="25.7" data-dth="15.4" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_0d74a625cdb8795a26171b966ca4408c.setContent(html_7e8ec84dcf4464c248a5ee02afb5288b);
+            
+        
+
+        circle_marker_cdf6f65108c1ffcee6b020d28c412221.bindPopup(popup_0d74a625cdb8795a26171b966ca4408c)
+        ;
+
+        
+    
+    
+            var circle_marker_b0f1609b71ab650d73cf5ac51d4af3fe = L.circleMarker(
+                [42.35877, 1.46144],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_ab63b5d7efffe4aaf8fb48385914999b = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_3eb448bc0db9813696622216bc8140fc = $(`<div id="html_3eb448bc0db9813696622216bc8140fc" style="width: 100.0%; height: 100.0%;"><b>La Seu d'Urgell</b>(FR)<br/>Population: 12,041<br/>Elevation: 700 m / 2,297 ft<br/>Nearest airport: Lleida-Alguaire Airport<br/>Drive to nearest airport: 129 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Fundació Sant Hospital<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="129.4" data-dth="2.2" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_ab63b5d7efffe4aaf8fb48385914999b.setContent(html_3eb448bc0db9813696622216bc8140fc);
+            
+        
+
+        circle_marker_b0f1609b71ab650d73cf5ac51d4af3fe.bindPopup(popup_ab63b5d7efffe4aaf8fb48385914999b)
+        ;
+
+        
+    
+    
+            var circle_marker_5ba1bb0be0c1ddba4bb06cd4e5ca523f = L.circleMarker(
+                [42.54499, 1.51483],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_3904d86f9b46708301647f86dc82f1ea = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_fc5fba6d1bef2c9481051d48165fae15 = $(`<div id="html_fc5fba6d1bef2c9481051d48165fae15" style="width: 100.0%; height: 100.0%;"><b>La Massana</b>(FR)<br/>Population: 7,211<br/>Elevation: 1244 m / 4,081 ft<br/>Nearest airport: Perpignan-Rivesaltes (Llabanère) Airport<br/>Drive to nearest airport: 171 min<br/>Drive to nearest hospital: 8 min<br/>Nearest hospital: Clínica Verge de Meritxell<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="170.7" data-dth="7.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_3904d86f9b46708301647f86dc82f1ea.setContent(html_fc5fba6d1bef2c9481051d48165fae15);
+            
+        
+
+        circle_marker_5ba1bb0be0c1ddba4bb06cd4e5ca523f.bindPopup(popup_3904d86f9b46708301647f86dc82f1ea)
+        ;
+
+        
+    
+    
+            var circle_marker_96a3dae96421679aa1cc3171ccce8b71 = L.circleMarker(
+                [42.53474, 1.58014],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_4ca201475496b66dd239d9d9f0475e43 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_045b1b2fd492ded4b4a6b43ac6fa1e22 = $(`<div id="html_045b1b2fd492ded4b4a6b43ac6fa1e22" style="width: 100.0%; height: 100.0%;"><b>Encamp</b>(AD)<br/>Population: 11,223<br/>Elevation: 1255 m / 4,117 ft<br/>Nearest airport: Perpignan-Rivesaltes (Llabanère) Airport<br/>Drive to nearest airport: 163 min<br/>Drive to nearest hospital: 38 min<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="163.2" data-dth="38.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_4ca201475496b66dd239d9d9f0475e43.setContent(html_045b1b2fd492ded4b4a6b43ac6fa1e22);
+            
+        
+
+        circle_marker_96a3dae96421679aa1cc3171ccce8b71.bindPopup(popup_4ca201475496b66dd239d9d9f0475e43)
+        ;
+
+        
+    
+    
+            var circle_marker_9955a15a77e83892345daf07d8100bd7 = L.circleMarker(
+                [42.20064, 2.19033],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_5418e3bc01db9123b9508280be109f6a = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_794080437be947fa2008ab12ac041e3c = $(`<div id="html_794080437be947fa2008ab12ac041e3c" style="width: 100.0%; height: 100.0%;"><b>Ripoll</b>(FR)<br/>Population: 11,057<br/>Elevation: 689 m / 2,260 ft<br/>Nearest airport: Girona-Costa Brava Airport<br/>Drive to nearest airport: 71 min<br/>Drive to nearest hospital: 5 min<br/>Nearest hospital: Hospital de Campdevànol<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="71.4" data-dth="4.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_5418e3bc01db9123b9508280be109f6a.setContent(html_794080437be947fa2008ab12ac041e3c);
+            
+        
+
+        circle_marker_9955a15a77e83892345daf07d8100bd7.bindPopup(popup_5418e3bc01db9123b9508280be109f6a)
+        ;
+
+        
+    
+    
+            var circle_marker_596bb6daef2930aea1bb570dd343c290 = L.circleMarker(
+                [42.8338, -1.6396906],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_943fded18b13f8c9750999987af503a6 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_5e9b6ba49135fae8500403e3f673500b = $(`<div id="html_5e9b6ba49135fae8500403e3f673500b" style="width: 100.0%; height: 100.0%;"><b>Ansoáin / Antsoain</b>(FR)<br/>Population: 10,573<br/>Elevation: 427 m / 1,401 ft<br/>Nearest airport: Pamplona Airport<br/>Drive to nearest airport: 17 min<br/>Drive to nearest hospital: 9 min<br/>Nearest hospital: Clínica San Miguel<br/>Source: osm <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="16.9" data-dth="9.3" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_943fded18b13f8c9750999987af503a6.setContent(html_5e9b6ba49135fae8500403e3f673500b);
+            
+        
+
+        circle_marker_596bb6daef2930aea1bb570dd343c290.bindPopup(popup_943fded18b13f8c9750999987af503a6)
+        ;
+
+        
+    
+    
+            var circle_marker_c1d1cd2bd97fdf3f252d13348682bb23 = L.circleMarker(
+                [42.51924, -0.36607],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_882cfd07381e94f5cae4331f0e146a67 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_4b16ec234a7d862d5beb37b86dec848e = $(`<div id="html_4b16ec234a7d862d5beb37b86dec848e" style="width: 100.0%; height: 100.0%;"><b>Sabiñánigo</b>(FR)<br/>Population: 10,378<br/>Elevation: 816 m / 2,677 ft<br/>Nearest airport: Pamplona Airport<br/>Drive to nearest airport: 99 min<br/>Drive to nearest hospital: 18 min<br/>Nearest hospital: Hospital de Jaca<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="99.2" data-dth="18.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_882cfd07381e94f5cae4331f0e146a67.setContent(html_4b16ec234a7d862d5beb37b86dec848e);
+            
+        
+
+        circle_marker_c1d1cd2bd97fdf3f252d13348682bb23.bindPopup(popup_882cfd07381e94f5cae4331f0e146a67)
+        ;
+
+        
+    
+    
+            var circle_marker_aa91e95ddb28d4b0c0ea2ddbf2d744b9 = L.circleMarker(
+                [42.96535, 1.60705],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_c5123e7a7e5cc005ed6e61bcbee11940 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_4469b951c43090c68e1fc68c7c2eecfa = $(`<div id="html_4469b951c43090c68e1fc68c7c2eecfa" style="width: 100.0%; height: 100.0%;"><b>Foix</b>(FR)<br/>Population: 9,860<br/>Elevation: 391 m / 1,283 ft<br/>Nearest airport: Toulouse-Blagnac Airport<br/>Drive to nearest airport: 79 min<br/>Drive to nearest hospital: 13 min<br/>Nearest hospital: Hôpital de jour psy infanto-juvénile La Vergnière l'Herm<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="79.1" data-dth="12.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_c5123e7a7e5cc005ed6e61bcbee11940.setContent(html_4469b951c43090c68e1fc68c7c2eecfa);
+            
+        
+
+        circle_marker_aa91e95ddb28d4b0c0ea2ddbf2d744b9.bindPopup(popup_c5123e7a7e5cc005ed6e61bcbee11940)
+        ;
+
+        
+    
+    
+            var circle_marker_23aeba8586b21b95384c3fb62be4d2a0 = L.circleMarker(
+                [42.46372, 1.49129],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_4431c4d4fec489510aa34ed41602a75a = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_590c35e574699f21e470a5551c7f3dd4 = $(`<div id="html_590c35e574699f21e470a5551c7f3dd4" style="width: 100.0%; height: 100.0%;"><b>Sant Julià de Lòria</b>(FR)<br/>Population: 8,022<br/>Elevation: 908 m / 2,979 ft<br/>Nearest airport: Lleida-Alguaire Airport<br/>Drive to nearest airport: 145 min<br/>Drive to nearest hospital: 2 min<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="145.1" data-dth="1.9" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_4431c4d4fec489510aa34ed41602a75a.setContent(html_590c35e574699f21e470a5551c7f3dd4);
+            
+        
+
+        circle_marker_23aeba8586b21b95384c3fb62be4d2a0.bindPopup(popup_4431c4d4fec489510aa34ed41602a75a)
+        ;
+
+        
+    
+    
+            var circle_marker_4754b25a9c5dd83b6d42ddee61a2853b = L.circleMarker(
+                [43.06497, 0.14876],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_e87cc9562b78d36aab952abbd8cd9089 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_2f96956ec98cae05bb924f7319752eb6 = $(`<div id="html_2f96956ec98cae05bb924f7319752eb6" style="width: 100.0%; height: 100.0%;"><b>Bagnères-de-Bigorre</b>(FR)<br/>Population: 8,967<br/>Elevation: 547 m / 1,795 ft<br/>Nearest airport: Tarbes-Lourdes-Pyrénées Airport<br/>Drive to nearest airport: 29 min<br/>Drive to nearest hospital: 1 min<br/>Nearest hospital: Centre hospitalier de Bagnères-de-Bigorre<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="28.8" data-dth="1.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_e87cc9562b78d36aab952abbd8cd9089.setContent(html_2f96956ec98cae05bb924f7319752eb6);
+            
+        
+
+        circle_marker_4754b25a9c5dd83b6d42ddee61a2853b.bindPopup(popup_e87cc9562b78d36aab952abbd8cd9089)
+        ;
+
+        
+    
+    
+            var circle_marker_1a30202b539f990155ee8be358b6dc64 = L.circleMarker(
+                [42.4316, 1.92819],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_5cfce82e9b15942e48e4bf9884c41985 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_978a05803adeaa2860c6e9e55a28ec61 = $(`<div id="html_978a05803adeaa2860c6e9e55a28ec61" style="width: 100.0%; height: 100.0%;"><b>Puigcerdà</b>(FR)<br/>Population: 8,845<br/>Elevation: 1213 m / 3,980 ft<br/>Nearest airport: Perpignan-Rivesaltes (Llabanère) Airport<br/>Drive to nearest airport: 104 min<br/>Drive to nearest hospital: 5 min<br/>Nearest hospital: Hospital de Cerdanya<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="104.1" data-dth="5.4" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_5cfce82e9b15942e48e4bf9884c41985.setContent(html_978a05803adeaa2860c6e9e55a28ec61);
+            
+        
+
+        circle_marker_1a30202b539f990155ee8be358b6dc64.bindPopup(popup_5cfce82e9b15942e48e4bf9884c41985)
+        ;
+
+        
+    
+    
+            var circle_marker_122f0f311f012565c2afacc785060966 = L.circleMarker(
+                [42.16964, 2.49943],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_f3ee0fe986e6cd7e501d1ee526b499bb = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_e660ce1a80a537fc493316b5c8984afa = $(`<div id="html_e660ce1a80a537fc493316b5c8984afa" style="width: 100.0%; height: 100.0%;"><b>Sant Cristòfol de les Fonts</b>(ES)<br/>Population: 8,791<br/>Elevation: 463 m / 1,519 ft<br/>Nearest airport: Girona-Costa Brava Airport<br/>Drive to nearest airport: 62 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Clínica Bofill<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="62.4" data-dth="3.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_f3ee0fe986e6cd7e501d1ee526b499bb.setContent(html_e660ce1a80a537fc493316b5c8984afa);
+            
+        
+
+        circle_marker_122f0f311f012565c2afacc785060966.bindPopup(popup_f3ee0fe986e6cd7e501d1ee526b499bb)
+        ;
+
+        
+    
+    
+            var circle_marker_6dd73ebdf223f1b91e3b9a54d3c23c48 = L.circleMarker(
+                [42.48533, 2.74804],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_4bf9f08dba580ee71c9ff81a36da9a3b = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_c4dd73b22483cb8ceaed7f364ea80833 = $(`<div id="html_c4dd73b22483cb8ceaed7f364ea80833" style="width: 100.0%; height: 100.0%;"><b>Ceret</b>(FR)<br/>Population: 8,171<br/>Elevation: 183 m / 600 ft<br/>Nearest airport: Perpignan-Rivesaltes (Llabanère) Airport<br/>Drive to nearest airport: 37 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Centre médico-psychologique de Céret<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="37.4" data-dth="3.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_4bf9f08dba580ee71c9ff81a36da9a3b.setContent(html_c4dd73b22483cb8ceaed7f364ea80833);
+            
+        
+
+        circle_marker_6dd73ebdf223f1b91e3b9a54d3c23c48.bindPopup(popup_4bf9f08dba580ee71c9ff81a36da9a3b)
+        ;
+
+        
+    
+    
+            var circle_marker_93b4c14cd4534a1948efe7a1b96cb925 = L.circleMarker(
+                [42.93267, 1.84844],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_fc8170c933b6439984be7bfbec1aa52c = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_5b4c56ad8c5a35de7813df925813fbce = $(`<div id="html_5b4c56ad8c5a35de7813df925813fbce" style="width: 100.0%; height: 100.0%;"><b>Lavelanet</b>(FR)<br/>Population: 7,382<br/>Elevation: 531 m / 1,742 ft<br/>Nearest airport: Carcassonne Salvaza Airport<br/>Drive to nearest airport: 65 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Centre hospitalier en Pays d'Olmes<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="64.6" data-dth="2.3" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_fc8170c933b6439984be7bfbec1aa52c.setContent(html_5b4c56ad8c5a35de7813df925813fbce);
+            
+        
+
+        circle_marker_93b4c14cd4534a1948efe7a1b96cb925.bindPopup(popup_fc8170c933b6439984be7bfbec1aa52c)
+        ;
+
+        
+    
+    
+            var circle_marker_632739135c75fbb4dc99fc14fd29d4b6 = L.circleMarker(
+                [42.61755, 2.42177],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_a600c46167328c31a70532dbfaa69e52 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_8e0faf208d475657c504fc86cc6bdb81 = $(`<div id="html_8e0faf208d475657c504fc86cc6bdb81" style="width: 100.0%; height: 100.0%;"><b>Prades</b>(FR)<br/>Population: 6,836<br/>Elevation: 349 m / 1,145 ft<br/>Nearest airport: Perpignan-Rivesaltes (Llabanère) Airport<br/>Drive to nearest airport: 44 min<br/>Drive to nearest hospital: 6 min<br/>Nearest hospital: Hôpital de Prades<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="44.1" data-dth="5.9" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_a600c46167328c31a70532dbfaa69e52.setContent(html_8e0faf208d475657c504fc86cc6bdb81);
+            
+        
+
+        circle_marker_632739135c75fbb4dc99fc14fd29d4b6.bindPopup(popup_a600c46167328c31a70532dbfaa69e52)
+        ;
+
+        
+    
+    
+            var circle_marker_e97515faf561bb9cef5ca15bbdb0f60b = L.circleMarker(
+                [43.32142, -1.89739],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_0abb5fe8da874e253dc936b5c84f7a9e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_13dc46509604aed710532201d6d74ff4 = $(`<div id="html_13dc46509604aed710532201d6d74ff4" style="width: 100.0%; height: 100.0%;"><b>Lezo</b>(ES)<br/>Population: 5,867<br/>Elevation: 12 m / 39 ft<br/>Nearest airport: San Sebastián Airport<br/>Drive to nearest airport: 12 min<br/>Drive to nearest hospital: 11 min<br/>Nearest hospital: Donostiako Unibertsitate Ospitalea<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="12.1" data-dth="11.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_0abb5fe8da874e253dc936b5c84f7a9e.setContent(html_13dc46509604aed710532201d6d74ff4);
+            
+        
+
+        circle_marker_e97515faf561bb9cef5ca15bbdb0f60b.bindPopup(popup_0abb5fe8da874e253dc936b5c84f7a9e)
+        ;
+
+        
+    
+    
+            var circle_marker_88c19328d143afe5e8fed31fe43fd293 = L.circleMarker(
+                [43.24727, -1.99084],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_12ace8f0116f3c4a19bab3f6ddc0e84e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_dd29663e50091402addf8e23acd0ea8a = $(`<div id="html_dd29663e50091402addf8e23acd0ea8a" style="width: 100.0%; height: 100.0%;"><b>Urnieta</b>(ES)<br/>Population: 5,827<br/>Elevation: 57 m / 187 ft<br/>Nearest airport: San Sebastián Airport<br/>Drive to nearest airport: 21 min<br/>Drive to nearest hospital: 10 min<br/>Nearest hospital: Policlinica Gipuzkoa<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="21.2" data-dth="10.3" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_12ace8f0116f3c4a19bab3f6ddc0e84e.setContent(html_dd29663e50091402addf8e23acd0ea8a);
+            
+        
+
+        circle_marker_88c19328d143afe5e8fed31fe43fd293.bindPopup(popup_12ace8f0116f3c4a19bab3f6ddc0e84e)
+        ;
+
+        
+    
+    
+            var circle_marker_d5bdce5eaaba03f25c006176a463b943 = L.circleMarker(
+                [42.16703, 0.89487],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_b43753ce279bbfb0f25f9ebf46e3bb57 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_842df7013e0f00694dcc40455b304771 = $(`<div id="html_842df7013e0f00694dcc40455b304771" style="width: 100.0%; height: 100.0%;"><b>Tremp</b>(FR)<br/>Population: 5,639<br/>Elevation: 477 m / 1,565 ft<br/>Nearest airport: Lleida-Alguaire Airport<br/>Drive to nearest airport: 87 min<br/>Drive to nearest hospital: 1 min<br/>Nearest hospital: Hospital Comarcal del Pallars<br/>Source: geonames <i>(open_elevation)</i><span class="city-meta" style="display:none" data-dta="87.4" data-dth="1.0" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_b43753ce279bbfb0f25f9ebf46e3bb57.setContent(html_842df7013e0f00694dcc40455b304771);
+            
+        
+
+        circle_marker_d5bdce5eaaba03f25c006176a463b943.bindPopup(popup_b43753ce279bbfb0f25f9ebf46e3bb57)
+        ;
+
+        
+    
+    
+            var circle_marker_1f21d164dc14aaf88c1d3d73244d8b50 = L.circleMarker(
+                [42.70196, 0.79556],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_0e4b1c0055064617bba95b2c1a1ded54);
+        
+    
+        var popup_b8c3a5c51a5f7c6c3206255603529dc7 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ea4f3dc661477c02399bebf2ded3db6a = $(`<div id="html_ea4f3dc661477c02399bebf2ded3db6a" style="width: 100.0%; height: 100.0%;"><b>Vielha e Mijaran</b>(ES)<br/>Population: 5,385<br/>Elevation: 975 m / 3,199 ft<br/>Nearest airport: Tarbes-Lourdes-Pyrénées Airport<br/>Drive to nearest airport: 104 min<br/>Drive to nearest hospital: 1 min<br/>Nearest hospital: Espitau Val d'Aran<br/>Source: geonames <i>(opentopo)</i><span class="city-meta" style="display:none" data-dta="103.5" data-dth="0.6" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_b8c3a5c51a5f7c6c3206255603529dc7.setContent(html_ea4f3dc661477c02399bebf2ded3db6a);
+            
+        
+
+        circle_marker_1f21d164dc14aaf88c1d3d73244d8b50.bindPopup(popup_b8c3a5c51a5f7c6c3206255603529dc7)
+        ;
+
+        
+    
+    
+            marker_cluster_0e4b1c0055064617bba95b2c1a1ded54.addTo(map_e358180af0ac4a1aed5bc7b13c52c7f0);
+        
+    
+            var layer_control_1c29587b3ec32d67a38dce67b0e82700_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_841d9f696a8027259c1b8f402da33cf7,
+                },
+                overlays :  {
+                    "Cities" : marker_cluster_0e4b1c0055064617bba95b2c1a1ded54,
+                },
+            };
+            let layer_control_1c29587b3ec32d67a38dce67b0e82700 = L.control.layers(
+                layer_control_1c29587b3ec32d67a38dce67b0e82700_layers.base_layers,
+                layer_control_1c29587b3ec32d67a38dce67b0e82700_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_e358180af0ac4a1aed5bc7b13c52c7f0);
+
+        
+</script>
+</html>

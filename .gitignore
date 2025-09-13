@@ -55,3 +55,7 @@ Thumbs.db
 # outputs/
 # *.csv
 # *.geojson
+
+# Large data files
+GMBA_Inventory_v2.0_standard/
+*.gpkg

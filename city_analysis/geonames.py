@@ -7,7 +7,7 @@ import requests
 
 GEONAMES_ENDPOINT = "http://api.geonames.org/searchJSON"
 DEFAULT_HEADERS = {
-    "User-Agent": "city-analysis-alps/0.1 (contact: your-email@example.com)",
+    "User-Agent": "city-analysis/0.1 (+contact: your-email@example.com)",
 }
 
 

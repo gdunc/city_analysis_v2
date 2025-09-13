@@ -10,8 +10,8 @@ from folium.plugins import MarkerCluster
 def _compute_map_center(records: Iterable[Dict]) -> tuple[float, float]:
     items = list(records)
     if not items:
-        # Default to central Alps
-        return (46.8, 10.8)
+        # Fallback center over Europe if no items
+        return (47.0, 8.0)
     avg_lat = sum(float(r.get("latitude", 0.0) or 0.0) for r in items) / len(items)
     avg_lon = sum(float(r.get("longitude", 0.0) or 0.0) for r in items) / len(items)
     return (avg_lat, avg_lon)
@@ -343,7 +343,7 @@ def _inject_population_filter(fmap: folium.Map) -> None:
     # No MacroElement: we'll create the control entirely in JS at runtime
 
     # JS to apply filter (handles MarkerCluster ownership)
-    script = """
+    script = r"""
     (function(){
       var MAP_VAR_NAME = '%MAP%';
       function getMap(){ return window[MAP_VAR_NAME]; }

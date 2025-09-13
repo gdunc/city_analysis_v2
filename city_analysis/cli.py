@@ -9,8 +9,9 @@ import logging
 
 from dotenv import load_dotenv
 
-from .config import ALPINE_COUNTRIES, DEFAULT_MIN_POPULATION, DEFAULT_REQUIRE_OSM_POPULATION
+from .config import ALPINE_COUNTRIES, DEFAULT_MIN_POPULATION, DEFAULT_REQUIRE_OSM_POPULATION, load_region_settings, load_region_settings_from_yaml
 from .geometry import default_alps_polygon, load_perimeter, polygon_bounds
+from .perimeter_loader import resolve_region_perimeter
 from .geonames import fetch_geonames_cities
 from .overpass import fetch_overpass_bbox_tiled
 from .normalize import filter_within_perimeter, dedupe_places, enforce_min_population
@@ -28,11 +29,13 @@ def parse_args() -> argparse.Namespace:
     # Load .env before reading environment defaults
     load_dotenv()
 
-    parser = argparse.ArgumentParser(description="Analyze populations and coordinates of cities in/near the Alps.")
+    parser = argparse.ArgumentParser(description="Analyze populations and coordinates of cities in/near a mountain region.")
+    parser.add_argument("--region", type=str, default=os.getenv("REGION", "alps"), help="Region slug to analyze (e.g., alps, pyrenees)")
+    parser.add_argument("--region-config", type=str, default=os.getenv("REGION_CONFIG"), help="Optional YAML file defining region settings")
     parser.add_argument("--geonames-username", default=os.getenv("GEONAMES_USERNAME"), help="GeoNames username (or set GEONAMES_USERNAME env var)")
     parser.add_argument("--min-population", type=int, default=DEFAULT_MIN_POPULATION, help="Minimum population threshold for GeoNames and final output")
-    parser.add_argument("--countries", nargs="*", default=ALPINE_COUNTRIES, help="Country codes to include (default: Alpine countries)")
-    parser.add_argument("--perimeter", type=str, help="Path to Alpine perimeter GeoJSON (FeatureCollection/Feature/Geometry). If omitted, use a default bbox.")
+    parser.add_argument("--countries", nargs="*", default=None, help="Country codes to include; defaults to region settings")
+    parser.add_argument("--perimeter", type=str, help="Path to region perimeter GeoJSON (FeatureCollection/Feature/Geometry). Overrides region settings.")
     parser.add_argument("--require-osm-population", action="store_true", default=DEFAULT_REQUIRE_OSM_POPULATION, help="Only include OSM places that have a population tag")
     parser.add_argument("--include-villages", action="store_true", help="Include OSM places with place=village in addition to city,town")
     parser.add_argument("--tile-size", type=float, default=1.0, help="Tile size in degrees for Overpass tiling")
@@ -53,7 +56,7 @@ def parse_args() -> argparse.Namespace:
 
     # Map generation options
     parser.add_argument("--make-map", action="store_true", help="Generate interactive HTML map alongside CSV/GeoJSON")
-    parser.add_argument("--map-file", type=str, default=None, help="Path for HTML map output (default: <out-dir>/alps_cities_map.html)")
+    parser.add_argument("--map-file", type=str, default=None, help="Path for HTML map output (default: <out-dir>/<region>_cities_map.html)")
     parser.add_argument("--map-tiles", type=str, default="OpenStreetMap", help="Folium tiles name or URL")
 
     # Airport nearest + driving distance/time (optional)
@@ -72,7 +75,7 @@ def parse_args() -> argparse.Namespace:
 
     # Second map style (country-colored, population-sized)
     parser.add_argument("--make-country-map", action="store_true", help="Generate country-colored, population-sized map")
-    parser.add_argument("--country-map-file", type=str, default=None, help="Path for second map HTML (default: <out-dir>/alps_cities_country_map.html)")
+    parser.add_argument("--country-map-file", type=str, default=None, help="Path for second map HTML (default: <out-dir>/<region>_cities_country_map.html)")
 
     # Build map directly from an existing CSV (skips fetching/processing)
     parser.add_argument("--from-csv", type=str, default=None, help="Path to an existing CSV of cities to build a map from")
@@ -87,12 +90,25 @@ def main() -> None:
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
+    
+    # Resolve region settings
+    if args.region_config:
+        settings = load_region_settings_from_yaml(args.region_config)
+    else:
+        settings = load_region_settings(args.region)
 
     # Fast path: Build map(s) directly from an existing CSV
     if args.from_csv:
         records = read_csv_records(args.from_csv)
-        out_dir = Path(args.out_dir)
+        out_dir = Path(args.out_dir) / settings.slug
         out_dir.mkdir(parents=True, exist_ok=True)
+
+        # Compute perimeter and bbox for optional enrichments that need it
+        if args.perimeter:
+            perimeter = load_perimeter(args.perimeter)
+        else:
+            perimeter = resolve_region_perimeter(settings)
+        bbox = polygon_bounds(perimeter)
 
         # Optionally enrich CSV with hospital presence before building maps
         if args.check_hospitals:
@@ -116,7 +132,7 @@ def main() -> None:
                     request_timeout=args.openai_timeout,
                     osrm_base_url=args.osrm_base_url,
                 )
-            csv_path = out_dir / "alps_cities.csv"
+            csv_path = out_dir / f"{settings.slug}_cities.csv"
             write_csv(csv_path, records)
             print(f"Wrote CSV with hospital columns to {csv_path}")
         # Optionally enrich CSV with nearest airport and driving info
@@ -147,23 +163,23 @@ def main() -> None:
                     limit=args.airports_limit,
                     resume_missing_only=args.airports_resume_missing,
                 )
-            csv_path = out_dir / "alps_cities.csv"
+            csv_path = out_dir / f"{settings.slug}_cities.csv"
             write_csv(csv_path, records)
             print(f"Wrote CSV with airport and driving columns to {csv_path}")
         if args.make_map:
-            map_path = Path(args.map_file) if args.map_file else (out_dir / "alps_cities_map.html")
+            map_path = Path(args.map_file) if args.map_file else (out_dir / f"{settings.slug}_cities_map.html")
             save_map(records, map_path, tiles=args.map_tiles)
             print(f"Wrote interactive map to {map_path}")
         if args.make_country_map:
-            country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / "alps_cities_country_map.html")
+            country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / f"{settings.slug}_cities_country_map.html")
             save_country_map(records, country_map_path, tiles=args.map_tiles)
             print(f"Wrote country-colored map to {country_map_path}")
         # If neither flag was given, default to generating both maps from CSV for convenience
         if not args.make_map and not args.make_country_map:
-            map_path = out_dir / "alps_cities_map.html"
+            map_path = out_dir / f"{settings.slug}_cities_map.html"
             save_map(records, map_path, tiles=args.map_tiles)
             print(f"Wrote interactive map to {map_path}")
-            country_map_path = out_dir / "alps_cities_country_map.html"
+            country_map_path = out_dir / f"{settings.slug}_cities_country_map.html"
             save_country_map(records, country_map_path, tiles=args.map_tiles)
             print(f"Wrote country-colored map to {country_map_path}")
         return
@@ -175,7 +191,7 @@ def main() -> None:
     if args.perimeter:
         perimeter = load_perimeter(args.perimeter)
     else:
-        perimeter = default_alps_polygon()
+        perimeter = resolve_region_perimeter(settings)
 
     # Build Overpass tiles using bbox from perimeter
     bbox = polygon_bounds(perimeter)
@@ -186,8 +202,8 @@ def main() -> None:
     if args.geonames_username:
         try:
             geonames_records = fetch_geonames_cities(
-                countries=args.countries,
-                min_population=args.min_population,
+                countries=(args.countries or settings.countries),
+                min_population=(args.min_population or settings.min_population),
                 username=args.geonames_username,
             )
         except Exception as e:
@@ -204,17 +220,17 @@ def main() -> None:
     # Combine
     combined: List[dict] = geonames_records + osm_records
 
-    # Exclude CH/SI/LI, fill missing countries for AT/DE/FR/IT, filter within Alps
+    # Exclude configured countries (legacy Alps behavior), fill missing countries, filter within perimeter
     combined = filter_excluded_countries(combined)
     combined = fill_missing_country(combined)
     filtered = filter_within_perimeter(combined, perimeter=perimeter)
 
     # Enforce min population on merged results and dedupe
-    filtered = enforce_min_population(filtered, min_population=args.min_population)
+    filtered = enforce_min_population(filtered, min_population=(args.min_population or settings.min_population))
     deduped = dedupe_places(filtered)
 
-    # Add distance to Alps perimeter
-    enriched = add_distance_to_perimeter_km(deduped, perimeter=perimeter)
+    # Add distance to region perimeter
+    enriched = add_distance_to_perimeter_km(deduped, perimeter=perimeter, region_slug=settings.slug)
 
     # Enrich with elevation data from multiple sources
     if not args.skip_elevation:
@@ -280,20 +296,20 @@ def main() -> None:
             )
 
     # Ensure output directory
-    out_dir = Path(args.out_dir)
+    out_dir = Path(args.out_dir) / settings.slug
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Write outputs
-    write_csv(out_dir / "alps_cities.csv", enriched)
-    write_geojson(out_dir / "alps_cities.geojson", enriched)
+    write_csv(out_dir / f"{settings.slug}_cities.csv", enriched)
+    write_geojson(out_dir / f"{settings.slug}_cities.geojson", enriched)
 
     # Optionally write interactive maps
     if args.make_map:
-        map_path = Path(args.map_file) if args.map_file else (out_dir / "alps_cities_map.html")
+        map_path = Path(args.map_file) if args.map_file else (out_dir / f"{settings.slug}_cities_map.html")
         save_map(enriched, map_path, tiles=args.map_tiles)
         print(f"Wrote interactive map to {map_path}")
     if args.make_country_map:
-        country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / "alps_cities_country_map.html")
+        country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / f"{settings.slug}_cities_country_map.html")
         save_country_map(enriched, country_map_path, tiles=args.map_tiles)
         print(f"Wrote country-colored map to {country_map_path}")
 
@@ -313,7 +329,7 @@ def main() -> None:
                 source_info = f" [{r['elevation_source']}:{confidence:.1f}]"
             elevation_info = f", elev {r['elevation']}m{source_info}"
         print(f"  {r['name']} ({r.get('country','')}) — pop {r.get('population', 0):,} @ ({r['latitude']:.4f},{r['longitude']:.4f}) [{r['source']}]" +
-              f"{elevation_info}, {r.get('distance_km_to_alps')} km to Alps")
+              f"{elevation_info}, {r.get('distance_km_to_perimeter')} km to {settings.name}")
 
 
 if __name__ == "__main__":

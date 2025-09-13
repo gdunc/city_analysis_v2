@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 from typing import Dict, List, Sequence, Tuple
+import logging
 
 import requests
 
@@ -13,7 +14,7 @@ OVERPASS_ENDPOINTS = [
 ]
 
 DEFAULT_HEADERS = {
-    "User-Agent": "city-analysis-alps/0.1 (contact: your-email@example.com)",
+    "User-Agent": "city-analysis/0.1 (+contact: your-email@example.com)",
 }
 
 
@@ -45,6 +46,7 @@ def build_overpass_query(
 
 
 def _try_overpass(endpoint: str, query: str) -> List[Dict]:
+    logging.info(f"Overpass: POST {endpoint}")
     resp = requests.post(endpoint, data={"data": query}, headers=DEFAULT_HEADERS, timeout=120)
     resp.raise_for_status()
     # Ensure proper UTF-8 encoding
@@ -112,9 +114,12 @@ def fetch_overpass_places(query: str, max_retries_per_endpoint: int = 2) -> List
     for endpoint in OVERPASS_ENDPOINTS:
         for attempt in range(max_retries_per_endpoint):
             try:
-                return _try_overpass(endpoint, query)
+                results = _try_overpass(endpoint, query)
+                logging.info(f"Overpass: success on {endpoint} (attempt {attempt+1}) elements={len(results)}")
+                return results
             except Exception as e:
                 last_error = e
+                logging.warning(f"Overpass: error on {endpoint} (attempt {attempt+1}): {e}")
                 # Exponential backoff with jitter
                 time.sleep(1.5 * (attempt + 1))
         # try next endpoint
@@ -138,28 +143,38 @@ def fetch_overpass_bbox_tiled(
     results: List[Dict] = []
     seen_keys = set()
 
+    # Compute number of tiles for progress
+    total_tiles_lat = max(1, int((north - south + 1e-9) // tile_size_deg + (1 if (south + ((int((north - south) / tile_size_deg)) * tile_size_deg)) < north else 0)))
+    total_tiles_lon = max(1, int((east - west + 1e-9) // tile_size_deg + (1 if (west + ((int((east - west) / tile_size_deg)) * tile_size_deg)) < east else 0)))
+    approx_total_tiles = total_tiles_lat * total_tiles_lon
+    logging.info(f"Overpass tiling: bbox={bbox} tile_size={tile_size_deg} approx_tiles={approx_total_tiles}")
+
     lat = south
+    tile_index = 0
     while lat < north:
         next_lat = min(north, lat + tile_size_deg)
         lon = west
         while lon < east:
             next_lon = min(east, lon + tile_size_deg)
             tile_bbox = (lat, lon, next_lat, next_lon)
+            tile_index += 1
+            logging.info(f"Overpass tile {tile_index}/{approx_total_tiles}: {tile_bbox}")
             q = build_overpass_query(tile_bbox, place_types=place_types, require_population_tag=require_population_tag)
             try:
                 chunk = fetch_overpass_places(q)
+                logging.info(f"Overpass tile {tile_index}: received {len(chunk)} elements")
                 for r in chunk:
                     key = (r.get("name"), round(float(r["latitude"]), 4), round(float(r["longitude"]), 4))
                     if key in seen_keys:
                         continue
                     seen_keys.add(key)
                     results.append(r)
-            except Exception:
-                # Skip failing tile and continue; Overpass may be flaky
-                pass
+            except Exception as e:
+                logging.warning(f"Overpass tile {tile_index}: failed with {e}; continuing")
             time.sleep(sleep_between)
             lon = next_lon
         lat = next_lat
+    logging.info(f"Overpass complete: total unique places {len(results)}")
     return results
 
 

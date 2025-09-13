@@ -187,14 +187,23 @@ def _calculate_bounding_box_distance(pt: Point, perimeter: Union[Polygon, MultiP
 def add_distance_to_perimeter_km(
     records: Iterable[Dict],
     perimeter: Union[Polygon, MultiPolygon],
+    *,
+    region_slug: str = "alps",
 ) -> List[Dict]:
-    """Add distance to Alps perimeter for each place record with robust fallback methods."""
+    """Add distance to region perimeter for each place record with robust fallback methods.
+
+    Writes the distance into a region-agnostic field name: distance_km_to_perimeter.
+    For backward compatibility, also fills distance_km_to_<slug> (e.g., _to_alps).
+    """
     
     # Validate and fix polygon if needed
     valid_perimeter = _validate_and_fix_polygon(perimeter)
     if not valid_perimeter:
         logger.error("Invalid perimeter geometry, cannot calculate distances")
-        return [{**r, "distance_km_to_alps": None} for r in records]
+        return [
+            {**r, "distance_km_to_perimeter": None, f"distance_km_to_{region_slug}": None}
+            for r in records
+        ]
     
     logger.info(f"Calculating distances using perimeter with bounds: {valid_perimeter.bounds}")
     
@@ -228,17 +237,17 @@ def add_distance_to_perimeter_km(
             if dist_km is None or dist_km == float('inf'):
                 error_count += 1
                 logger.warning(f"All distance methods failed for {r.get('name', 'unknown')}")
-                r = {**r, "distance_km_to_alps": None}
+                r = {**r, "distance_km_to_perimeter": None, f"distance_km_to_{region_slug}": None}
             else:
                 # Round to 3 decimal places
                 dist_km = round(dist_km, 3)
                 success_count += 1
-                r = {**r, "distance_km_to_alps": dist_km}
+                r = {**r, "distance_km_to_perimeter": dist_km, f"distance_km_to_{region_slug}": dist_km}
             
         except Exception as e:
             error_count += 1
             logger.warning(f"Failed to calculate distance for {r.get('name', 'unknown')}: {e}")
-            r = {**r, "distance_km_to_alps": None}
+            r = {**r, "distance_km_to_perimeter": None, f"distance_km_to_{region_slug}": None}
         
         updated.append(r)
     
