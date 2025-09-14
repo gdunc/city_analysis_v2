@@ -1,11 +1,11 @@
-# City Analysis v2 — Alpine Cities (Population + Coordinates)
+# City Analysis v2 — Mountain Region Cities (Population + Coordinates)
 
-Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames and OSM (Overpass), clipped to the Alpine perimeter, with CSV/GeoJSON outputs, optional elevation enrichment, hospital presence check, and interactive maps.
+Minimal toolchain to fetch and analyze cities in and near mountain regions (Alps, Pyrenees, Rockies) from GeoNames and OSM (Overpass), clipped to regional perimeters, with CSV/GeoJSON outputs, optional elevation enrichment, hospital presence check, and interactive maps.
 
 ## Features
 - **Population and coordinates** from GeoNames and OpenStreetMap
 - **Elevation** from OSM/GeoNames, with optional multi-source enrichment (OpenTopoData, Google, Open‑Elevation)
-- **Distance to Alps** computed for each place
+- **Distance to region perimeter** computed for each place (Alps, Pyrenees, or Rockies)
 - **Country filtering** with automatic country inference for missing codes
 - **Population threshold** filtering
 - **Interactive maps**:
@@ -16,7 +16,7 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - **CSV-to-map mode**: build maps directly from an existing CSV without refetching data
 
 ## Architecture (CTO-level overview)
-- `city_analysis/geometry.py`: Perimeter handling (load GeoJSON, default Alps polygon/bbox, Overpass bbox conversion)
+- `city_analysis/geometry.py`: Perimeter handling (load GeoJSON, default region polygons/bbox, Overpass bbox conversion)
 - `city_analysis/geonames.py`: GeoNames API client with pagination, normalized records
 - `city_analysis/overpass.py`: Overpass QL builder and fetcher, normalized records (`place=city|town|village`)
 - `city_analysis/normalize.py`: Perimeter filtering and deduplication by name + proximity with country resolution
@@ -27,6 +27,7 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - `city_analysis/analysis.py`: Summary metrics and top-N by population
 - `city_analysis/hospital_check.py`: Optional hospital presence enrichment via OSM (default) or OpenAI/hybrid
 - `city_analysis/airport_check.py`: Optional nearest international airport enrichment via OpenAI web search + OSRM driving metrics
+- `city_analysis/extract_rockies.py`: Rockies region perimeter extraction from GMBA dataset
 - `city_analysis/cli.py`: CLI orchestration
 - `city_analysis/map_utils.py`: Folium map builders and savers (standard and country-colored)
 
@@ -36,6 +37,7 @@ Minimal toolchain to fetch and analyze cities in and near the Alps from GeoNames
 - **Elevation enrichment**: OpenTopoData, Google Elevation API, Open‑Elevation
 - **OurAirports**: Airport metadata (large/medium; scheduled service; IATA/ICAO; coordinates) for offline nearest-airport lookup
 - **OSRM**: Routing for driving distance/time
+- **GMBA (Global Mountain Biodiversity Assessment)**: Mountain region boundaries for Rockies perimeter extraction
 
 ## Elevation Data Coverage
 Multi-source enrichment can significantly improve elevation coverage:
@@ -60,7 +62,7 @@ pip install -r requirements.txt
 - **Google Elevation API** (optional): Set `GOOGLE_API_KEY` or pass `--google-api-key`.
 - **OpenAI (optional)**: Set `OPENAI_API_KEY` only if you explicitly enable OpenAI modes. Optional `--openai-model` (default `gpt-5`) and `--openai-timeout`.
 - **OSRM routing** (optional for airports): Default public server is used. Override with `--osrm-base-url` if you have your own OSRM instance.
-- **Perimeter**: Provide a GeoJSON polygon/multipolygon of the Alps if available; otherwise, a realistic default polygon/bbox is used.
+- **Perimeter**: Provide a GeoJSON polygon/multipolygon of the target region if available; otherwise, a realistic default polygon/bbox is used.
 
 The CLI auto-loads a `.env` file if present (via `python-dotenv`). Example:
 ```bash
@@ -69,13 +71,18 @@ GEONAMES_USERNAME=your_user
 GOOGLE_API_KEY=your_key   # optional
 OPENAI_API_KEY=sk-...     # optional, for --check-hospitals
 ```
-The repo includes an example perimeter file: `alps_perimeter.geojson`.
+The repo includes example perimeter files:
+- `alps_perimeter.geojson` - Alps region
+- `data/regions/pyrenees/perimeter.geojson` - Pyrenees region  
+- `data/regions/rockies/perimeter.geojson` - Rockies region
 
 ## Usage
+
+### Alps Analysis (default)
 ```bash
 python -m city_analysis.cli --geonames-username YOUR_GEONAMES_USER --out-dir outputs
 ```
-Example using the included perimeter file and generating both maps:
+Example using the included Alps perimeter file and generating both maps:
 ```bash
 python -m city_analysis.cli \
   --geonames-username YOUR_GEONAMES_USER \
@@ -85,10 +92,32 @@ python -m city_analysis.cli \
   --out-dir outputs
 ```
 
+### Pyrenees Analysis
+```bash
+python -m city_analysis.cli \
+  --geonames-username YOUR_GEONAMES_USER \
+  --perimeter data/regions/pyrenees/perimeter.geojson \
+  --countries ES FR AD \
+  --make-map \
+  --make-country-map \
+  --out-dir outputs/pyrenees
+```
+
+### Rockies Analysis
+```bash
+python -m city_analysis.cli \
+  --geonames-username YOUR_GEONAMES_USER \
+  --perimeter data/regions/rockies/perimeter.geojson \
+  --countries US CA \
+  --make-map \
+  --make-country-map \
+  --out-dir outputs/rockies
+```
+
 ### CLI options: what they do and when to use them
 - **--geonames-username USER**: Enables GeoNames fetching (more complete populations). Use when you want broader coverage; omit to run OSM-only (faster, fewer dependencies).
-- **--perimeter FILE.geojson**: Custom Alpine perimeter or other region. Use to change study area; omit to use the built-in Alps polygon.
-- **--countries CODES...**: Restrict GeoNames/OSM queries to listed country codes (default: AT FR IT DE; CH/SI/LI are removed later). Narrow for speed or broader for coverage.
+- **--perimeter FILE.geojson**: Custom region perimeter or other region. Use to change study area; omit to use the built-in Alps polygon.
+- **--countries CODES...**: Restrict GeoNames/OSM queries to listed country codes (default: AT FR IT DE; CH/SI/LI are removed later). For Pyrenees use ES FR AD, for Rockies use US CA. Narrow for speed or broader for coverage.
 - **--min-population N**: Minimum population filter for GeoNames and final output. Increase for performance/"bigger places" focus; decrease to include smaller towns (slower, noisier).
 - **--require-osm-population**: Only include OSM places that explicitly have a `population` tag. Use for stricter data quality; omit to keep more places (may lack population values).
 - **--include-villages**: Include OSM `place=village` in addition to `city`/`town`. Use to capture small settlements; omit to focus on larger urban areas.
@@ -235,15 +264,19 @@ Controls:
 - General: limits and resume `--airports-limit`, `--airports-resume-missing`.
 
 ## Outputs
-- `alps_cities.csv` — Columns include: `name, country, latitude, longitude, population, elevation, elevation_feet, elevation_source, elevation_confidence, source, distance_km_to_alps`.
+- `{region}_cities.csv` — Columns include: `name, country, latitude, longitude, population, elevation, elevation_feet, elevation_source, elevation_confidence, source, distance_km_to_region`.
   - If hospital presence is enabled: `hospital_in_city, hospital_confidence_pct, hospital_reasoning, hospital_error, hospital_nearest_name, hospital_nearest_latitude, hospital_nearest_longitude, nearest_hospital_km, hospital_in_city_or_nearby, driving_km_to_hospital, driving_time_minutes_to_hospital`
   - If nearest airport is enabled: `airport_nearest_name, airport_nearest_iata, airport_nearest_icao, airport_nearest_latitude, airport_nearest_longitude, airport_confidence_pct, airport_reasoning, airport_error, driving_km_to_airport, driving_time_minutes_to_airport, driving_confidence_pct, driving_reasoning, driving_error`
-- `alps_cities.geojson` — GeoJSON FeatureCollection with attributes mirrored from CSV
-- `alps_cities_map.html` — Standard interactive HTML map (when `--make-map` is used)
-- `alps_cities_country_map.html` — Country-colored, population-sized map (when `--make-country-map` is used)
+- `{region}_cities.geojson` — GeoJSON FeatureCollection with attributes mirrored from CSV
+- `{region}_cities_map.html` — Standard interactive HTML map (when `--make-map` is used)
+- `{region}_cities_country_map.html` — Country-colored, population-sized map (when `--make-country-map` is used)
+
+Where `{region}` is `alps`, `pyrenees`, or `rockies` depending on the analysis.
 
 ## Notes
 - Licensing: GeoNames (CC BY 4.0), OSM (ODbL). Validate terms before redistribution.
 - Population completeness varies, especially for OSM if `population` tag is missing.
 - If `GEONAMES_USERNAME` is not provided, the tool runs in OSM-only mode (reduced completeness).
-- Default countries queried are `AT, FR, IT, DE`. Switzerland (CH), Slovenia (SI), and Liechtenstein (LI) are excluded by design in post-processing.
+- Default countries queried are `AT, FR, IT, DE` for Alps. Switzerland (CH), Slovenia (SI), and Liechtenstein (LI) are excluded by design in post-processing for Alps analysis.
+- For Pyrenees: use `ES, FR, AD` (Spain, France, Andorra)
+- For Rockies: use `US, CA` (United States, Canada)
