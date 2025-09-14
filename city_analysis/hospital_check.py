@@ -11,6 +11,7 @@ from openai import OpenAI
 from tqdm import tqdm
 from math import radians, sin, cos, asin, sqrt
 from .geometry import default_alps_polygon, polygon_bounds
+from typing import Optional
 from .airport_check import _osrm_route, DriveResult
 from .overpass import fetch_overpass_hospitals_bbox_tiled
 
@@ -273,9 +274,22 @@ def enrich_records_with_hospital_presence_osm(
     # Determine bbox to query for hospitals
     if perimeter_bbox is None:
         perimeter_bbox = polygon_bounds(default_alps_polygon())
+    # Expand bbox to search up to ~1000 km for nearest hospital
+    south, west, north, east = perimeter_bbox
+    # Approximate conversion: 1 degree lat ~ 111 km; lon scaled by cos(mid-lat)
+    import math
+    mid_lat = max(-89.0, min(89.0, (south + north) / 2.0))
+    dlat = 1000.0 / 111.0
+    dlon = 1000.0 / (111.0 * max(0.1, math.cos(math.radians(mid_lat))))
+    expanded = (
+        max(-90.0, south - dlat),
+        max(-180.0, west - dlon),
+        min(90.0, north + dlat),
+        min(180.0, east + dlon),
+    )
 
-    # Fetch hospitals once
-    hospitals = _load_hospitals_for_bbox(perimeter_bbox, tile_size_deg=tile_size_deg, sleep_between=sleep_between_tiles)
+    # Fetch hospitals once over expanded bbox
+    hospitals = _load_hospitals_for_bbox(expanded, tile_size_deg=tile_size_deg, sleep_between=sleep_between_tiles)
 
     # Precompute for quick coarse filter
     deg_radius = max(0.001, radius_km / 111.0)  # ~1 deg ~111 km
@@ -410,7 +424,7 @@ def enrich_records_with_hospital_presence_osm(
                 airport_lat=float(new_record["hospital_nearest_latitude"]),
                 airport_lon=float(new_record["hospital_nearest_longitude"]),
                 base_url=osrm_base_url,
-                request_timeout=30.0,
+                request_timeout=None,
             )
             if drive.driving_error:
                 new_record["driving_km_to_hospital"] = ""

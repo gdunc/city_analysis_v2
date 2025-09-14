@@ -66,6 +66,15 @@ REGIONS: dict[str, RegionSettings] = {
         excluded_countries=[],
         map_tiles="CartoDB.Positron",
     ),
+    "rockies": RegionSettings(
+        name="Rocky Mountains",
+        slug="rockies",
+        countries=["US", "CA"],
+        # Perimeter discovered at data/regions/rockies/perimeter.geojson if present
+        perimeter_geojson=None,
+        excluded_countries=[],
+        map_tiles="CartoDB.Positron",
+    ),
 }
 
 

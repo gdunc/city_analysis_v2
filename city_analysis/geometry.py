@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Tuple
 
 from shapely.geometry import Polygon, MultiPolygon, shape, box, Point
+from shapely.ops import unary_union
 
 
 def load_perimeter(perimeter_path: str | Path) -> MultiPolygon | Polygon:

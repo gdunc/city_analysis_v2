@@ -36,8 +36,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-population", type=int, default=DEFAULT_MIN_POPULATION, help="Minimum population threshold for GeoNames and final output")
     parser.add_argument("--countries", nargs="*", default=None, help="Country codes to include; defaults to region settings")
     parser.add_argument("--perimeter", type=str, help="Path to region perimeter GeoJSON (FeatureCollection/Feature/Geometry). Overrides region settings.")
-    parser.add_argument("--require-osm-population", action="store_true", default=DEFAULT_REQUIRE_OSM_POPULATION, help="Only include OSM places that have a population tag")
-    parser.add_argument("--include-villages", action="store_true", help="Include OSM places with place=village in addition to city,town")
+    # Villages now included by default; keep arg for backward-compat but ignore
+    parser.add_argument("--require-osm-population", action="store_true", default=DEFAULT_REQUIRE_OSM_POPULATION, help=argparse.SUPPRESS)
+    parser.add_argument("--include-villages", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--tile-size", type=float, default=1.0, help="Tile size in degrees for Overpass tiling")
     parser.add_argument("--out-dir", type=str, default="outputs", help="Directory to write outputs")
     parser.add_argument("--top", type=int, default=20, help="Show top-N by population in console")
@@ -46,8 +47,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-elevation", action="store_true", help="Skip elevation enrichment (use only OSM/GeoNames data)")
 
     # Hospital presence check (optional)
-    parser.add_argument("--check-hospitals", action="store_true", help="Check if each city has a hospital; adds columns to CSV (defaults to OSM-based)")
-    parser.add_argument("--hospital-mode", type=str, choices=["osm", "openai", "hybrid"], default=os.getenv("HOSPITAL_MODE", "osm"), help="Hospital check mode: 'osm' (default), 'openai', or 'hybrid' (OSM first, then OpenAI fallback)")
+    # Hospitals always enriched via OSM by default; suppress CLI toggles
+    parser.add_argument("--check-hospitals", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--hospital-mode", type=str, choices=["osm", "openai", "hybrid"], default=os.getenv("HOSPITAL_MODE", "osm"), help=argparse.SUPPRESS)
     parser.add_argument("--hospital-radius-km", type=float, default=float(os.getenv("HOSPITAL_RADIUS_KM", "3.0")), help="Radius in km around city centroid to consider OSM hospitals (default 3.0)")
     parser.add_argument("--hospital-tile-size", type=float, default=float(os.getenv("HOSPITAL_TILE_SIZE_DEG", "1.0")), help="Overpass tile size in degrees for hospital fetch (default 1.0)")
     parser.add_argument("--hospital-no-openai-fallback", action="store_true", help="In hybrid mode, disable OpenAI fallback (OSM only)")
@@ -60,8 +62,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--map-tiles", type=str, default="OpenStreetMap", help="Folium tiles name or URL")
 
     # Airport nearest + driving distance/time (optional)
-    parser.add_argument("--check-airports", action="store_true", help="Find nearest international airport and OSRM driving; offline dataset by default (no OpenAI)")
-    parser.add_argument("--airports-use-openai", action="store_true", help="Opt-in: use OpenAI web search instead of offline dataset")
+    # Airports always enriched via offline dataset by default; suppress toggles
+    parser.add_argument("--check-airports", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--airports-use-openai", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--airports-dataset", type=str, default=os.getenv("AIRPORTS_DATASET", None), help="Path to OurAirports CSV; if omitted, auto-download and cache")
     parser.add_argument("--airports-topk", type=int, default=int(os.getenv("AIRPORTS_TOPK", "3")), help="Top-K nearest airports to consider for OSRM refinement (offline mode)")
     parser.add_argument("--airports-max-radius-km", type=float, default=float(os.getenv("AIRPORTS_MAX_RADIUS_KM", "400")), help="Max crow-flies radius to attempt OSRM driving (offline mode)")
@@ -185,7 +188,8 @@ def main() -> None:
         return
 
     if not args.geonames_username:
-        print("Note: GeoNames username missing; proceeding with OSM only.", file=sys.stderr)
+        print("Error: GeoNames username is required. Set GEONAMES_USERNAME in your environment or use --geonames-username.", file=sys.stderr)
+        sys.exit(1)
 
     # Load or default perimeter
     if args.perimeter:
@@ -195,7 +199,8 @@ def main() -> None:
 
     # Build Overpass tiles using bbox from perimeter
     bbox = polygon_bounds(perimeter)
-    place_types = ("city", "town", "village") if args.include_villages else ("city", "town")
+    # Always include villages by default
+    place_types = ("city", "town", "village")
 
     # Fetch data
     geonames_records: List[dict] = []
@@ -244,56 +249,33 @@ def main() -> None:
         print("Skipping elevation enrichment (using only OSM/GeoNames data)", file=sys.stderr)
 
     # Optional: Hospital presence check
-    if args.check_hospitals:
-        if args.hospital_mode == "openai":
-            print("Checking hospital presence via OpenAI (explicitly enabled)", file=sys.stderr)
-            enriched = enrich_records_with_hospital_presence(
-                enriched,
-                model=args.openai_model,
-                request_timeout=args.openai_timeout,
-            )
-        else:
-            print("Checking hospital presence via OSM (default)", file=sys.stderr)
-            enriched = enrich_records_with_hospital_presence_osm(
-                enriched,
-                perimeter_bbox=bbox,
-                radius_km=args.hospital_radius_km,
-                tile_size_deg=args.hospital_tile_size,
-                sleep_between_tiles=0.5,
-                fallback_to_openai=(args.hospital_mode == "hybrid" and not args.hospital_no_openai_fallback),
-                model=args.openai_model,
-                request_timeout=args.openai_timeout,
-                osrm_base_url=args.osrm_base_url,
-            )
+    # Always enrich with hospital presence via OSM by default
+    print("Checking hospital presence via OSM (default)", file=sys.stderr)
+    enriched = enrich_records_with_hospital_presence_osm(
+        enriched,
+        perimeter_bbox=bbox,
+        radius_km=args.hospital_radius_km,
+        tile_size_deg=args.hospital_tile_size,
+        sleep_between_tiles=0.5,
+        fallback_to_openai=False,
+        model=args.openai_model,
+        request_timeout=args.openai_timeout,
+        osrm_base_url=args.osrm_base_url,
+    )
 
     # Optional: Nearest international airport + driving time/distance
-    if args.check_airports:
-        print("Finding nearest international airports and driving metrics...", file=sys.stderr)
-        if args.airports_use_openai:
-            print("Using OpenAI mode (explicitly opted in)", file=sys.stderr)
-            enriched = enrich_records_with_nearest_airport(
-                enriched,
-                model=args.openai_model,
-                request_timeout=args.openai_timeout,
-                osrm_base_url=args.osrm_base_url,
-                max_retries=args.airports_max_retries,
-                initial_backoff_seconds=args.airports_initial_backoff,
-                backoff_multiplier=args.airports_backoff_multiplier,
-                jitter_seconds=args.airports_jitter,
-                limit=args.airports_limit,
-                resume_missing_only=args.airports_resume_missing,
-            )
-        else:
-            print("Using offline dataset mode (default; no OpenAI)", file=sys.stderr)
-            enriched = enrich_records_with_nearest_airport_offline(
-                enriched,
-                dataset_csv=args.airports_dataset,
-                osrm_base_url=args.osrm_base_url,
-                topk=args.airports_topk,
-                max_radius_km=args.airports_max_radius_km,
-                limit=args.airports_limit,
-                resume_missing_only=args.airports_resume_missing,
-            )
+    # Always enrich with nearest airport via offline dataset by default
+    print("Finding nearest international airports and driving metrics...", file=sys.stderr)
+    print("Using offline dataset mode (default; no OpenAI)", file=sys.stderr)
+    enriched = enrich_records_with_nearest_airport_offline(
+        enriched,
+        dataset_csv=args.airports_dataset,
+        osrm_base_url=args.osrm_base_url,
+        topk=args.airports_topk,
+        max_radius_km=args.airports_max_radius_km or 1000.0,
+        limit=args.airports_limit,
+        resume_missing_only=args.airports_resume_missing,
+    )
 
     # Ensure output directory
     out_dir = Path(args.out_dir) / settings.slug

@@ -210,11 +210,11 @@ def _osrm_route(
     airport_lat: float,
     airport_lon: float,
     base_url: str = "https://router.project-osrm.org",
-    request_timeout: float = 30.0,
+    request_timeout: Optional[float] = None,
 ) -> DriveResult:
     try:
         url = f"{base_url.rstrip('/')}/route/v1/driving/{city_lon:.6f},{city_lat:.6f};{airport_lon:.6f},{airport_lat:.6f}?overview=false&annotations=duration,distance&alternatives=false"
-        resp = requests.get(url, timeout=request_timeout)
+        resp = requests.get(url) if request_timeout is None else requests.get(url, timeout=request_timeout)
         if resp.status_code != 200:
             return DriveResult(
                 driving_km_to_airport=None,
@@ -370,7 +370,7 @@ def enrich_records_with_nearest_airport(
                 airport_lat=float(new_record["airport_nearest_latitude"]),
                 airport_lon=float(new_record["airport_nearest_longitude"]),
                 base_url=osrm_base_url,
-                request_timeout=30.0,
+                request_timeout=None,
             )
         else:
             drive = DriveResult(
@@ -498,7 +498,7 @@ def enrich_records_with_nearest_airport_offline(
     dataset_csv: Optional[str] = None,
     osrm_base_url: str = "https://router.project-osrm.org",
     topk: int = 3,
-    max_radius_km: float = 400.0,
+    max_radius_km: float = 1000.0,
     sleep_seconds_between_requests: float = 0.1,
     limit: Optional[int] = None,
     resume_missing_only: bool = False,
@@ -605,7 +605,7 @@ def enrich_records_with_nearest_airport_offline(
                     airport_lat=a_lat,
                     airport_lon=a_lon,
                     base_url=osrm_base_url,
-                    request_timeout=30.0,
+                    request_timeout=None,
                 )
                 driving_attempted = True
                 if dr.driving_error:

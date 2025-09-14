@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_85b19088ee2ed5562128ebd6f25647fc {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    <script>
+    (function(){
+      var MAP_VAR_NAME = 'map_85b19088ee2ed5562128ebd6f25647fc';
+      function getMap(){ return window[MAP_VAR_NAME]; }
+
+      function collectMarkers(layer, out){
+        if (!layer) return;
+        if (layer instanceof L.CircleMarker) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectMarkers(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectMarkers(child, out); });
+        }
+      }
+
+      function collectClusters(layer, out){
+        if (!layer) return;
+        if (typeof L.MarkerClusterGroup !== 'undefined' && (layer instanceof L.MarkerClusterGroup)) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectClusters(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectClusters(child, out); });
+        }
+      }
+
+      function readPopulation(marker){
+        var p = 0;
+        if (marker && marker.options && marker.options.population != null) {
+          var n = Number(marker.options.population);
+          if (!isNaN(n)) return n;
+        }
+        try {
+          var pop = 0;
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var htmlStr = '';
+          if (typeof content === 'string') {
+            htmlStr = content;
+          } else if (content && typeof content.innerHTML === 'string') {
+            htmlStr = content.innerHTML;
+          } else if (content && typeof content.textContent === 'string') {
+            htmlStr = content.textContent;
+          }
+          if (htmlStr) {
+            var m = htmlStr.match(/Population:\s*([0-9,.]+)/i);
+            if (m && m[1]) {
+              pop = Number(m[1].replace(/[\,\s]/g, '')) || 0;
+            }
+          }
+          return pop;
+        } catch (e) { return 0; }
+      }
+
+      function readMeta(marker){
+        try {
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var root;
+          if (typeof content === 'string') {
+            var div = document.createElement('div');
+            div.innerHTML = content;
+            root = div;
+          } else if (content && content instanceof HTMLElement) {
+            root = content;
+          } else if (content && content.innerHTML) {
+            var d2 = document.createElement('div');
+            d2.innerHTML = content.innerHTML;
+            root = d2;
+          }
+          if (!root) return { dta:null, dth:null, hic:'', hcn:'' };
+          var meta = root.querySelector('.city-meta');
+          if (!meta) return { dta:null, dth:null, hic:'', hcn:'' };
+          var dta = meta.getAttribute('data-dta');
+          var dth = meta.getAttribute('data-dth');
+          var hic = (meta.getAttribute('data-hic') || '').toLowerCase();
+          var hcn = (meta.getAttribute('data-hcn') || '').toLowerCase();
+          var dtaNum = (dta !== null && dta !== '') ? Number(dta) : null;
+          var dthNum = (dth !== null && dth !== '') ? Number(dth) : null;
+          if (isNaN(dtaNum)) dtaNum = null;
+          if (isNaN(dthNum)) dthNum = null;
+          return { dta: dtaNum, dth: dthNum, hic: hic, hcn: hcn };
+        } catch (e) {
+          return { dta:null, dth:null, hic:'', hcn:'' };
+        }
+      }
+
+      var state = window.__popFilterState || { indexBuilt:false, markerToOwners:{}, markers:[], clusters:[] };
+      function buildIndex(){
+        var map = getMap();
+        state.markers = [];
+        state.clusters = [];
+        map.eachLayer(function(l){ collectMarkers(l, state.markers); });
+        map.eachLayer(function(l){ collectClusters(l, state.clusters); });
+        state.markerToOwners = {};
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var owners = [];
+          for (var j=0;j<state.clusters.length;j++){
+            var c = state.clusters[j];
+            if (c.hasLayer && c.hasLayer(m)) owners.push(c);
+          }
+          state.markerToOwners[m._leaflet_id] = owners;
+        }
+        state.indexBuilt = true;
+        window.__popFilterState = state;
+      }
+
+      function showMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (!c.hasLayer(m)) c.addLayer(m);
+          }
+        } else {
+          if (!map.hasLayer(m)) map.addLayer(m);
+        }
+        if (m._icon) m._icon.style.display = '';
+        if (m._path) m._path.style.display = '';
+      }
+
+      function hideMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (c.hasLayer(m)) c.removeLayer(m);
+          }
+        } else {
+          if (map.hasLayer(m)) map.removeLayer(m);
+        }
+        if (m._icon) m._icon.style.display = 'none';
+        if (m._path) m._path.style.display = 'none';
+      }
+
+      function applyFilter(minPop, maxAirportMins, maxHospitalMins, hospitalInCity, hospitalInCityNearby){
+        if (!state.indexBuilt) buildIndex();
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var p = readPopulation(m);
+          var show = (p >= minPop);
+          var meta = readMeta(m);
+          if (show && maxAirportMins != null){
+            if (meta.dta == null) { show = false; } else { show = show && (meta.dta <= maxAirportMins); }
+          }
+          if (show && maxHospitalMins != null){
+            if (meta.dth == null) { show = false; } else { show = show && (meta.dth <= maxHospitalMins); }
+          }
+          if (show && hospitalInCity && hospitalInCity !== 'any'){
+            show = show && (meta.hic === hospitalInCity);
+          }
+          if (show && hospitalInCityNearby && hospitalInCityNearby !== 'any'){
+            show = show && (meta.hcn === hospitalInCityNearby);
+          }
+          if (show) showMarker(m); else hideMarker(m);
+        }
+      }
+
+      function ensureUI(){
+        // If control already present, skip
+        if (document.getElementById('pop-filter')) return;
+        var map = getMap();
+        var ctrl = L.control({position: 'topleft'});
+        ctrl.onAdd = function(map){
+          var container = L.DomUtil.create('div');
+          container.innerHTML = `
+    <div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 260px;">
+  <div style="font-size:12px; margin-bottom:6px;"><b>Filters</b></div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Min population</label><br/>
+    <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to airport (min)</label><br/>
+    <input id="max-airport-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to hospital (min)</label><br/>
+    <input id="max-hospital-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Hospital in city?</label><br/>
+    <select id="hospital-in-city" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div style="font-size:12px; margin-bottom:8px;">
+    <label>Hospital in city or nearby?</label><br/>
+    <select id="hospital-in-city-or-nearby" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div>
+    <button id="apply-pop-filter" style="margin-right:6px;">Apply</button>
+    <button id="reset-pop-filter">Reset</button>
+  </div>
+</div>
+          `;
+          L.DomEvent.disableClickPropagation(container);
+          return container;
+        };
+        ctrl.addTo(map);
+      }
+
+      function hookUI(){
+        ensureUI();
+        var btn = document.getElementById('apply-pop-filter');
+        var reset = document.getElementById('reset-pop-filter');
+        var input = document.getElementById('pop-threshold');
+        var maxA = document.getElementById('max-airport-mins');
+        var maxH = document.getElementById('max-hospital-mins');
+        var hic = document.getElementById('hospital-in-city');
+        var hcn = document.getElementById('hospital-in-city-or-nearby');
+        if (!btn || !input) return;
+        btn.addEventListener('click', function(){
+          var v = Number(input.value || 0) || 0;
+          var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+          var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+          var ic = (hic && hic.value) ? hic.value : 'any';
+          var cn = (hcn && hcn.value) ? hcn.value : 'any';
+          applyFilter(v, a, h, ic, cn);
+        });
+        input.addEventListener('keypress', function(e){
+          if (e.key === 'Enter') {
+            var v = Number(input.value || 0) || 0;
+            var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+            var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+            var ic = (hic && hic.value) ? hic.value : 'any';
+            var cn = (hcn && hcn.value) ? hcn.value : 'any';
+            applyFilter(v, a, h, ic, cn);
+          }
+        });
+        if (reset){
+          reset.addEventListener('click', function(){
+            if (input) input.value = 0;
+            if (maxA) maxA.value = '';
+            if (maxH) maxH.value = '';
+            if (hic) hic.value = 'any';
+            if (hcn) hcn.value = 'any';
+            applyFilter(0, null, null, 'any', 'any');
+          });
+        }
+      }
+
+      function whenMapReady(fn){
+        if (getMap()) { fn(); return; }
+        var tries = 0; var maxTries = 200; // ~10s
+        var iv = setInterval(function(){
+          if (getMap()){ clearInterval(iv); fn(); }
+          else if (++tries >= maxTries){ clearInterval(iv); }
+        }, 50);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function(){ whenMapReady(hookUI); });
+      } else {
+        whenMapReady(hookUI);
+      }
+    })();
+    </script>
+    
+            <div class="folium-map" id="map_85b19088ee2ed5562128ebd6f25647fc" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_85b19088ee2ed5562128ebd6f25647fc = L.map(
+                "map_85b19088ee2ed5562128ebd6f25647fc",
+                {
+                    center: [41.66677412051282, -109.68542872564103],
+                    crs: L.CRS.EPSG3857,
+                    
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+
+
+                }
+            );
+            L.control.scale().addTo(map_85b19088ee2ed5562128ebd6f25647fc);
+
+            
+
+        
+    
+            var tile_layer_ede7b0122f53a5a721e75809f2766a2b = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ede7b0122f53a5a721e75809f2766a2b.addTo(map_85b19088ee2ed5562128ebd6f25647fc);
+        
+    
+            var marker_cluster_22736f8b0033d93d3b0d268b0d697206 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_05422e7e5ff3c631e1e804dbcb2de929 = L.circleMarker(
+                [46.0131505, -112.536508],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_b7cf11355c4ce110296e6c69bd02db45 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a9aaf3f4c931b7a00885322bdbdeea25 = $(`<div id="html_a9aaf3f4c931b7a00885322bdbdeea25" style="width: 100.0%; height: 100.0%;"><b>Butte</b>(US)<br/>Population: 34,494<br/>Elevation: 1743 m / 5,719 ft<br/>Nearest airport: Bert Mooney Airport<br/>Drive to nearest airport: 14 min<br/>Drive to nearest hospital: 1 min<br/>Nearest hospital: St. James Hospital<br/>Source: osm <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Butte" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="14.2" data-dth="1.4" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_b7cf11355c4ce110296e6c69bd02db45.setContent(html_a9aaf3f4c931b7a00885322bdbdeea25);
+            
+        
+
+        circle_marker_05422e7e5ff3c631e1e804dbcb2de929.bindPopup(popup_b7cf11355c4ce110296e6c69bd02db45)
+        ;
+
+        
+    
+    
+            var circle_marker_645789631bcd0669a0a239a3c2f5e716 = L.circleMarker(
+                [40.61967, -111.81021],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_930eedcf38d0737477e16e4083b354c7 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_f39f53cf32625f3d28fc5cfe2dc0501a = $(`<div id="html_f39f53cf32625f3d28fc5cfe2dc0501a" style="width: 100.0%; height: 100.0%;"><b>Cottonwood Heights</b>(US)<br/>Population: 34,343<br/>Elevation: 1468 m / 4,816 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 27 min<br/>Drive to nearest hospital: 7 min<br/>Nearest hospital: Utah Youth Village<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Cottonwood+Heights" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="26.8" data-dth="6.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_930eedcf38d0737477e16e4083b354c7.setContent(html_f39f53cf32625f3d28fc5cfe2dc0501a);
+            
+        
+
+        circle_marker_645789631bcd0669a0a239a3c2f5e716.bindPopup(popup_930eedcf38d0737477e16e4083b354c7)
+        ;
+
+        
+    
+    
+            var circle_marker_ef5ad6cf636ac103c0c00ad558704266 = L.circleMarker(
+                [46.59271, -112.03611],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_b4002c802013274399e51d11f0a022f8 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_9d441e562c713082ea30d9ec2becb024 = $(`<div id="html_9d441e562c713082ea30d9ec2becb024" style="width: 100.0%; height: 100.0%;"><b>Helena</b>(US)<br/>Population: 32,091<br/>Elevation: 1237 m / 4,058 ft<br/>Nearest airport: Helena Regional Airport<br/>Drive to nearest airport: 9 min<br/>Drive to nearest hospital: 8 min<br/>Nearest hospital: Saint Peter's Health<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Helena" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="9.0" data-dth="7.5" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_b4002c802013274399e51d11f0a022f8.setContent(html_9d441e562c713082ea30d9ec2becb024);
+            
+        
+
+        circle_marker_ef5ad6cf636ac103c0c00ad558704266.bindPopup(popup_b4002c802013274399e51d11f0a022f8)
+        ;
+
+        
+    
+    
+            var circle_marker_ef583d9ed8d818dc493fbc7ca81b66f0 = L.circleMarker(
+                [40.9805, -111.88744],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_08a6fb16e907f506754b02c5ca1481dc = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_2b7d6cb2d79cd17dfeae3eac34dc2dff = $(`<div id="html_2b7d6cb2d79cd17dfeae3eac34dc2dff" style="width: 100.0%; height: 100.0%;"><b>Farmington</b>(US)<br/>Population: 22,566<br/>Elevation: 1319 m / 4,327 ft<br/>Nearest airport: Ogden Hinckley Airport<br/>Drive to nearest airport: 26 min<br/>Drive to nearest hospital: 12 min<br/>Nearest hospital: Intermountain Healthcare Layton Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Farmington" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="25.5" data-dth="12.1" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_08a6fb16e907f506754b02c5ca1481dc.setContent(html_2b7d6cb2d79cd17dfeae3eac34dc2dff);
+            
+        
+
+        circle_marker_ef583d9ed8d818dc493fbc7ca81b66f0.bindPopup(popup_08a6fb16e907f506754b02c5ca1481dc)
+        ;
+
+        
+    
+    
+            var circle_marker_d2bb3925d5331aa2cdfd19be67d89f6e = L.circleMarker(
+                [40.84856, -111.90688],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_197aa6030799e20177c6e3b543238b29 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_9f1ae418bc6f4cbea349bf315b9d2cd6 = $(`<div id="html_9f1ae418bc6f4cbea349bf315b9d2cd6" style="width: 100.0%; height: 100.0%;"><b>North Salt Lake</b>(US)<br/>Population: 19,796<br/>Elevation: 1329 m / 4,360 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 16 min<br/>Drive to nearest hospital: 5 min<br/>Nearest hospital: Benchmark Behavioral Health Systems<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=North+Salt+Lake" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="16.2" data-dth="5.1" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_197aa6030799e20177c6e3b543238b29.setContent(html_9f1ae418bc6f4cbea349bf315b9d2cd6);
+            
+        
+
+        circle_marker_d2bb3925d5331aa2cdfd19be67d89f6e.bindPopup(popup_197aa6030799e20177c6e3b543238b29)
+        ;
+
+        
+    
+    
+            var circle_marker_8ac089b5e432a6cc01da61245e024848 = L.circleMarker(
+                [42.72825, -111.53245],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_79869f7bb7fdfbba23ce85130593da27 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_741f7a33b96bc2f7e1873e1c2d46b613 = $(`<div id="html_741f7a33b96bc2f7e1873e1c2d46b613" style="width: 100.0%; height: 100.0%;"><b>Conda</b>(US)<br/>Population: 21,260<br/>Elevation: 1889 m / 6,198 ft<br/>Nearest airport: Pocatello Regional Airport<br/>Drive to nearest airport: 103 min<br/>Drive to nearest hospital: 26 min<br/>Nearest hospital: Caribou Memorial Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Conda" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="102.8" data-dth="25.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_79869f7bb7fdfbba23ce85130593da27.setContent(html_741f7a33b96bc2f7e1873e1c2d46b613);
+            
+        
+
+        circle_marker_8ac089b5e432a6cc01da61245e024848.bindPopup(popup_79869f7bb7fdfbba23ce85130593da27)
+        ;
+
+        
+    
+    
+            var circle_marker_bb5c6c386c7c3e3ba48f4ce1637acce0 = L.circleMarker(
+                [39.75554, -105.2211],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_a891de6732d67077050e9634950c3b47 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_530add9b1d79eb6e491b10ea70538730 = $(`<div id="html_530add9b1d79eb6e491b10ea70538730" style="width: 100.0%; height: 100.0%;"><b>Golden</b>(US)<br/>Population: 20,330<br/>Elevation: 1737 m / 5,699 ft<br/>Nearest airport: Rocky Mountain Metropolitan Airport<br/>Drive to nearest airport: 29 min<br/>Drive to nearest hospital: 12 min<br/>Nearest hospital: Denver West Surgery Center<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Golden" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="29.3" data-dth="11.6" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_a891de6732d67077050e9634950c3b47.setContent(html_530add9b1d79eb6e491b10ea70538730);
+            
+        
+
+        circle_marker_bb5c6c386c7c3e3ba48f4ce1637acce0.bindPopup(popup_a891de6732d67077050e9634950c3b47)
+        ;
+
+        
+    
+    
+            var circle_marker_665388e77dd03f2152a0ec20f5576cf8 = L.circleMarker(
+                [37.27528, -107.88007],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_c1e3bf97d5d8cfaaed4970275808fb72 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_98a484c2fa6f52176eb66de0deba3b62 = $(`<div id="html_98a484c2fa6f52176eb66de0deba3b62" style="width: 100.0%; height: 100.0%;"><b>Durango</b>(US)<br/>Population: 18,006<br/>Elevation: 1995 m / 6,545 ft<br/>Nearest airport: Durango La Plata County Airport<br/>Drive to nearest airport: 36 min<br/>Drive to nearest hospital: 9 min<br/>Nearest hospital: Animas Surgical Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Durango" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="36.3" data-dth="9.3" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_c1e3bf97d5d8cfaaed4970275808fb72.setContent(html_98a484c2fa6f52176eb66de0deba3b62);
+            
+        
+
+        circle_marker_665388e77dd03f2152a0ec20f5576cf8.bindPopup(popup_c1e3bf97d5d8cfaaed4970275808fb72)
+        ;
+
+        
+    
+    
+            var circle_marker_6dc568537c6ec98f0f305fb2e8d0ddfc = L.circleMarker(
+                [41.30716, -111.96022],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_8363262faafda15f2773c7dfddfc8032 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_1dcfb957f96b6e2314b13f6de0394731 = $(`<div id="html_1dcfb957f96b6e2314b13f6de0394731" style="width: 100.0%; height: 100.0%;"><b>North Ogden</b>(US)<br/>Population: 18,446<br/>Elevation: 1365 m / 4,478 ft<br/>Nearest airport: Ogden Hinckley Airport<br/>Drive to nearest airport: 18 min<br/>Drive to nearest hospital: 19 min<br/>Nearest hospital: McKay-Dee North Campus<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=North+Ogden" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="18.3" data-dth="18.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_8363262faafda15f2773c7dfddfc8032.setContent(html_1dcfb957f96b6e2314b13f6de0394731);
+            
+        
+
+        circle_marker_6dc568537c6ec98f0f305fb2e8d0ddfc.bindPopup(popup_8363262faafda15f2773c7dfddfc8032)
+        ;
+
+        
+    
+    
+            var circle_marker_8c3fe788369ec31d0b788c72d79c7565 = L.circleMarker(
+                [40.918, -111.87216],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_c4a783c4560660f21ba1ed3e874692df = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_0920da9462e37d105bdbb891ac8fddef = $(`<div id="html_0920da9462e37d105bdbb891ac8fddef" style="width: 100.0%; height: 100.0%;"><b>Centerville</b>(US)<br/>Population: 16,877<br/>Elevation: 1337 m / 4,386 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 23 min<br/>Drive to nearest hospital: 6 min<br/>Nearest hospital: Lakeview Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Centerville" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="23.3" data-dth="6.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_c4a783c4560660f21ba1ed3e874692df.setContent(html_0920da9462e37d105bdbb891ac8fddef);
+            
+        
+
+        circle_marker_8c3fe788369ec31d0b788c72d79c7565.bindPopup(popup_c4a783c4560660f21ba1ed3e874692df)
+        ;
+
+        
+    
+    
+            var circle_marker_3fe0e43dbbe2feff9ce561ae12995c17 = L.circleMarker(
+                [40.5069, -111.41324],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_1d7510b67bc37410aedb7cb0a510ed1f = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_3769e44e2d340d85c002474db5910af0 = $(`<div id="html_3769e44e2d340d85c002474db5910af0" style="width: 100.0%; height: 100.0%;"><b>Heber City</b>(US)<br/>Population: 9,198<br/>Elevation: 1713 m / 5,620 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 58 min<br/>Drive to nearest hospital: 0 min<br/>Nearest hospital: Encompass Health<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Heber+City" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="58.3" data-dth="0.2" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_1d7510b67bc37410aedb7cb0a510ed1f.setContent(html_3769e44e2d340d85c002474db5910af0);
+            
+        
+
+        circle_marker_3fe0e43dbbe2feff9ce561ae12995c17.bindPopup(popup_1d7510b67bc37410aedb7cb0a510ed1f)
+        ;
+
+        
+    
+    
+            var circle_marker_63d0a0e6fee00a4170d26b0e571eefa3 = L.circleMarker(
+                [51.08335, -115.35206],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_42dd192b6f95b0fb47a23ca7fd1b5940 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_7fef9c1e1f370891f072b7add2002bef = $(`<div id="html_7fef9c1e1f370891f072b7add2002bef" style="width: 100.0%; height: 100.0%;"><b>Canmore</b>(CA)<br/>Population: 13,992<br/>Elevation: 1309 m / 4,295 ft<br/>Nearest airport: Calgary International Airport<br/>Drive to nearest airport: 96 min<br/>Drive to nearest hospital: 6 min<br/>Nearest hospital: Canmore General Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Canmore" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="96.1" data-dth="5.7" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_42dd192b6f95b0fb47a23ca7fd1b5940.setContent(html_7fef9c1e1f370891f072b7add2002bef);
+            
+        
+
+        circle_marker_63d0a0e6fee00a4170d26b0e571eefa3.bindPopup(popup_42dd192b6f95b0fb47a23ca7fd1b5940)
+        ;
+
+        
+    
+    
+            var circle_marker_0fd20735eaeae05cc74c02da4d88769d = L.circleMarker(
+                [40.48498, -106.83172],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_137ab7642f88f8a63ffb894ad9d00356 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_b7f97f4aa7c80e4c08fef21eed1fd75a = $(`<div id="html_b7f97f4aa7c80e4c08fef21eed1fd75a" style="width: 100.0%; height: 100.0%;"><b>Steamboat Springs</b>(US)<br/>Population: 12,435<br/>Elevation: 2057 m / 6,749 ft<br/>Nearest airport: Yampa Valley Airport<br/>Drive to nearest airport: 31 min<br/>Drive to nearest hospital: 6 min<br/>Nearest hospital: Yampa Valley Medical Center<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Steamboat+Springs" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="31.1" data-dth="6.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_137ab7642f88f8a63ffb894ad9d00356.setContent(html_b7f97f4aa7c80e4c08fef21eed1fd75a);
+            
+        
+
+        circle_marker_0fd20735eaeae05cc74c02da4d88769d.bindPopup(popup_137ab7642f88f8a63ffb894ad9d00356)
+        ;
+
+        
+    
+    
+            var circle_marker_1bd4ff9023658e652a673cba1c16db6a = L.circleMarker(
+                [39.64499, -106.5942],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_0f6cd771acff557ceea64cab45c697ee = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_55de4a0605f2324e150ac6842705c5af = $(`<div id="html_55de4a0605f2324e150ac6842705c5af" style="width: 100.0%; height: 100.0%;"><b>Edwards</b>(US)<br/>Population: 10,266<br/>Elevation: 2200 m / 7,218 ft<br/>Nearest airport: Eagle County Regional Airport<br/>Drive to nearest airport: 31 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Shaw Cancer Center<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Edwards" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="31.3" data-dth="2.3" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_0f6cd771acff557ceea64cab45c697ee.setContent(html_55de4a0605f2324e150ac6842705c5af);
+            
+        
+
+        circle_marker_1bd4ff9023658e652a673cba1c16db6a.bindPopup(popup_0f6cd771acff557ceea64cab45c697ee)
+        ;
+
+        
+    
+    
+            var circle_marker_80da5367f5c82a09170d97dd09df00f6 = L.circleMarker(
+                [41.31828, -111.99216],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_0274dda9d2add356995b37c9259b451c = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_c8096501036f07fe42460dbbb67ed5a2 = $(`<div id="html_c8096501036f07fe42460dbbb67ed5a2" style="width: 100.0%; height: 100.0%;"><b>Pleasant View</b>(US)<br/>Population: 9,273<br/>Elevation: 1327 m / 4,354 ft<br/>Nearest airport: Ogden Hinckley Airport<br/>Drive to nearest airport: 16 min<br/>Drive to nearest hospital: 20 min<br/>Nearest hospital: McKay-Dee North Campus<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Pleasant+View" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="16.4" data-dth="20.1" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_0274dda9d2add356995b37c9259b451c.setContent(html_c8096501036f07fe42460dbbb67ed5a2);
+            
+        
+
+        circle_marker_80da5367f5c82a09170d97dd09df00f6.bindPopup(popup_0274dda9d2add356995b37c9259b451c)
+        ;
+
+        
+    
+    
+            var circle_marker_4aa505e21e5232166e6bd9ce7eb7a97a = L.circleMarker(
+                [43.47993, -110.76243],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_3042a826f4c853238726a9adeefe4182 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_900ee2a8d88b067cbd8f5b7f7e2c6889 = $(`<div id="html_900ee2a8d88b067cbd8f5b7f7e2c6889" style="width: 100.0%; height: 100.0%;"><b>Jackson</b>(US)<br/>Population: 10,523<br/>Elevation: 1905 m / 6,250 ft<br/>Nearest airport: Jackson Hole Airport<br/>Drive to nearest airport: 17 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Saint John's Medical Center<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Jackson" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="17.1" data-dth="3.0" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_3042a826f4c853238726a9adeefe4182.setContent(html_900ee2a8d88b067cbd8f5b7f7e2c6889);
+            
+        
+
+        circle_marker_4aa505e21e5232166e6bd9ce7eb7a97a.bindPopup(popup_3042a826f4c853238726a9adeefe4182)
+        ;
+
+        
+    
+    
+            var circle_marker_e9b463cadd680d3f35067c9b28e4d67c = L.circleMarker(
+                [40.41412, -111.75854],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_2f20292417c87ece41b3f4479de6550a = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_d52e6db6d8eff3156ba954ec12009233 = $(`<div id="html_d52e6db6d8eff3156ba954ec12009233" style="width: 100.0%; height: 100.0%;"><b>Cedar Hills</b>(US)<br/>Population: 10,265<br/>Elevation: 1511 m / 4,957 ft<br/>Nearest airport: Provo-Utah Lake International Airport<br/>Drive to nearest airport: 45 min<br/>Drive to nearest hospital: 9 min<br/>Nearest hospital: American Fork Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Cedar+Hills" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="45.0" data-dth="8.6" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_2f20292417c87ece41b3f4479de6550a.setContent(html_d52e6db6d8eff3156ba954ec12009233);
+            
+        
+
+        circle_marker_e9b463cadd680d3f35067c9b28e4d67c.bindPopup(popup_2f20292417c87ece41b3f4479de6550a)
+        ;
+
+        
+    
+    
+            var circle_marker_ef8c707ae81343e9a31704164e99f720 = L.circleMarker(
+                [39.55054, -107.32478],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_fccec907266ebe1f4010476ef8da492b = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_ebd8f7362d04dcbe11344f04fed1e7cc = $(`<div id="html_ebd8f7362d04dcbe11344f04fed1e7cc" style="width: 100.0%; height: 100.0%;"><b>Glenwood Springs</b>(US)<br/>Population: 9,906<br/>Elevation: 1763 m / 5,784 ft<br/>Nearest airport: Eagle County Regional Airport<br/>Drive to nearest airport: 35 min<br/>Drive to nearest hospital: 5 min<br/>Nearest hospital: Valley View Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Glenwood+Springs" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="35.1" data-dth="4.8" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_fccec907266ebe1f4010476ef8da492b.setContent(html_ebd8f7362d04dcbe11344f04fed1e7cc);
+            
+        
+
+        circle_marker_ef8c707ae81343e9a31704164e99f720.bindPopup(popup_fccec907266ebe1f4010476ef8da492b)
+        ;
+
+        
+    
+    
+            var circle_marker_8ccc4ab053735f1855deddc284c3b4aa = L.circleMarker(
+                [46.12854, -112.94226],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_0d6c11bd96f0d7b30721d7170906a944 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_7b29e7ac05e152d5c4b84aead4bb89d1 = $(`<div id="html_7b29e7ac05e152d5c4b84aead4bb89d1" style="width: 100.0%; height: 100.0%;"><b>Anaconda</b>(US)<br/>Population: 9,417<br/>Elevation: 1599 m / 5,246 ft<br/>Nearest airport: Bert Mooney Airport<br/>Drive to nearest airport: 36 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Community Hospital of Anaconda<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Anaconda" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="35.7" data-dth="1.9" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_0d6c11bd96f0d7b30721d7170906a944.setContent(html_7b29e7ac05e152d5c4b84aead4bb89d1);
+            
+        
+
+        circle_marker_8ccc4ab053735f1855deddc284c3b4aa.bindPopup(popup_0d6c11bd96f0d7b30721d7170906a944)
+        ;
+
+        
+    
+    
+            var circle_marker_5cc0e051ec74c7e60d1860c1115fedff = L.circleMarker(
+                [39.47388, -105.08526],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_2f2bb31a77acb6388072a969221824f7 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_2cbfb9f262e6382c5850da892e20b2a3 = $(`<div id="html_2cbfb9f262e6382c5850da892e20b2a3" style="width: 100.0%; height: 100.0%;"><b>Roxborough Park</b>(US)<br/>Population: 9,099<br/>Elevation: 1753 m / 5,751 ft<br/>Nearest airport: Rocky Mountain Metropolitan Airport<br/>Drive to nearest airport: 63 min<br/>Drive to nearest hospital: 16 min<br/>Nearest hospital: UCHealth Sterling Ranch Medical Center<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Roxborough+Park" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="63.2" data-dth="16.2" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_2f2bb31a77acb6388072a969221824f7.setContent(html_2cbfb9f262e6382c5850da892e20b2a3);
+            
+        
+
+        circle_marker_5cc0e051ec74c7e60d1860c1115fedff.bindPopup(popup_2f2bb31a77acb6388072a969221824f7)
+        ;
+
+        
+    
+    
+            var circle_marker_132b0655a614485667d1d300a6d1f086 = L.circleMarker(
+                [39.63332, -105.31721],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_cdb87913cfa21e60170b08ec82fb273b = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a205b21112d980dc2c4d0d3281d52c44 = $(`<div id="html_a205b21112d980dc2c4d0d3281d52c44" style="width: 100.0%; height: 100.0%;"><b>Evergreen</b>(US)<br/>Population: 9,038<br/>Elevation: 2184 m / 7,165 ft<br/>Nearest airport: Rocky Mountain Metropolitan Airport<br/>Drive to nearest airport: 56 min<br/>Drive to nearest hospital: 31 min<br/>Nearest hospital: The Root Acupuncture<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Evergreen" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="55.5" data-dth="30.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_cdb87913cfa21e60170b08ec82fb273b.setContent(html_a205b21112d980dc2c4d0d3281d52c44);
+            
+        
+
+        circle_marker_132b0655a614485667d1d300a6d1f086.bindPopup(popup_cdb87913cfa21e60170b08ec82fb273b)
+        ;
+
+        
+    
+    
+            var circle_marker_368da2e5c80533e358ff4809add06174 = L.circleMarker(
+                [40.64606, -111.49797],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_ac04de1819c0fde88105e29608cca9a9 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_f1cf4ccb88827bfd1c47767c0ff9a91e = $(`<div id="html_f1cf4ccb88827bfd1c47767c0ff9a91e" style="width: 100.0%; height: 100.0%;"><b>Park City</b>(US)<br/>Population: 8,128<br/>Elevation: 2145 m / 7,037 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 48 min<br/>Drive to nearest hospital: 9 min<br/>Nearest hospital: Park City Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Park+City" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="47.7" data-dth="9.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_ac04de1819c0fde88105e29608cca9a9.setContent(html_f1cf4ccb88827bfd1c47767c0ff9a91e);
+            
+        
+
+        circle_marker_368da2e5c80533e358ff4809add06174.bindPopup(popup_ac04de1819c0fde88105e29608cca9a9)
+        ;
+
+        
+    
+    
+            var circle_marker_65fb8190e467478ae344fe19d3789ae5 = L.circleMarker(
+                [51.17622, -115.56982],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_3ad72a5f1dfabf3beaf2a672b8f27633 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_45e1a7d06aa65d374b59b7e83a7d09b9 = $(`<div id="html_45e1a7d06aa65d374b59b7e83a7d09b9" style="width: 100.0%; height: 100.0%;"><b>Banff</b>(CA)<br/>Population: 8,305<br/>Elevation: 1387 m / 4,551 ft<br/>Nearest airport: Calgary International Airport<br/>Drive to nearest airport: 114 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Mineral Springs Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Banff" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="114.5" data-dth="2.6" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_3ad72a5f1dfabf3beaf2a672b8f27633.setContent(html_45e1a7d06aa65d374b59b7e83a7d09b9);
+            
+        
+
+        circle_marker_65fb8190e467478ae344fe19d3789ae5.bindPopup(popup_3ad72a5f1dfabf3beaf2a672b8f27633)
+        ;
+
+        
+    
+    
+            var circle_marker_4245f329c64beeb413f36e80dbd2dcb5 = L.circleMarker(
+                [39.40554, -105.47333],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_ce56bd6f221d2e936818d0a79d55f7c4 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_39f98b9b79ab8f1ec3889dcad7bb2856 = $(`<div id="html_39f98b9b79ab8f1ec3889dcad7bb2856" style="width: 100.0%; height: 100.0%;"><b>Bailey</b>(US)<br/>Population: 8,042<br/>Elevation: 2360 m / 7,743 ft<br/>Nearest airport: Rocky Mountain Metropolitan Airport<br/>Drive to nearest airport: 79 min<br/>Drive to nearest hospital: 62 min<br/>Nearest hospital: UCHealth Sterling Ranch Medical Center<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Bailey" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="79.2" data-dth="62.3" data-hic="no" data-hcn="no"></span></div>`)[0];
+                popup_ce56bd6f221d2e936818d0a79d55f7c4.setContent(html_39f98b9b79ab8f1ec3889dcad7bb2856);
+            
+        
+
+        circle_marker_4245f329c64beeb413f36e80dbd2dcb5.bindPopup(popup_ce56bd6f221d2e936818d0a79d55f7c4)
+        ;
+
+        
+    
+    
+            var circle_marker_effc526fbf3bda75e75b7498e4b65157 = L.circleMarker(
+                [39.6469294, -106.951711],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_d3989cf82db05331e96345597f0e14f6 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_106ff57026f0366b7ae0d20e84942fe3 = $(`<div id="html_106ff57026f0366b7ae0d20e84942fe3" style="width: 100.0%; height: 100.0%;"><b>Gypsum</b>(US)<br/>Population: 8,040<br/>Elevation: 1924 m / 6,312 ft<br/>Nearest airport: Eagle County Regional Airport<br/>Drive to nearest airport: 5 min<br/>Drive to nearest hospital: 26 min<br/>Nearest hospital: Shaw Cancer Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Gypsum" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="5.3" data-dth="25.7" data-hic="no" data-hcn="no"></span></div>`)[0];
+                popup_d3989cf82db05331e96345597f0e14f6.setContent(html_106ff57026f0366b7ae0d20e84942fe3);
+            
+        
+
+        circle_marker_effc526fbf3bda75e75b7498e4b65157.bindPopup(popup_d3989cf82db05331e96345597f0e14f6)
+        ;
+
+        
+    
+    
+            var circle_marker_3185a39259858bcf1c6a2d3a0def5092 = L.circleMarker(
+                [46.66291, -112.06044],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_ba804cf9b064c9786ecd805c62b15b44 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_7926f9c3ae8f40fd6e8326bc0834c767 = $(`<div id="html_7926f9c3ae8f40fd6e8326bc0834c767" style="width: 100.0%; height: 100.0%;"><b>Helena Valley West Central</b>(US)<br/>Population: 7,883<br/>Elevation: 1295 m / 4,249 ft<br/>Nearest airport: Helena Regional Airport<br/>Drive to nearest airport: 21 min<br/>Drive to nearest hospital: 22 min<br/>Nearest hospital: Veterans Administration Medical Center<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Helena+Valley+West+Central" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="21.2" data-dth="22.4" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_ba804cf9b064c9786ecd805c62b15b44.setContent(html_7926f9c3ae8f40fd6e8326bc0834c767);
+            
+        
+
+        circle_marker_3185a39259858bcf1c6a2d3a0def5092.bindPopup(popup_ba804cf9b064c9786ecd805c62b15b44)
+        ;
+
+        
+    
+    
+            var circle_marker_3f103e1f73c2ec49edd7ca7fb08d54aa = L.circleMarker(
+                [40.74578, -111.61159],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_abb7b8969c2558a304c2cd556aee5650 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_b25c9346b1e8526b5bf12a070876f075 = $(`<div id="html_b25c9346b1e8526b5bf12a070876f075" style="width: 100.0%; height: 100.0%;"><b>Summit Park</b>(US)<br/>Population: 7,775<br/>Elevation: 2104 m / 6,903 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 34 min<br/>Drive to nearest hospital: 20 min<br/>Nearest hospital: Park City Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Summit+Park" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="33.5" data-dth="20.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_abb7b8969c2558a304c2cd556aee5650.setContent(html_b25c9346b1e8526b5bf12a070876f075);
+            
+        
+
+        circle_marker_3f103e1f73c2ec49edd7ca7fb08d54aa.bindPopup(popup_abb7b8969c2558a304c2cd556aee5650)
+        ;
+
+        
+    
+    
+            var circle_marker_f854717bdd534e5c3a58076fa08aefca = L.circleMarker(
+                [39.6545407, -106.828038],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_5bf03abe9c01ae44c0195623486bde5d = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_519bb93b6247d3105f109c70dd5680dd = $(`<div id="html_519bb93b6247d3105f109c70dd5680dd" style="width: 100.0%; height: 100.0%;"><b>Eagle</b>(US)<br/>Population: 7,511<br/>Elevation: 2012 m / 6,601 ft<br/>Nearest airport: Eagle County Regional Airport<br/>Drive to nearest airport: 12 min<br/>Drive to nearest hospital: 19 min<br/>Nearest hospital: Shaw Cancer Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Eagle" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="12.0" data-dth="18.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_5bf03abe9c01ae44c0195623486bde5d.setContent(html_519bb93b6247d3105f109c70dd5680dd);
+            
+        
+
+        circle_marker_f854717bdd534e5c3a58076fa08aefca.bindPopup(popup_5bf03abe9c01ae44c0195623486bde5d)
+        ;
+
+        
+    
+    
+            var circle_marker_4f5b0e74bdf0fa4fc0d6fba3cd8c11aa = L.circleMarker(
+                [38.99388, -105.05693],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_2eb809a2f46e374871b7d05e6175329e = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_490f757550c8d4662efb4ba5df0b1dde = $(`<div id="html_490f757550c8d4662efb4ba5df0b1dde" style="width: 100.0%; height: 100.0%;"><b>Woodland Park</b>(US)<br/>Population: 7,222<br/>Elevation: 2583 m / 8,474 ft<br/>Nearest airport: City of Colorado Springs Municipal Airport<br/>Drive to nearest airport: 49 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Pikes Peak Regional Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Woodland+Park" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="48.7" data-dth="3.9" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_2eb809a2f46e374871b7d05e6175329e.setContent(html_490f757550c8d4662efb4ba5df0b1dde);
+            
+        
+
+        circle_marker_4f5b0e74bdf0fa4fc0d6fba3cd8c11aa.bindPopup(popup_2eb809a2f46e374871b7d05e6175329e)
+        ;
+
+        
+    
+    
+            var circle_marker_80bb1b2ff0a0d005745528da6812221f = L.circleMarker(
+                [39.1911128, -106.82356],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_934c8c6ec0b9e01144cfe610e6d922e8 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_af9c16d3a36403f367d3360585dc160f = $(`<div id="html_af9c16d3a36403f367d3360585dc160f" style="width: 100.0%; height: 100.0%;"><b>Aspen</b>(US)<br/>Population: 6,658<br/>Elevation: 2405 m / 7,890 ft<br/>Nearest airport: Aspen-Pitkin County Airport (Sardy Field)<br/>Drive to nearest airport: 8 min<br/>Drive to nearest hospital: 5 min<br/>Nearest hospital: Aspen Valley Hospital<br/>Source: osm<br/><a href="https://www.google.com/search?q=Aspen" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="8.0" data-dth="5.3" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_934c8c6ec0b9e01144cfe610e6d922e8.setContent(html_af9c16d3a36403f367d3360585dc160f);
+            
+        
+
+        circle_marker_80bb1b2ff0a0d005745528da6812221f.bindPopup(popup_934c8c6ec0b9e01144cfe610e6d922e8)
+        ;
+
+        
+    
+    
+            var circle_marker_6140d802da7ef646d2f138840aec9e57 = L.circleMarker(
+                [39.4005647, -107.2112407],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_f4f599861cdda124b8907fd64bfdae05 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_931ce810e198ef4547c0128de3e3aad6 = $(`<div id="html_931ce810e198ef4547c0128de3e3aad6" style="width: 100.0%; height: 100.0%;"><b>Carbondale</b>(US)<br/>Population: 6,434<br/>Elevation: 1881 m / 6,171 ft<br/>Nearest airport: Aspen-Pitkin County Airport (Sardy Field)<br/>Drive to nearest airport: 37 min<br/>Drive to nearest hospital: 18 min<br/>Nearest hospital: Valley View Hospital<br/>Source: osm<br/><a href="https://www.google.com/search?q=Carbondale" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="36.8" data-dth="18.4" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_f4f599861cdda124b8907fd64bfdae05.setContent(html_931ce810e198ef4547c0128de3e3aad6);
+            
+        
+
+        circle_marker_6140d802da7ef646d2f138840aec9e57.bindPopup(popup_f4f599861cdda124b8907fd64bfdae05)
+        ;
+
+        
+    
+    
+            var circle_marker_89f6c164a9809d9eb71d9bf72bf4447e = L.circleMarker(
+                [40.6944402, -111.54379],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_df4aacce723589a7c0d149e1e53ac289 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_6ab5c04c0cca349add7d02c4cde923ca = $(`<div id="html_6ab5c04c0cca349add7d02c4cde923ca" style="width: 100.0%; height: 100.0%;"><b>Snyderville</b>(US)<br/>Population: 6,255<br/>Elevation: 2013 m / 6,604 ft<br/>Nearest airport: Salt Lake City International Airport<br/>Drive to nearest airport: 39 min<br/>Drive to nearest hospital: 12 min<br/>Nearest hospital: Park City Hospital<br/>Source: osm<br/><a href="https://www.google.com/search?q=Snyderville" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="39.4" data-dth="11.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_df4aacce723589a7c0d149e1e53ac289.setContent(html_6ab5c04c0cca349add7d02c4cde923ca);
+            
+        
+
+        circle_marker_89f6c164a9809d9eb71d9bf72bf4447e.bindPopup(popup_df4aacce723589a7c0d149e1e53ac289)
+        ;
+
+        
+    
+    
+            var circle_marker_50608a5c78ded287123b2f6632014261 = L.circleMarker(
+                [41.0321662, -111.902162],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_0b0ad0e96e8739a6598ecba0072e5836 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_59617ab11c6e440557f3e5a16497ccce = $(`<div id="html_59617ab11c6e440557f3e5a16497ccce" style="width: 100.0%; height: 100.0%;"><b>Fruit Heights</b>(US)<br/>Population: 6,101<br/>Elevation: 1432 m / 4,698 ft<br/>Nearest airport: Ogden Hinckley Airport<br/>Drive to nearest airport: 24 min<br/>Drive to nearest hospital: 11 min<br/>Nearest hospital: Intermountain Healthcare Layton Hospital<br/>Source: osm<br/><a href="https://www.google.com/search?q=Fruit+Heights" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="23.5" data-dth="11.0" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_0b0ad0e96e8739a6598ecba0072e5836.setContent(html_59617ab11c6e440557f3e5a16497ccce);
+            
+        
+
+        circle_marker_50608a5c78ded287123b2f6632014261.bindPopup(popup_0b0ad0e96e8739a6598ecba0072e5836)
+        ;
+
+        
+    
+    
+            var circle_marker_709ca9edef24ce9ea71763ab019f59fe = L.circleMarker(
+                [39.6342752, -106.522243],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_eef65c500cf4aa547abb29c68a4f37c6 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_73b43a4e87a17975e60811a953828134 = $(`<div id="html_73b43a4e87a17975e60811a953828134" style="width: 100.0%; height: 100.0%;"><b>Avon</b>(US)<br/>Population: 6,072<br/>Elevation: 2265 m / 7,431 ft<br/>Nearest airport: Eagle County Regional Airport<br/>Drive to nearest airport: 34 min<br/>Drive to nearest hospital: 1 min<br/>Nearest hospital: Buck Creek Medical Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Avon" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="34.5" data-dth="1.2" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_eef65c500cf4aa547abb29c68a4f37c6.setContent(html_73b43a4e87a17975e60811a953828134);
+            
+        
+
+        circle_marker_709ca9edef24ce9ea71763ab019f59fe.bindPopup(popup_eef65c500cf4aa547abb29c68a4f37c6)
+        ;
+
+        
+    
+    
+            var circle_marker_dc1ab0b58b08d081d79f7215c028146a = L.circleMarker(
+                [40.3771926, -105.523216],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_401f73e9afd01ad943feeabefae099dd = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_a170d67db675a07a758d24de1da13f69 = $(`<div id="html_a170d67db675a07a758d24de1da13f69" style="width: 100.0%; height: 100.0%;"><b>Estes Park</b>(US)<br/>Population: 6,006<br/>Elevation: 2300 m / 7,546 ft<br/>Nearest airport: Rocky Mountain Metropolitan Airport<br/>Drive to nearest airport: 78 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Estes Park Medical Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Estes+Park" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="77.5" data-dth="4.5" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_401f73e9afd01ad943feeabefae099dd.setContent(html_a170d67db675a07a758d24de1da13f69);
+            
+        
+
+        circle_marker_dc1ab0b58b08d081d79f7215c028146a.bindPopup(popup_401f73e9afd01ad943feeabefae099dd)
+        ;
+
+        
+    
+    
+            var circle_marker_fcbcd9aba07d27add9ea619c7c606349 = L.circleMarker(
+                [38.5371195, -105.990968],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_dcbbf1d28bc6d449065f98f5a3a8af3c = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_8ebeb9242a1f7d1d5cfeaa7fd4692a57 = $(`<div id="html_8ebeb9242a1f7d1d5cfeaa7fd4692a57" style="width: 100.0%; height: 100.0%;"><b>Salida</b>(US)<br/>Population: 5,666<br/>Elevation: 2159 m / 7,083 ft<br/>Nearest airport: Gunnison Crested Butte Regional Airport<br/>Drive to nearest airport: 103 min<br/>Drive to nearest hospital: 5 min<br/>Nearest hospital: Heart of the Rockies Regional Medical Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Salida" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="103.3" data-dth="5.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_dcbbf1d28bc6d449065f98f5a3a8af3c.setContent(html_8ebeb9242a1f7d1d5cfeaa7fd4692a57);
+            
+        
+
+        circle_marker_fcbcd9aba07d27add9ea619c7c606349.bindPopup(popup_dcbbf1d28bc6d449065f98f5a3a8af3c)
+        ;
+
+        
+    
+    
+            var circle_marker_050ae8ce18a13a8f6ae72395bf842261 = L.circleMarker(
+                [41.4649365, -112.032445],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_c240adf6b19a455762b6e394a4b3cdd7 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_dfb4cb2e0fa47046fd9d815ece508cb8 = $(`<div id="html_dfb4cb2e0fa47046fd9d815ece508cb8" style="width: 100.0%; height: 100.0%;"><b>Perry</b>(US)<br/>Population: 5,551<br/>Elevation: 1331 m / 4,367 ft<br/>Nearest airport: Ogden Hinckley Airport<br/>Drive to nearest airport: 27 min<br/>Drive to nearest hospital: 7 min<br/>Nearest hospital: Brigham City Community Hospital<br/>Source: osm<br/><a href="https://www.google.com/search?q=Perry" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="27.0" data-dth="6.7" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_c240adf6b19a455762b6e394a4b3cdd7.setContent(html_dfb4cb2e0fa47046fd9d815ece508cb8);
+            
+        
+
+        circle_marker_050ae8ce18a13a8f6ae72395bf842261.bindPopup(popup_c240adf6b19a455762b6e394a4b3cdd7)
+        ;
+
+        
+    
+    
+            var circle_marker_2ab78ab3894b68c727ff396994816349 = L.circleMarker(
+                [49.49996, -115.06871],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_893e62ebf1248ab71fe99d5ae8e4e2c2 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_8965dc663a9b7cfa1c70a9b798a43a67 = $(`<div id="html_8965dc663a9b7cfa1c70a9b798a43a67" style="width: 100.0%; height: 100.0%;"><b>Fernie</b>(CA)<br/>Population: 5,249<br/>Elevation: 988 m / 3,241 ft<br/>Nearest airport: Cranbrook/Canadian Rockies International Airport<br/>Drive to nearest airport: 82 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Elk Valley Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Fernie" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="81.8" data-dth="3.8" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_893e62ebf1248ab71fe99d5ae8e4e2c2.setContent(html_8965dc663a9b7cfa1c70a9b798a43a67);
+            
+        
+
+        circle_marker_2ab78ab3894b68c727ff396994816349.bindPopup(popup_893e62ebf1248ab71fe99d5ae8e4e2c2)
+        ;
+
+        
+    
+    
+            var circle_marker_75ed9d3b43aa8654b82f5f904a7c488b = L.circleMarker(
+                [39.4829124, -106.0465486],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_22736f8b0033d93d3b0d268b0d697206);
+        
+    
+        var popup_79eb9afd3fb3353a42ce995fe4646a54 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_42e3f51e76ff4cf587ab6437b9861b0e = $(`<div id="html_42e3f51e76ff4cf587ab6437b9861b0e" style="width: 100.0%; height: 100.0%;"><b>Breckenridge</b>(US)<br/>Population: 5,078<br/>Elevation: 2965 m / 9,728 ft<br/>Nearest airport: Eagle County Regional Airport<br/>Drive to nearest airport: 90 min<br/>Drive to nearest hospital: 16 min<br/>Nearest hospital: Saint Anthony Summit Medical Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Breckenridge" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="90.5" data-dth="15.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_79eb9afd3fb3353a42ce995fe4646a54.setContent(html_42e3f51e76ff4cf587ab6437b9861b0e);
+            
+        
+
+        circle_marker_75ed9d3b43aa8654b82f5f904a7c488b.bindPopup(popup_79eb9afd3fb3353a42ce995fe4646a54)
+        ;
+
+        
+    
+    
+            marker_cluster_22736f8b0033d93d3b0d268b0d697206.addTo(map_85b19088ee2ed5562128ebd6f25647fc);
+        
+    
+            var layer_control_c50d97352cf45770a5818d0f1788f7a4_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_ede7b0122f53a5a721e75809f2766a2b,
+                },
+                overlays :  {
+                    "Cities" : marker_cluster_22736f8b0033d93d3b0d268b0d697206,
+                },
+            };
+            let layer_control_c50d97352cf45770a5818d0f1788f7a4 = L.control.layers(
+                layer_control_c50d97352cf45770a5818d0f1788f7a4_layers.base_layers,
+                layer_control_c50d97352cf45770a5818d0f1788f7a4_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_85b19088ee2ed5562128ebd6f25647fc);
+
+        
+</script>
+</html>

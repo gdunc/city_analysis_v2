@@ -40,6 +40,10 @@ def _fallback_bbox_for_slug(slug: str) -> Optional[Polygon]:
         # Approximate Pyrenees envelope (Bay of Biscay to Mediterranean)
         # This is a conservative mask; GMBA polygon is preferred when available.
         return box(-2.8, 42.0, 3.6, 43.8)
+    if s == "rockies":
+        # Approximate Rockies envelope from NM to British Columbia/Alberta
+        # Conservative west/east bounds to avoid coastal and great plains spillover
+        return box(-125.0, 31.0, -103.0, 60.0)
     return None
 
 
