@@ -44,6 +44,10 @@ def _fallback_bbox_for_slug(slug: str) -> Optional[Polygon]:
         # Approximate Rockies envelope from NM to British Columbia/Alberta
         # Conservative west/east bounds to avoid coastal and great plains spillover
         return box(-125.0, 31.0, -103.0, 60.0)
+    if s == "sierra_nevada":
+        # Approximate Sierra Nevada (California/Nevada, USA). Conservative bounds.
+        # West near Central Valley; east near Nevada border; spans roughly Tehachapi to Lassen.
+        return box(-122.5, 35.0, -117.0, 40.8)
     return None
 
 

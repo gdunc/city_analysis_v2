@@ -64,7 +64,7 @@ REGIONS: dict[str, RegionSettings] = {
         # Expected future location for curated polygon (optional)
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB.Positron",
+        map_tiles="CartoDB positron",
     ),
     "rockies": RegionSettings(
         name="Rocky Mountains",
@@ -73,7 +73,16 @@ REGIONS: dict[str, RegionSettings] = {
         # Perimeter discovered at data/regions/rockies/perimeter.geojson if present
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB.Positron",
+        map_tiles="CartoDB positron",
+    ),
+    "sierra_nevada": RegionSettings(
+        name="Sierra Nevada",
+        slug="sierra_nevada",
+        countries=["US", "MX"],
+        # Expect perimeter at data/regions/sierra_nevada/perimeter.geojson if present
+        perimeter_geojson=None,
+        excluded_countries=[],
+        map_tiles="CartoDB positron",
     ),
 }
 

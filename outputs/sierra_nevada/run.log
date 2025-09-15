@@ -1,0 +1,160 @@
+2025-09-15 11:13:40,685 - root - INFO - Overpass tiling: bbox=(34.81861111111108, -121.94890341840025, 40.44687038845478, -117.86265418108383) tile_size=1.0 approx_tiles=30
+2025-09-15 11:13:40,686 - root - INFO - Overpass tile 1/30: (34.81861111111108, -121.94890341840025, 35.81861111111108, -120.94890341840025)
+2025-09-15 11:13:40,686 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:13:41,763 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-15 11:13:41,763 - root - INFO - Overpass tile 1: received 2 elements
+2025-09-15 11:13:42,268 - root - INFO - Overpass tile 2/30: (34.81861111111108, -120.94890341840025, 35.81861111111108, -119.94890341840025)
+2025-09-15 11:13:42,269 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:13:44,028 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=32
+2025-09-15 11:13:44,028 - root - INFO - Overpass tile 2: received 32 elements
+2025-09-15 11:13:44,533 - root - INFO - Overpass tile 3/30: (34.81861111111108, -119.94890341840025, 35.81861111111108, -118.94890341840025)
+2025-09-15 11:13:44,533 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:13:50,577 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:13:52,082 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:13:55,804 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 2) elements=22
+2025-09-15 11:13:55,804 - root - INFO - Overpass tile 3: received 22 elements
+2025-09-15 11:13:56,309 - root - INFO - Overpass tile 4/30: (34.81861111111108, -118.94890341840025, 35.81861111111108, -117.94890341840025)
+2025-09-15 11:13:56,310 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:14:02,664 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=22
+2025-09-15 11:14:02,664 - root - INFO - Overpass tile 4: received 22 elements
+2025-09-15 11:14:03,168 - root - INFO - Overpass tile 5/30: (34.81861111111108, -117.94890341840025, 35.81861111111108, -117.86265418108383)
+2025-09-15 11:14:03,169 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:14:03,598 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=1
+2025-09-15 11:14:03,598 - root - INFO - Overpass tile 5: received 1 elemen2025-09-15 11:14:04,368 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:14:10,566 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 2): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:14:13,568 - root - INFO - Overpass: POST https://overpass.kumi.systems/api/interpreter
+2025-09-15 11:14:14,849 - root - INFO - Overpass: success on https://overpass.kumi.systems/api/interpreter (attempt 1) elements=1
+2025-09-15 11:14:14,849 - root - INFO - Overpass tile 5: received 1 elements
+2025-09-15 11:14:15,355 - root - INFO - Overpass tile 6/30: (35.818611111112025-09-15 11:14:16,033 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=13
+2025-09-15 11:14:16,033 - root - INF2025-09-15 11:14:17,207 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=40
+2025-09-15 11:14:17,207 - root - INFO - Overpass tile 6: received 40 elements
+2025-09-15 11:14:17,713 - root - INFO - Overpass tile 7/30: (35.818611111112025-09-15 11:14:22,524 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 429 Client Error: Too Many Requests for url: h2025-09-15 11:14:23,445 - root - WARNIN2025-09-15 11:14:24,030 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:14:33,297 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 2): 429 Client Error: Too Many Requests for url: h2025-09-15 11:14:35,328 - root - WARNIN2025-09-15 11:14:36,302 - root - INFO - Overpass: POST https://overpass.kumi.systems/api/interpreter
+2025-09-15 11:14:40,171 - root - INFO - Overpass: success on https://overpass.kumi.systems/api/interpreter (attempt 1) elements=68
+2025-09-15 11:14:40,172 - root2025-09-15 11:15:06,108 - root - INFO - Overpass: success on https://overpass.kumi.systems/api/interpreter (attempt 1) elements=13
+2025-09-15 11:15:06,108 - root - INFO - Overpass tile 7: received 13 elements
+2025-09-15 11:15:06,613 - root - INFO - Overpass tile 8/30: (35.81861111111108, -119.94890341840025, 36.81861111111108, -118.94890341840025)
+2025-09-15 11:15:06,614 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:09,021 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=68
+2025-09-15 11:15:09,021 - root - INFO - Overpass tile 8: received 68 elements
+2025-09-15 11:15:09,526 - root - INFO - Overpass tile 9/30: (35.81861111111108, -118.94890341840025, 36.81861111111108, -117.94890341840025)
+2025-09-15 11:15:09,527 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:11,591 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=4
+2025-09-15 11:15:11,591 - root - INFO - Overpass tile 9: received 4 elements
+2025-09-15 11:15:12,096 - root - INFO - Overpass tile 10/30: (35.81861111111108, -117.94890341840025, 36.81861111111108, -117.86265418108383)
+2025-09-15 11:15:12,096 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:17,314 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-15 11:15:17,314 - root - INFO - Overpass tile 10: received 0 elements
+2025-09-15 11:15:17,819 - root - INFO - Overpass tile 11/30: (36.81861111111108, -121.94890341840025, 37.81861111111108, -120.94890341840025)
+2025-09-15 11:15:17,819 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:24,989 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:15:26,494 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:34,009 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 2) elements=68
+2025-09-15 11:15:34,009 - root - INFO - Overpass tile 11: received 68 elements
+2025-09-15 11:15:34,513 - root - INFO - Overpass tile 12/30: (36.81861111111108, -120.94890341840025, 37.81861111111108, -119.94890341840025)
+2025-09-15 11:15:34,513 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:43,835 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=44
+2025-09-15 11:15:43,836 - root - INFO - Overpass tile 12: received 44 elements
+2025-09-15 11:15:44,341 - root - INFO - Overpass tile 13/30: (36.81861111111108, -119.94890341840025, 37.81861111111108, -118.94890341840025)
+2025-09-15 11:15:44,341 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:46,802 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=19
+2025-09-15 11:15:46,802 - root - INFO - Overpass tile 13: received 19 elements
+2025-09-15 11:15:47,308 - root - INFO - Overpass tile 14/30: (36.81861111111108, -118.94890341840025, 37.81861111111108, -117.94890341840025)
+2025-09-15 11:15:47,308 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:49,671 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=9
+2025-09-15 11:15:49,671 - root - INFO - Overpass tile 14: received 9 elements
+2025-09-15 11:15:50,173 - root - INFO - Overpass tile 15/30: (36.81861111111108, -117.94890341840025, 37.81861111111108, -117.86265418108383)
+2025-09-15 11:15:50,173 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:15:56,528 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:15:58,030 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:05,648 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 2): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:16:08,658 - root - INFO - Overpass: POST https://overpass.kumi.systems/api/interpreter
+2025-09-15 11:16:09,126 - root - INFO - Overpass: success on https://overpass.kumi.systems/api/interpreter (attempt 1) elements=0
+2025-09-15 11:16:09,126 - root - INFO - Overpass tile 15: received 0 elements
+2025-09-15 11:16:09,636 - root - INFO - Overpass tile 16/30: (37.81861111111108, -121.94890341840025, 38.81861111111108, -120.94890341840025)
+2025-09-15 11:16:09,636 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:18,139 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=55
+2025-09-15 11:16:18,139 - root - INFO - Overpass tile 16: received 55 elements
+2025-09-15 11:16:18,649 - root - INFO - Overpass tile 17/30: (37.81861111111108, -120.94890341840025, 38.81861111111108, -119.94890341840025)
+2025-09-15 11:16:18,650 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:20,188 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=35
+2025-09-15 11:16:20,188 - root - INFO - Overpass tile 17: received 35 elements
+2025-09-15 11:16:20,690 - root - INFO - Overpass tile 18/30: (37.81861111111108, -119.94890341840025, 38.81861111111108, -118.94890341840025)
+2025-09-15 11:16:20,691 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:26,356 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:16:27,866 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:29,402 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 2) elements=7
+2025-09-15 11:16:29,403 - root - INFO - Overpass tile 18: received 7 elements
+2025-09-15 11:16:29,911 - root - INFO - Overpass tile 19/30: (37.81861111111108, -118.94890341840025, 38.81861111111108, -117.94890341840025)
+2025-09-15 11:16:29,911 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:36,264 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=5
+2025-09-15 11:16:36,264 - root - INFO - Overpass tile 19: received 5 elements
+2025-09-15 11:16:36,774 - root - INFO - Overpass tile 20/30: (37.81861111111108, -117.94890341840025, 38.81861111111108, -117.86265418108383)
+2025-09-15 11:16:36,774 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:42,650 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-15 11:16:42,650 - root - INFO - Overpass tile 20: received 0 elements
+2025-09-15 11:16:43,153 - root - INFO - Overpass tile 21/30: (38.81861111111108, -121.94890341840025, 39.81861111111108, -120.94890341840025)
+2025-09-15 11:16:43,153 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:47,631 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=53
+2025-09-15 11:16:47,631 - root - INFO - Overpass tile 21: received 53 elements
+2025-09-15 11:16:48,137 - root - INFO - Overpass tile 22/30: (38.81861111111108, -120.94890341840025, 39.81861111111108, -119.94890341840025)
+2025-09-15 11:16:48,137 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:51,727 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=24
+2025-09-15 11:16:51,727 - root - INFO - Overpass tile 22: received 24 elements
+2025-09-15 11:16:52,237 - root - INFO - Overpass tile 23/30: (38.81861111111108, -119.94890341840025, 39.81861111111108, -118.94890341840025)
+2025-09-15 11:16:52,238 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:16:54,361 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=33
+2025-09-15 11:16:54,361 - root - INFO - Overpass tile 23: received 33 elements
+2025-09-15 11:16:54,871 - root - INFO - Overpass tile 24/30: (38.81861111111108, -118.94890341840025, 39.81861111111108, -117.94890341840025)
+2025-09-15 11:16:54,871 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:01,199 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=4
+2025-09-15 11:17:01,200 - root - INFO - Overpass tile 24: received 4 elements
+2025-09-15 11:17:01,710 - root - INFO - Overpass tile 25/30: (38.81861111111108, -117.94890341840025, 39.81861111111108, -117.86265418108383)
+2025-09-15 11:17:01,710 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:08,826 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 504 Server Error: Gateway Timeout for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:17:10,336 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:10,743 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 2) elements=1
+2025-09-15 11:17:10,744 - root - INFO - Overpass tile 25: received 1 elements
+2025-09-15 11:17:11,254 - root - INFO - Overpass tile 26/30: (39.81861111111108, -121.94890341840025, 40.44687038845478, -120.94890341840025)
+2025-09-15 11:17:11,254 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:16,609 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=8
+2025-09-15 11:17:16,609 - root - INFO - Overpass tile 26: received 8 elements
+2025-09-15 11:17:17,118 - root - INFO - Overpass tile 27/30: (39.81861111111108, -120.94890341840025, 40.44687038845478, -119.94890341840025)
+2025-09-15 11:17:17,118 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:19,850 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=12
+2025-09-15 11:17:19,851 - root - INFO - Overpass tile 27: received 12 elements
+2025-09-15 11:17:20,357 - root - INFO - Overpass tile 28/30: (39.81861111111108, -119.94890341840025, 40.44687038845478, -118.94890341840025)
+2025-09-15 11:17:20,358 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:26,334 - root - WARNING - Overpass: error on https://overpass-api.de/api/interpreter (attempt 1): 429 Client Error: Too Many Requests for url: https://overpass-api.de/api/interpreter
+2025-09-15 11:17:27,840 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:28,161 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 2) elements=1
+2025-09-15 11:17:28,161 - root - INFO - Overpass tile 28: received 1 elements
+2025-09-15 11:17:28,669 - root - INFO - Overpass tile 29/30: (39.81861111111108, -118.94890341840025, 40.44687038845478, -117.94890341840025)
+2025-09-15 11:17:28,670 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:29,409 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=2
+2025-09-15 11:17:29,409 - root - INFO - Overpass tile 29: received 2 elements
+2025-09-15 11:17:29,916 - root - INFO - Overpass tile 30/30: (39.81861111111108, -117.94890341840025, 40.44687038845478, -117.86265418108383)
+2025-09-15 11:17:29,917 - root - INFO - Overpass: POST https://overpass-api.de/api/interpreter
+2025-09-15 11:17:31,433 - root - INFO - Overpass: success on https://overpass-api.de/api/interpreter (attempt 1) elements=0
+2025-09-15 11:17:31,433 - root - INFO - Overpass tile 30: received 0 elements
+2025-09-15 11:17:31,943 - root - INFO - Overpass complete: total unique places 563
+2025-09-15 11:17:32,143 - city_analysis.distance - INFO - Calculating distances using perimeter with Checking hospitals (OSM):   0%|          | 0/8 [00:00<?, ?city/s]Checking hospitals (OSM):  12%|█▎        | 1/8 [00:00<00:00,  9.67city/s]Checking hospitals (OSM):  25%|██▌       | 2/8 [00:01<00:03,  1.58city/s]Checking hospitals (OSM):  38%|███▊      | 3/8 [00:02<00:04,  1.25city/s]Checking hospitals (OSM):  50%|█████     | 4/8 [00:03<00:03,  1.14city/s]Checking hospitals (OSM):  62%|██████▎   | 5/8 [00:04<00:02,  1.08city/s]Checking hospitals (OSM):  75%|███████▌  | 6/8 [00:33<00:21, 10.60s/city]Checking hospitals (OSM): 100%|Checking hospitals (OSM):   0%|          | 0/8 [00:00<?, ?city/s]Checking hospitals (OSM):  25%|██▌       | 2/8 [00:01<00:03,  1.69city/s]Checking hospitals (OSM):  38%|███▊      | 3/8 [00:02<00:03,  1.30city/s]Checking hospitals (OSM):  50%|█████     | 4/8 [00:03<00:03,  1.21city/s]Checking hospitals (OSM):  62%|██████▎   | 5/8 [00:04<00:02,  1.12city/s]Checking hospitals (OSM):  75%|███████▌  | 6/8 [00:05<00:01,  1.07city/s]Checking hospitals (OSM):  88%|████████▊ | 7/8 [00:06<00:00,  1.04city/s]Checking hospitals (OSM): 100%|██████████| 8/8 [00:07<00:00,  1.05city/s]Checking hospitals (OSM): 100%|██████████| 8/8 [00:07<00:00,  1.12city/s]
+Finding nearest international airports and driving metrics...
+Using offline dataset mode (default; no OpenAI)
+Nearest airports (offline):   0%|          | 0/8 [00:00<?, ?city/s]Nearest airports (offline):  12%|█▎        | 1/8 [00:02<00:20,  3.00s/city]Nearest airports (offline):  25%|██▌       | 2/8 [00:05<00:17,  2.98s/city]Nearest airports (offline):  38%|███▊      | 3/8 [00:08<00:14,  2.96s/city]Nearest airports (offline):  50%|█████     | 4/8 [00:12<00:12,  3.02s/city]Nearest airports (offline):  62%|██████▎   | 5/8 [00:14<00:09,  3.00s/city]Nearest airports (offline):  75%|███████▌  | 6/8 [00:17<00:05,  3.00s/city]Nearest airports (offline):  88%|████████▊ | 7/8 [00:21<00:03,  3.02s/city]Nearest airports (offline): 100%|██████████| 8/8 [00:24<00:00,  3.01s/city]Nearest airports (offline): 100%|██████████| 8/8 [00:24<00:00,  3.00s/city]
+Wrote interactive map to /Users/grantduncan/Documents/coding/city_analysis_v2/outputs/sierra_nevada/sierra_nevada/sierra_nevada_cities_map.html
+Wrote country-colored map to /Users/grantduncan/Documents/coding/city_analysis_v2/outputs/sierra_nevada/sierra_nevada/sierra_nevada_cities_country_map.html
+Summary:
+  total_places: 8
+  with_population: 8
+  missing_population: 0
+
+Top 20 by population:
+  Paradise (US) — pop 26,476 @ (39.7596,-121.6219) [geonames], elev 546.0m [opentopo:0.9], 0.0 km to Sierra Nevada
+  Tehachapi (US) — pop 13,021 @ (35.1322,-118.4490) [geonames], elev 1208.0m [opentopo:0.9], 0.0 km to Sierra Nevada
+  Magalia (US) — pop 11,310 @ (39.8121,-121.5783) [geonames], elev 713.0m [opentopo:0.9], 0.0 km to Sierra Nevada
+  Incline Village (US) — pop 8,777 @ (39.2513,-119.9730) [geonames], elev 1959.0m [open_elevation:0.8], 0.0 km to Sierra Nevada
+  Golden Hills (US) — pop 8,656 @ (35.1425,-118.4904) [geonames], elev 1186.0m [opentopo:0.9], 0.0 km to Sierra Nevada
+  Mammoth Lakes (US) — pop 7,946 @ (37.6486,-118.9721) [geonames], elev 2406.0m [open_elevation:0.8], 0.0 km to Sierra Nevada
+  Pollock Pines (US) — pop 6,871 @ (38.7613,-120.5866) [osm], elev 1197.0m, 0.0 km to Sierra Nevada
+  Oakhurst (US) — pop 5,945 @ (37.3311,-119.6558) [osm], elev 693.0m, 0.0 km to Sierra Nevada

@@ -59,7 +59,8 @@ def parse_args() -> argparse.Namespace:
     # Map generation options
     parser.add_argument("--make-map", action="store_true", help="Generate interactive HTML map alongside CSV/GeoJSON")
     parser.add_argument("--map-file", type=str, default=None, help="Path for HTML map output (default: <out-dir>/<region>_cities_map.html)")
-    parser.add_argument("--map-tiles", type=str, default="OpenStreetMap", help="Folium tiles name or URL")
+    # If omitted, we'll default to the region's configured tiles (settings.map_tiles)
+    parser.add_argument("--map-tiles", type=str, default=None, help="Folium tiles name or URL (defaults to region setting)")
 
     # Airport nearest + driving distance/time (optional)
     # Airports always enriched via offline dataset by default; suppress toggles
@@ -171,19 +172,19 @@ def main() -> None:
             print(f"Wrote CSV with airport and driving columns to {csv_path}")
         if args.make_map:
             map_path = Path(args.map_file) if args.map_file else (out_dir / f"{settings.slug}_cities_map.html")
-            save_map(records, map_path, tiles=args.map_tiles)
+            save_map(records, map_path, tiles=(args.map_tiles or settings.map_tiles))
             print(f"Wrote interactive map to {map_path}")
         if args.make_country_map:
             country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / f"{settings.slug}_cities_country_map.html")
-            save_country_map(records, country_map_path, tiles=args.map_tiles)
+            save_country_map(records, country_map_path, tiles=(args.map_tiles or settings.map_tiles))
             print(f"Wrote country-colored map to {country_map_path}")
         # If neither flag was given, default to generating both maps from CSV for convenience
         if not args.make_map and not args.make_country_map:
             map_path = out_dir / f"{settings.slug}_cities_map.html"
-            save_map(records, map_path, tiles=args.map_tiles)
+            save_map(records, map_path, tiles=(args.map_tiles or settings.map_tiles))
             print(f"Wrote interactive map to {map_path}")
             country_map_path = out_dir / f"{settings.slug}_cities_country_map.html"
-            save_country_map(records, country_map_path, tiles=args.map_tiles)
+            save_country_map(records, country_map_path, tiles=(args.map_tiles or settings.map_tiles))
             print(f"Wrote country-colored map to {country_map_path}")
         return
 
@@ -288,11 +289,11 @@ def main() -> None:
     # Optionally write interactive maps
     if args.make_map:
         map_path = Path(args.map_file) if args.map_file else (out_dir / f"{settings.slug}_cities_map.html")
-        save_map(enriched, map_path, tiles=args.map_tiles)
+        save_map(enriched, map_path, tiles=(args.map_tiles or settings.map_tiles))
         print(f"Wrote interactive map to {map_path}")
     if args.make_country_map:
         country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / f"{settings.slug}_cities_country_map.html")
-        save_country_map(enriched, country_map_path, tiles=args.map_tiles)
+        save_country_map(enriched, country_map_path, tiles=(args.map_tiles or settings.map_tiles))
         print(f"Wrote country-colored map to {country_map_path}")
 
     # Console summary

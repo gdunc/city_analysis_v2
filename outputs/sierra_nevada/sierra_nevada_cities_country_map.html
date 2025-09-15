@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c6b936782a76e31e0a13cea021a781f4 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    <script>
+    (function(){
+      var MAP_VAR_NAME = 'map_c6b936782a76e31e0a13cea021a781f4';
+      function getMap(){ return window[MAP_VAR_NAME]; }
+
+      function collectMarkers(layer, out){
+        if (!layer) return;
+        if (layer instanceof L.CircleMarker) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectMarkers(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectMarkers(child, out); });
+        }
+      }
+
+      function collectClusters(layer, out){
+        if (!layer) return;
+        if (typeof L.MarkerClusterGroup !== 'undefined' && (layer instanceof L.MarkerClusterGroup)) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectClusters(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectClusters(child, out); });
+        }
+      }
+
+      function readPopulation(marker){
+        var p = 0;
+        if (marker && marker.options && marker.options.population != null) {
+          var n = Number(marker.options.population);
+          if (!isNaN(n)) return n;
+        }
+        try {
+          var pop = 0;
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var htmlStr = '';
+          if (typeof content === 'string') {
+            htmlStr = content;
+          } else if (content && typeof content.innerHTML === 'string') {
+            htmlStr = content.innerHTML;
+          } else if (content && typeof content.textContent === 'string') {
+            htmlStr = content.textContent;
+          }
+          if (htmlStr) {
+            var m = htmlStr.match(/Population:\s*([0-9,.]+)/i);
+            if (m && m[1]) {
+              pop = Number(m[1].replace(/[\,\s]/g, '')) || 0;
+            }
+          }
+          return pop;
+        } catch (e) { return 0; }
+      }
+
+      function readMeta(marker){
+        try {
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var root;
+          if (typeof content === 'string') {
+            var div = document.createElement('div');
+            div.innerHTML = content;
+            root = div;
+          } else if (content && content instanceof HTMLElement) {
+            root = content;
+          } else if (content && content.innerHTML) {
+            var d2 = document.createElement('div');
+            d2.innerHTML = content.innerHTML;
+            root = d2;
+          }
+          if (!root) return { dta:null, dth:null, hic:'', hcn:'' };
+          var meta = root.querySelector('.city-meta');
+          if (!meta) return { dta:null, dth:null, hic:'', hcn:'' };
+          var dta = meta.getAttribute('data-dta');
+          var dth = meta.getAttribute('data-dth');
+          var hic = (meta.getAttribute('data-hic') || '').toLowerCase();
+          var hcn = (meta.getAttribute('data-hcn') || '').toLowerCase();
+          var dtaNum = (dta !== null && dta !== '') ? Number(dta) : null;
+          var dthNum = (dth !== null && dth !== '') ? Number(dth) : null;
+          if (isNaN(dtaNum)) dtaNum = null;
+          if (isNaN(dthNum)) dthNum = null;
+          return { dta: dtaNum, dth: dthNum, hic: hic, hcn: hcn };
+        } catch (e) {
+          return { dta:null, dth:null, hic:'', hcn:'' };
+        }
+      }
+
+      var state = window.__popFilterState || { indexBuilt:false, markerToOwners:{}, markers:[], clusters:[] };
+      function buildIndex(){
+        var map = getMap();
+        state.markers = [];
+        state.clusters = [];
+        map.eachLayer(function(l){ collectMarkers(l, state.markers); });
+        map.eachLayer(function(l){ collectClusters(l, state.clusters); });
+        state.markerToOwners = {};
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var owners = [];
+          for (var j=0;j<state.clusters.length;j++){
+            var c = state.clusters[j];
+            if (c.hasLayer && c.hasLayer(m)) owners.push(c);
+          }
+          state.markerToOwners[m._leaflet_id] = owners;
+        }
+        state.indexBuilt = true;
+        window.__popFilterState = state;
+      }
+
+      function showMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (!c.hasLayer(m)) c.addLayer(m);
+          }
+        } else {
+          if (!map.hasLayer(m)) map.addLayer(m);
+        }
+        if (m._icon) m._icon.style.display = '';
+        if (m._path) m._path.style.display = '';
+      }
+
+      function hideMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (c.hasLayer(m)) c.removeLayer(m);
+          }
+        } else {
+          if (map.hasLayer(m)) map.removeLayer(m);
+        }
+        if (m._icon) m._icon.style.display = 'none';
+        if (m._path) m._path.style.display = 'none';
+      }
+
+      function applyFilter(minPop, maxAirportMins, maxHospitalMins, hospitalInCity, hospitalInCityNearby){
+        if (!state.indexBuilt) buildIndex();
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var p = readPopulation(m);
+          var show = (p >= minPop);
+          var meta = readMeta(m);
+          if (show && maxAirportMins != null){
+            if (meta.dta == null) { show = false; } else { show = show && (meta.dta <= maxAirportMins); }
+          }
+          if (show && maxHospitalMins != null){
+            if (meta.dth == null) { show = false; } else { show = show && (meta.dth <= maxHospitalMins); }
+          }
+          if (show && hospitalInCity && hospitalInCity !== 'any'){
+            show = show && (meta.hic === hospitalInCity);
+          }
+          if (show && hospitalInCityNearby && hospitalInCityNearby !== 'any'){
+            show = show && (meta.hcn === hospitalInCityNearby);
+          }
+          if (show) showMarker(m); else hideMarker(m);
+        }
+      }
+
+      function ensureUI(){
+        // If control already present, skip
+        if (document.getElementById('pop-filter')) return;
+        var map = getMap();
+        var ctrl = L.control({position: 'topleft'});
+        ctrl.onAdd = function(map){
+          var container = L.DomUtil.create('div');
+          container.innerHTML = `
+    <div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 260px;">
+  <div style="font-size:12px; margin-bottom:6px;"><b>Filters</b></div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Min population</label><br/>
+    <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to airport (min)</label><br/>
+    <input id="max-airport-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to hospital (min)</label><br/>
+    <input id="max-hospital-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Hospital in city?</label><br/>
+    <select id="hospital-in-city" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div style="font-size:12px; margin-bottom:8px;">
+    <label>Hospital in city or nearby?</label><br/>
+    <select id="hospital-in-city-or-nearby" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div>
+    <button id="apply-pop-filter" style="margin-right:6px;">Apply</button>
+    <button id="reset-pop-filter">Reset</button>
+  </div>
+</div>
+          `;
+          L.DomEvent.disableClickPropagation(container);
+          return container;
+        };
+        ctrl.addTo(map);
+      }
+
+      function hookUI(){
+        ensureUI();
+        var btn = document.getElementById('apply-pop-filter');
+        var reset = document.getElementById('reset-pop-filter');
+        var input = document.getElementById('pop-threshold');
+        var maxA = document.getElementById('max-airport-mins');
+        var maxH = document.getElementById('max-hospital-mins');
+        var hic = document.getElementById('hospital-in-city');
+        var hcn = document.getElementById('hospital-in-city-or-nearby');
+        if (!btn || !input) return;
+        btn.addEventListener('click', function(){
+          var v = Number(input.value || 0) || 0;
+          var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+          var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+          var ic = (hic && hic.value) ? hic.value : 'any';
+          var cn = (hcn && hcn.value) ? hcn.value : 'any';
+          applyFilter(v, a, h, ic, cn);
+        });
+        input.addEventListener('keypress', function(e){
+          if (e.key === 'Enter') {
+            var v = Number(input.value || 0) || 0;
+            var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+            var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+            var ic = (hic && hic.value) ? hic.value : 'any';
+            var cn = (hcn && hcn.value) ? hcn.value : 'any';
+            applyFilter(v, a, h, ic, cn);
+          }
+        });
+        if (reset){
+          reset.addEventListener('click', function(){
+            if (input) input.value = 0;
+            if (maxA) maxA.value = '';
+            if (maxH) maxH.value = '';
+            if (hic) hic.value = 'any';
+            if (hcn) hcn.value = 'any';
+            applyFilter(0, null, null, 'any', 'any');
+          });
+        }
+      }
+
+      function whenMapReady(fn){
+        if (getMap()) { fn(); return; }
+        var tries = 0; var maxTries = 200; // ~10s
+        var iv = setInterval(function(){
+          if (getMap()){ clearInterval(iv); fn(); }
+          else if (++tries >= maxTries){ clearInterval(iv); }
+        }, 50);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function(){ whenMapReady(hookUI); });
+      } else {
+        whenMapReady(hookUI);
+      }
+    })();
+    </script>
+    
+            <div class="folium-map" id="map_c6b936782a76e31e0a13cea021a781f4" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_c6b936782a76e31e0a13cea021a781f4 = L.map(
+                "map_c6b936782a76e31e0a13cea021a781f4",
+                {
+                    center: [37.854832925000004, -119.9158781375],
+                    crs: L.CRS.EPSG3857,
+                    
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+
+
+                }
+            );
+            L.control.scale().addTo(map_c6b936782a76e31e0a13cea021a781f4);
+
+            
+
+        
+    
+            var tile_layer_39935a6315ed3a210df70378a2bbc553 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_39935a6315ed3a210df70378a2bbc553.addTo(map_c6b936782a76e31e0a13cea021a781f4);
+        
+    
+            var feature_group_70859bfe6963b804d11255bc45b0280e = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_15ad8e61d983248bf599fe7881832ae2 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_8da622bc72c5b89cbc732c67e87a2c22 = L.circleMarker(
+                [39.75961, -121.62192],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.0, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_44577a4cc5eae0a8cd3bec6bde503a55 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_d7d4b9c81179bcc779ae9fea38a33dda = $(`<div id="html_d7d4b9c81179bcc779ae9fea38a33dda" style="width: 100.0%; height: 100.0%;"><b>Paradise</b>(US)<br/>Population: 26,476<br/>Elevation: 546 m / 1,791 ft<br/>Nearest airport: Redding Municipal Airport<br/>Drive to nearest airport: 101 min<br/>Drive to nearest hospital: 10 min<br/>Nearest hospital: Adventist Health Feather River<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Paradise" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="101.2" data-dth="9.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_44577a4cc5eae0a8cd3bec6bde503a55.setContent(html_d7d4b9c81179bcc779ae9fea38a33dda);
+            
+        
+
+        circle_marker_8da622bc72c5b89cbc732c67e87a2c22.bindPopup(popup_44577a4cc5eae0a8cd3bec6bde503a55)
+        ;
+
+        
+    
+    
+            var circle_marker_d133b946191705a13e5f0e934faa55ce = L.circleMarker(
+                [35.13219, -118.44897],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.773723315614113, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_cd094e99e6b49fc2526c2c6cc27cd30f = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_e1c9d99ba5fab7329f53327832672e86 = $(`<div id="html_e1c9d99ba5fab7329f53327832672e86" style="width: 100.0%; height: 100.0%;"><b>Tehachapi</b>(US)<br/>Population: 13,021<br/>Elevation: 1208 m / 3,963 ft<br/>Nearest airport: Meadows Field<br/>Drive to nearest airport: 62 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Adventist Health Tehachapi Valley<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Tehachapi" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="62.1" data-dth="3.8" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_cd094e99e6b49fc2526c2c6cc27cd30f.setContent(html_e1c9d99ba5fab7329f53327832672e86);
+            
+        
+
+        circle_marker_d133b946191705a13e5f0e934faa55ce.bindPopup(popup_cd094e99e6b49fc2526c2c6cc27cd30f)
+        ;
+
+        
+    
+    
+            var circle_marker_05fa3e51beb6b1192b062ec9b9c95001 = L.circleMarker(
+                [39.81211, -121.57831],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.7362660301959965, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_671b2413a905182c90639c0751f22b26 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_5d8afe6e00ca5b1e21bf11e4c2c350d6 = $(`<div id="html_5d8afe6e00ca5b1e21bf11e4c2c350d6" style="width: 100.0%; height: 100.0%;"><b>Magalia</b>(US)<br/>Population: 11,310<br/>Elevation: 713 m / 2,339 ft<br/>Nearest airport: Redding Municipal Airport<br/>Drive to nearest airport: 112 min<br/>Drive to nearest hospital: 10 min<br/>Nearest hospital: Adventist Health Feather River<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Magalia" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="111.5" data-dth="9.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_671b2413a905182c90639c0751f22b26.setContent(html_5d8afe6e00ca5b1e21bf11e4c2c350d6);
+            
+        
+
+        circle_marker_05fa3e51beb6b1192b062ec9b9c95001.bindPopup(popup_671b2413a905182c90639c0751f22b26)
+        ;
+
+        
+    
+    
+            var circle_marker_80a0d82eec5a84cfaee0c11f89447113 = L.circleMarker(
+                [39.2513, -119.97297],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.869022907797144, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_06c747d1def5802d6d8f3e8f1d27e907 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_b32835ed15199ff38b2f6a18d5fc10c9 = $(`<div id="html_b32835ed15199ff38b2f6a18d5fc10c9" style="width: 100.0%; height: 100.0%;"><b>Incline Village</b>(US)<br/>Population: 8,777<br/>Elevation: 1959 m / 6,427 ft<br/>Nearest airport: Truckee Tahoe Airport<br/>Drive to nearest airport: 26 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Incline Village Community Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Incline+Village" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="25.9" data-dth="3.3" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_06c747d1def5802d6d8f3e8f1d27e907.setContent(html_b32835ed15199ff38b2f6a18d5fc10c9);
+            
+        
+
+        circle_marker_80a0d82eec5a84cfaee0c11f89447113.bindPopup(popup_06c747d1def5802d6d8f3e8f1d27e907)
+        ;
+
+        
+    
+    
+            var circle_marker_857a8464eef57049b68e0c74bda38ba3 = L.circleMarker(
+                [35.14247, -118.49036],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.766791824024458, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_c24f60d849122aa7cc059026853564a6 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_d7fae9f6ee58b3fc14398b9b5b5606c0 = $(`<div id="html_d7fae9f6ee58b3fc14398b9b5b5606c0" style="width: 100.0%; height: 100.0%;"><b>Golden Hills</b>(US)<br/>Population: 8,656<br/>Elevation: 1186 m / 3,891 ft<br/>Nearest airport: Meadows Field<br/>Drive to nearest airport: 65 min<br/>Drive to nearest hospital: 9 min<br/>Nearest hospital: Adventist Health Tehachapi Valley<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Golden+Hills" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="64.6" data-dth="9.4" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_c24f60d849122aa7cc059026853564a6.setContent(html_d7fae9f6ee58b3fc14398b9b5b5606c0);
+            
+        
+
+        circle_marker_857a8464eef57049b68e0c74bda38ba3.bindPopup(popup_c24f60d849122aa7cc059026853564a6)
+        ;
+
+        
+    
+    
+            var circle_marker_faa6f507658e08033764658750fa739a = L.circleMarker(
+                [37.64855, -118.97208],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.136523234759736, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_4c9d9aae140b428e3dda7b69ebf64b50 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_6d4a7003e0a8fd693112219a91737876 = $(`<div id="html_6d4a7003e0a8fd693112219a91737876" style="width: 100.0%; height: 100.0%;"><b>Mammoth Lakes</b>(US)<br/>Population: 7,946<br/>Elevation: 2406 m / 7,894 ft<br/>Nearest airport: Eastern Sierra Regional Airport<br/>Drive to nearest airport: 61 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Mammoth Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Mammoth+Lakes" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="60.6" data-dth="3.7" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_4c9d9aae140b428e3dda7b69ebf64b50.setContent(html_6d4a7003e0a8fd693112219a91737876);
+            
+        
+
+        circle_marker_faa6f507658e08033764658750fa739a.bindPopup(popup_4c9d9aae140b428e3dda7b69ebf64b50)
+        ;
+
+        
+    
+    
+            var circle_marker_62743ad8caf6ad6ab5fac400365fb736 = L.circleMarker(
+                [38.7613021, -120.586593],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.066052779514668, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_806738644898e38aed333fcd3012d9af = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_5f7ef80815813c1dc4464e8b2575fc63 = $(`<div id="html_5f7ef80815813c1dc4464e8b2575fc63" style="width: 100.0%; height: 100.0%;"><b>Pollock Pines</b>(US)<br/>Population: 6,871<br/>Elevation: 1197 m / 3,927 ft<br/>Nearest airport: Sacramento International Airport<br/>Drive to nearest airport: 85 min<br/>Drive to nearest hospital: 20 min<br/>Nearest hospital: Marshall Medical Center<br/>Source: osm<br/><a href="https://www.google.com/search?q=Pollock+Pines" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="84.8" data-dth="19.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_806738644898e38aed333fcd3012d9af.setContent(html_5f7ef80815813c1dc4464e8b2575fc63);
+            
+        
+
+        circle_marker_62743ad8caf6ad6ab5fac400365fb736.bindPopup(popup_806738644898e38aed333fcd3012d9af)
+        ;
+
+        
+    
+    
+            var circle_marker_3f33504484208c46c3840c4a6057af5b = L.circleMarker(
+                [37.3311313, -119.6558221],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3.0, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_15ad8e61d983248bf599fe7881832ae2);
+        
+    
+        var popup_15fb4edcd5dcd265096cac1f89b9e715 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_960e33eef20327c0a528a5fbaedbedcc = $(`<div id="html_960e33eef20327c0a528a5fbaedbedcc" style="width: 100.0%; height: 100.0%;"><b>Oakhurst</b>(US)<br/>Population: 5,945<br/>Elevation: 693 m / 2,274 ft<br/>Nearest airport: Fresno Yosemite International Airport<br/>Drive to nearest airport: 65 min<br/>Drive to nearest hospital: 45 min<br/>Nearest hospital: John C Fremont Healthcare District<br/>Source: osm<br/><a href="https://www.google.com/search?q=Oakhurst" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="65.4" data-dth="44.8" data-hic="no" data-hcn="no"></span></div>`)[0];
+                popup_15fb4edcd5dcd265096cac1f89b9e715.setContent(html_960e33eef20327c0a528a5fbaedbedcc);
+            
+        
+
+        circle_marker_3f33504484208c46c3840c4a6057af5b.bindPopup(popup_15fb4edcd5dcd265096cac1f89b9e715)
+        ;
+
+        
+    
+    
+            marker_cluster_15ad8e61d983248bf599fe7881832ae2.addTo(feature_group_70859bfe6963b804d11255bc45b0280e);
+        
+    
+            feature_group_70859bfe6963b804d11255bc45b0280e.addTo(map_c6b936782a76e31e0a13cea021a781f4);
+        
+    
+            var layer_control_3121f188c5676f543879191b6ce8ffa9_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_39935a6315ed3a210df70378a2bbc553,
+                },
+                overlays :  {
+                    "US (8)" : feature_group_70859bfe6963b804d11255bc45b0280e,
+                },
+            };
+            let layer_control_3121f188c5676f543879191b6ce8ffa9 = L.control.layers(
+                layer_control_3121f188c5676f543879191b6ce8ffa9_layers.base_layers,
+                layer_control_3121f188c5676f543879191b6ce8ffa9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_c6b936782a76e31e0a13cea021a781f4);
+
+        
+</script>
+</html>
