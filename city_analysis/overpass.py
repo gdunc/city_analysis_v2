@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import time
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple, Optional
 import logging
 
 import requests
+from pathlib import Path
+import json
 
 OVERPASS_ENDPOINTS = [
     "https://overpass-api.de/api/interpreter",
@@ -134,6 +136,9 @@ def fetch_overpass_bbox_tiled(
     require_population_tag: bool = False,
     tile_size_deg: float = 1.0,
     sleep_between: float = 0.5,
+    cache_dir: Optional[str] = None,
+    region_slug: Optional[str] = None,
+    resume: bool = False,
 ) -> List[Dict]:
     """Split a bbox into tiles and aggregate Overpass results to avoid huge queries.
 
@@ -149,6 +154,16 @@ def fetch_overpass_bbox_tiled(
     approx_total_tiles = total_tiles_lat * total_tiles_lon
     logging.info(f"Overpass tiling: bbox={bbox} tile_size={tile_size_deg} approx_tiles={approx_total_tiles}")
 
+    # Prepare cache directory if enabled
+    cache_path: Optional[Path] = None
+    if cache_dir:
+        region_key = (region_slug or "default").strip().lower() or "default"
+        cache_path = Path(cache_dir) / "overpass" / region_key / f"places_tiles_{tile_size_deg}deg"
+        cache_path.mkdir(parents=True, exist_ok=True)
+
+    def _tile_fname(s: float, w: float, n: float, e: float) -> str:
+        return f"s_{s:.4f}_w_{w:.4f}_n_{n:.4f}_e_{e:.4f}.json"
+
     lat = south
     tile_index = 0
     while lat < north:
@@ -159,10 +174,27 @@ def fetch_overpass_bbox_tiled(
             tile_bbox = (lat, lon, next_lat, next_lon)
             tile_index += 1
             logging.info(f"Overpass tile {tile_index}/{approx_total_tiles}: {tile_bbox}")
+            # Resume/read cache if available
+            cached_chunk: Optional[List[Dict]] = None
+            cache_file: Optional[Path] = None
+            if cache_path is not None:
+                cache_file = cache_path / _tile_fname(lat, lon, next_lat, next_lon)
+                if resume and cache_file.exists():
+                    try:
+                        cached_chunk = json.loads(cache_file.read_text(encoding="utf-8"))
+                        logging.info(f"Overpass tile {tile_index}: loaded {len(cached_chunk)} from cache")
+                    except Exception:
+                        cached_chunk = None
             q = build_overpass_query(tile_bbox, place_types=place_types, require_population_tag=require_population_tag)
             try:
-                chunk = fetch_overpass_places(q)
+                chunk = cached_chunk if cached_chunk is not None else fetch_overpass_places(q)
                 logging.info(f"Overpass tile {tile_index}: received {len(chunk)} elements")
+                # Write cache if enabled and not from cache
+                if cache_file is not None and cached_chunk is None:
+                    try:
+                        cache_file.write_text(json.dumps(chunk, ensure_ascii=False), encoding="utf-8")
+                    except Exception:
+                        pass
                 for r in chunk:
                     key = (r.get("name"), round(float(r["latitude"]), 4), round(float(r["longitude"]), 4))
                     if key in seen_keys:
@@ -256,6 +288,9 @@ def fetch_overpass_hospitals_bbox_tiled(
     bbox: Tuple[float, float, float, float],
     tile_size_deg: float = 1.0,
     sleep_between: float = 0.5,
+    cache_dir: Optional[str] = None,
+    region_slug: Optional[str] = None,
+    resume: bool = False,
 ) -> List[Dict]:
     """Split a bbox into tiles and aggregate Overpass results for hospitals.
 
@@ -264,6 +299,16 @@ def fetch_overpass_hospitals_bbox_tiled(
     south, west, north, east = bbox
     results: List[Dict] = []
     seen_keys = set()
+
+    # Prepare cache directory if enabled
+    cache_path: Optional[Path] = None
+    if cache_dir:
+        region_key = (region_slug or "default").strip().lower() or "default"
+        cache_path = Path(cache_dir) / "overpass" / region_key / f"hospitals_tiles_{tile_size_deg}deg"
+        cache_path.mkdir(parents=True, exist_ok=True)
+
+    def _tile_fname(s: float, w: float, n: float, e: float) -> str:
+        return f"s_{s:.4f}_w_{w:.4f}_n_{n:.4f}_e_{e:.4f}.json"
 
     lat = south
     while lat < north:
@@ -274,7 +319,22 @@ def fetch_overpass_hospitals_bbox_tiled(
             tile_bbox = (lat, lon, next_lat, next_lon)
             q = build_overpass_hospitals_query(tile_bbox)
             try:
-                chunk = fetch_overpass_hospitals(q)
+                # Resume/read cache if available
+                cached_chunk: Optional[List[Dict]] = None
+                cache_file: Optional[Path] = None
+                if cache_path is not None:
+                    cache_file = cache_path / _tile_fname(lat, lon, next_lat, next_lon)
+                    if resume and cache_file.exists():
+                        try:
+                            cached_chunk = json.loads(cache_file.read_text(encoding="utf-8"))
+                        except Exception:
+                            cached_chunk = None
+                chunk = cached_chunk if cached_chunk is not None else fetch_overpass_hospitals(q)
+                if cache_file is not None and cached_chunk is None:
+                    try:
+                        cache_file.write_text(json.dumps(chunk, ensure_ascii=False), encoding="utf-8")
+                    except Exception:
+                        pass
                 for r in chunk:
                     key = (
                         r.get("name") or "",

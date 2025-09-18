@@ -41,6 +41,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--include-villages", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--tile-size", type=float, default=1.0, help="Tile size in degrees for Overpass tiling")
     parser.add_argument("--out-dir", type=str, default="outputs", help="Directory to write outputs")
+    parser.add_argument("--cache-dir", type=str, default="outputs/cache", help="Directory to cache intermediate fetches (tiles, etc.)")
     parser.add_argument("--top", type=int, default=20, help="Show top-N by population in console")
     parser.add_argument("--google-api-key", default=os.getenv("GOOGLE_API_KEY"), help="Google Elevation API key (or set GOOGLE_API_KEY env var)")
     parser.add_argument("--elevation-batch-size", type=int, default=100, help="Batch size for elevation API requests")
@@ -83,6 +84,11 @@ def parse_args() -> argparse.Namespace:
 
     # Build map directly from an existing CSV (skips fetching/processing)
     parser.add_argument("--from-csv", type=str, default=None, help="Path to an existing CSV of cities to build a map from")
+    # Pipeline staging / checkpointing
+    parser.add_argument("--stage", type=str, choices=[
+        "fetch", "filter", "dedupe", "enrich_elevation", "enrich_hospitals", "enrich_airports", "maps", "all"
+    ], default=os.getenv("STAGE", "all"), help="Run a specific pipeline stage or 'all'")
+    parser.add_argument("--resume", action="store_true", help="Resume from cached tiles/intermediate files when available")
     return parser.parse_args()
 
 
@@ -216,67 +222,217 @@ def main() -> None:
             print(f"Warning: GeoNames fetch failed ({e}); continuing with OSM data only.", file=sys.stderr)
             geonames_records = []
 
-    osm_records = fetch_overpass_bbox_tiled(
-        bbox=bbox,
-        place_types=place_types,
-        require_population_tag=args.require_osm_population,
-        tile_size_deg=args.tile_size,
-    )
+    # Stage: fetch
+    out_dir = Path(args.out_dir) / settings.slug
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stage_fetch_json = out_dir / "stage_fetch_combined.json"
+    stage_filtered_json = out_dir / "stage_filtered.json"
+    stage_deduped_json = out_dir / "stage_deduped.json"
+    stage_enriched_elev_json = out_dir / "stage_enriched_elevation.json"
+    stage_enriched_hosp_json = out_dir / "stage_enriched_hospitals.json"
+    stage_enriched_air_json = out_dir / "stage_enriched_airports.json"
 
-    # Combine
-    combined: List[dict] = geonames_records + osm_records
+    if args.stage in ("fetch", "all"):
+        osm_records = fetch_overpass_bbox_tiled(
+            bbox=bbox,
+            place_types=place_types,
+            require_population_tag=args.require_osm_population,
+            tile_size_deg=args.tile_size,
+            cache_dir=str(Path(args.cache_dir)),
+            region_slug=settings.slug,
+            resume=args.resume,
+        )
+        combined = geonames_records + osm_records
+        # Save fetch stage
+        write_geojson(stage_fetch_json, combined)
+        if args.stage == "fetch":
+            # Stop after completing this stage unless running full pipeline
+            return
+    else:
+        # Load from previous stage
+        if stage_fetch_json.exists():
+            combined = read_csv_records(stage_fetch_json) if str(stage_fetch_json).endswith(".csv") else []
+            # Allow GeoJSON as JSON list of features conversion
+            try:
+                import json as _json
+                data = _json.loads(stage_fetch_json.read_text(encoding="utf-8"))
+                if isinstance(data, dict) and data.get("type") == "FeatureCollection":
+                    feats = data.get("features", [])
+                    combined = []
+                    for f in feats:
+                        props = f.get("properties", {})
+                        geom = f.get("geometry", {})
+                        if geom and geom.get("type") == "Point":
+                            coords = geom.get("coordinates", [None, None])
+                            props["longitude"], props["latitude"] = coords[0], coords[1]
+                        combined.append(props)
+            except Exception:
+                combined = []
+        else:
+            print("Error: fetch stage output missing; run with --stage fetch first.", file=sys.stderr)
+            sys.exit(2)
+
+    # At this point `combined` is already set either from fresh fetch (fetch stage)
+    # or loaded from the previous stage file. Do not recompute here.
 
     # Exclude configured countries (region-aware), fill missing countries using boundary lookup limited to region
-    combined = filter_excluded_countries(combined, excluded_codes=(settings.excluded_countries or []))
-    combined = fill_missing_country(combined, allowed_countries=(args.countries or settings.countries))
-    filtered = filter_within_perimeter(combined, perimeter=perimeter)
+    # Stage: filter
+    if args.stage in ("filter", "all"):
+        combined = filter_excluded_countries(combined, excluded_codes=(settings.excluded_countries or []))
+        combined = fill_missing_country(combined, allowed_countries=(args.countries or settings.countries))
+        filtered = filter_within_perimeter(combined, perimeter=perimeter)
+        filtered = enforce_min_population(filtered, min_population=(args.min_population or settings.min_population))
+        write_geojson(stage_filtered_json, filtered)
+        if args.stage == "filter":
+            return
+    else:
+        try:
+            import json as _json
+            data = _json.loads(stage_filtered_json.read_text(encoding="utf-8"))
+            feats = data.get("features", [])
+            filtered = []
+            for f in feats:
+                props = f.get("properties", {})
+                geom = f.get("geometry", {})
+                if geom and geom.get("type") == "Point":
+                    coords = geom.get("coordinates", [None, None])
+                    props["longitude"], props["latitude"] = coords[0], coords[1]
+                filtered.append(props)
+        except Exception:
+            print("Error: filter stage output missing/unreadable; run with --stage filter first.", file=sys.stderr)
+            sys.exit(2)
 
     # Enforce min population on merged results and dedupe
-    filtered = enforce_min_population(filtered, min_population=(args.min_population or settings.min_population))
-    deduped = dedupe_places(filtered, allowed_countries=(args.countries or settings.countries))
+    # Stage: dedupe
+    if args.stage in ("dedupe", "all"):
+        deduped = dedupe_places(filtered, allowed_countries=(args.countries or settings.countries))
+        write_geojson(stage_deduped_json, deduped)
+        if args.stage == "dedupe":
+            return
+    else:
+        try:
+            import json as _json
+            data = _json.loads(stage_deduped_json.read_text(encoding="utf-8"))
+            feats = data.get("features", [])
+            deduped = []
+            for f in feats:
+                props = f.get("properties", {})
+                geom = f.get("geometry", {})
+                if geom and geom.get("type") == "Point":
+                    coords = geom.get("coordinates", [None, None])
+                    props["longitude"], props["latitude"] = coords[0], coords[1]
+                deduped.append(props)
+        except Exception:
+            print("Error: dedupe stage output missing/unreadable; run with --stage dedupe first.", file=sys.stderr)
+            sys.exit(2)
 
     # Add distance to region perimeter
     enriched = add_distance_to_perimeter_km(deduped, perimeter=perimeter, region_slug=settings.slug)
 
-    # Enrich with elevation data from multiple sources
-    if not args.skip_elevation:
-        print("Enriching places with elevation data...", file=sys.stderr)
-        enriched = enrich_places_with_elevation(
-            enriched,
-            google_api_key=args.google_api_key,
-            batch_size=args.elevation_batch_size
-        )
+    # Stage: enrich_elevation
+    if args.stage in ("enrich_elevation", "all"):
+        if not args.skip_elevation:
+            print("Enriching places with elevation data...", file=sys.stderr)
+            enriched = enrich_places_with_elevation(
+                enriched,
+                google_api_key=args.google_api_key,
+                batch_size=args.elevation_batch_size
+            )
+        else:
+            print("Skipping elevation enrichment (using only OSM/GeoNames data)", file=sys.stderr)
+        write_geojson(stage_enriched_elev_json, enriched)
+        if args.stage == "enrich_elevation":
+            return
     else:
-        print("Skipping elevation enrichment (using only OSM/GeoNames data)", file=sys.stderr)
+        try:
+            import json as _json
+            data = _json.loads(stage_enriched_elev_json.read_text(encoding="utf-8"))
+            feats = data.get("features", [])
+            enriched = []
+            for f in feats:
+                props = f.get("properties", {})
+                geom = f.get("geometry", {})
+                if geom and geom.get("type") == "Point":
+                    coords = geom.get("coordinates", [None, None])
+                    props["longitude"], props["latitude"] = coords[0], coords[1]
+                enriched.append(props)
+        except Exception:
+            print("Error: enrich_elevation stage output missing/unreadable; run that stage first.", file=sys.stderr)
+            sys.exit(2)
 
     # Optional: Hospital presence check
     # Always enrich with hospital presence via OSM by default
-    print("Checking hospital presence via OSM (default)", file=sys.stderr)
-    enriched = enrich_records_with_hospital_presence_osm(
-        enriched,
-        perimeter_bbox=bbox,
-        radius_km=args.hospital_radius_km,
-        tile_size_deg=args.hospital_tile_size,
-        sleep_between_tiles=0.5,
-        fallback_to_openai=False,
-        model=args.openai_model,
-        request_timeout=args.openai_timeout,
-        osrm_base_url=args.osrm_base_url,
-    )
+    # Stage: enrich_hospitals
+    if args.stage in ("enrich_hospitals", "all"):
+        print("Checking hospital presence via OSM (default)", file=sys.stderr)
+        enriched = enrich_records_with_hospital_presence_osm(
+            enriched,
+            perimeter_bbox=bbox,
+            radius_km=args.hospital_radius_km,
+            tile_size_deg=args.hospital_tile_size,
+            sleep_between_tiles=0.5,
+            fallback_to_openai=False,
+            model=args.openai_model,
+            request_timeout=args.openai_timeout,
+            osrm_base_url=args.osrm_base_url,
+            cache_dir=str(Path(args.cache_dir)),
+            region_slug=settings.slug,
+            resume=args.resume,
+        )
+        write_geojson(stage_enriched_hosp_json, enriched)
+        if args.stage == "enrich_hospitals":
+            return
+    else:
+        try:
+            import json as _json
+            data = _json.loads(stage_enriched_hosp_json.read_text(encoding="utf-8"))
+            feats = data.get("features", [])
+            enriched = []
+            for f in feats:
+                props = f.get("properties", {})
+                geom = f.get("geometry", {})
+                if geom and geom.get("type") == "Point":
+                    coords = geom.get("coordinates", [None, None])
+                    props["longitude"], props["latitude"] = coords[0], coords[1]
+                enriched.append(props)
+        except Exception:
+            print("Error: enrich_hospitals stage output missing/unreadable; run that stage first.", file=sys.stderr)
+            sys.exit(2)
 
     # Optional: Nearest international airport + driving time/distance
     # Always enrich with nearest airport via offline dataset by default
-    print("Finding nearest international airports and driving metrics...", file=sys.stderr)
-    print("Using offline dataset mode (default; no OpenAI)", file=sys.stderr)
-    enriched = enrich_records_with_nearest_airport_offline(
-        enriched,
-        dataset_csv=args.airports_dataset,
-        osrm_base_url=args.osrm_base_url,
-        topk=args.airports_topk,
-        max_radius_km=args.airports_max_radius_km or 1000.0,
-        limit=args.airports_limit,
-        resume_missing_only=args.airports_resume_missing,
-    )
+    # Stage: enrich_airports
+    if args.stage in ("enrich_airports", "all"):
+        print("Finding nearest international airports and driving metrics...", file=sys.stderr)
+        print("Using offline dataset mode (default; no OpenAI)", file=sys.stderr)
+        enriched = enrich_records_with_nearest_airport_offline(
+            enriched,
+            dataset_csv=args.airports_dataset,
+            osrm_base_url=args.osrm_base_url,
+            topk=args.airports_topk,
+            max_radius_km=args.airports_max_radius_km or 1000.0,
+            limit=args.airports_limit,
+            resume_missing_only=args.airports_resume_missing,
+        )
+        write_geojson(stage_enriched_air_json, enriched)
+        if args.stage == "enrich_airports":
+            return
+    else:
+        try:
+            import json as _json
+            data = _json.loads(stage_enriched_air_json.read_text(encoding="utf-8"))
+            feats = data.get("features", [])
+            enriched = []
+            for f in feats:
+                props = f.get("properties", {})
+                geom = f.get("geometry", {})
+                if geom and geom.get("type") == "Point":
+                    coords = geom.get("coordinates", [None, None])
+                    props["longitude"], props["latitude"] = coords[0], coords[1]
+                enriched.append(props)
+        except Exception:
+            print("Error: enrich_airports stage output missing/unreadable; run that stage first.", file=sys.stderr)
+            sys.exit(2)
 
     # Ensure output directory
     out_dir = Path(args.out_dir) / settings.slug
@@ -287,11 +443,12 @@ def main() -> None:
     write_geojson(out_dir / f"{settings.slug}_cities.geojson", enriched)
 
     # Optionally write interactive maps
-    if args.make_map:
+    # Stage: maps
+    if args.stage in ("maps", "all") and args.make_map:
         map_path = Path(args.map_file) if args.map_file else (out_dir / f"{settings.slug}_cities_map.html")
         save_map(enriched, map_path, tiles=(args.map_tiles or settings.map_tiles))
         print(f"Wrote interactive map to {map_path}")
-    if args.make_country_map:
+    if args.stage in ("maps", "all") and args.make_country_map:
         country_map_path = Path(args.country_map_file) if args.country_map_file else (out_dir / f"{settings.slug}_cities_country_map.html")
         save_country_map(enriched, country_map_path, tiles=(args.map_tiles or settings.map_tiles))
         print(f"Wrote country-colored map to {country_map_path}")

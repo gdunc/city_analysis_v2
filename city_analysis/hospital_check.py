@@ -240,7 +240,7 @@ def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return r * c
 
 
-def _load_hospitals_for_bbox(bbox: Tuple[float, float, float, float], tile_size_deg: float = 1.0, sleep_between: float = 0.5) -> List[Dict]:
+def _load_hospitals_for_bbox(bbox: Tuple[float, float, float, float], tile_size_deg: float = 1.0, sleep_between: float = 0.5, cache_dir: Optional[str] = None, region_slug: Optional[str] = None, resume: bool = False) -> List[Dict]:
     """Fetch hospitals from Overpass within bbox using tiling, return normalized list.
 
     Returns list of dicts with keys: name, latitude, longitude, source, _tags
@@ -249,6 +249,9 @@ def _load_hospitals_for_bbox(bbox: Tuple[float, float, float, float], tile_size_
         bbox=bbox,
         tile_size_deg=tile_size_deg,
         sleep_between=sleep_between,
+        cache_dir=cache_dir,
+        region_slug=region_slug,
+        resume=resume,
     )
     return hospitals
 
@@ -264,6 +267,9 @@ def enrich_records_with_hospital_presence_osm(
     request_timeout: Optional[float] = 60.0,
     sleep_seconds_between_requests: float = 0.5,
     osrm_base_url: str = "https://router.project-osrm.org",
+    cache_dir: Optional[str] = None,
+    region_slug: Optional[str] = None,
+    resume: bool = False,
 ) -> List[Dict]:
     """Determine hospital presence using OSM hospitals within a radius around city centroid.
 
@@ -289,7 +295,7 @@ def enrich_records_with_hospital_presence_osm(
     )
 
     # Fetch hospitals once over expanded bbox
-    hospitals = _load_hospitals_for_bbox(expanded, tile_size_deg=tile_size_deg, sleep_between=sleep_between_tiles)
+    hospitals = _load_hospitals_for_bbox(expanded, tile_size_deg=tile_size_deg, sleep_between=sleep_between_tiles, cache_dir=cache_dir, region_slug=region_slug, resume=resume)
 
     # Precompute for quick coarse filter
     deg_radius = max(0.001, radius_km / 111.0)  # ~1 deg ~111 km

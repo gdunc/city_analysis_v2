@@ -84,6 +84,15 @@ REGIONS: dict[str, RegionSettings] = {
         excluded_countries=[],
         map_tiles="CartoDB positron",
     ),
+    "cascade_range": RegionSettings(
+        name="Cascade Range",
+        slug="cascade_range",
+        countries=["US", "CA"],
+        # Expect perimeter at data/regions/cascade_range/perimeter.geojson if present
+        perimeter_geojson=None,
+        excluded_countries=[],
+        map_tiles="CartoDB positron",
+    ),
 }
 
 
