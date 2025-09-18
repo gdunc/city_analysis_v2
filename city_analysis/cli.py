@@ -219,8 +219,8 @@ def main() -> None:
                 username=args.geonames_username,
             )
         except Exception as e:
-            print(f"Warning: GeoNames fetch failed ({e}); continuing with OSM data only.", file=sys.stderr)
-            geonames_records = []
+            print(f"Error: GeoNames fetch failed ({e}). Aborting run because GeoNames is required.", file=sys.stderr)
+            sys.exit(1)
 
     # Stage: fetch
     out_dir = Path(args.out_dir) / settings.slug

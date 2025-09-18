@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_9640fc6e707642ab07a3b32152d4a41d {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    <script>
+    (function(){
+      var MAP_VAR_NAME = 'map_9640fc6e707642ab07a3b32152d4a41d';
+      function getMap(){ return window[MAP_VAR_NAME]; }
+
+      function collectMarkers(layer, out){
+        if (!layer) return;
+        if (layer instanceof L.CircleMarker) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectMarkers(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectMarkers(child, out); });
+        }
+      }
+
+      function collectClusters(layer, out){
+        if (!layer) return;
+        if (typeof L.MarkerClusterGroup !== 'undefined' && (layer instanceof L.MarkerClusterGroup)) {
+          out.push(layer);
+        } else if (layer.getLayers && typeof layer.getLayers === 'function') {
+          var children = layer.getLayers();
+          for (var i=0;i<children.length;i++) collectClusters(children[i], out);
+        } else if (layer.eachLayer && typeof layer.eachLayer === 'function') {
+          layer.eachLayer(function(child){ collectClusters(child, out); });
+        }
+      }
+
+      function readPopulation(marker){
+        var p = 0;
+        if (marker && marker.options && marker.options.population != null) {
+          var n = Number(marker.options.population);
+          if (!isNaN(n)) return n;
+        }
+        try {
+          var pop = 0;
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var htmlStr = '';
+          if (typeof content === 'string') {
+            htmlStr = content;
+          } else if (content && typeof content.innerHTML === 'string') {
+            htmlStr = content.innerHTML;
+          } else if (content && typeof content.textContent === 'string') {
+            htmlStr = content.textContent;
+          }
+          if (htmlStr) {
+            var m = htmlStr.match(/Population:\s*([0-9,.]+)/i);
+            if (m && m[1]) {
+              pop = Number(m[1].replace(/[\,\s]/g, '')) || 0;
+            }
+          }
+          return pop;
+        } catch (e) { return 0; }
+      }
+
+      function readMeta(marker){
+        try {
+          var popup = marker.getPopup && marker.getPopup();
+          var content = popup && (popup.getContent && popup.getContent());
+          var root;
+          if (typeof content === 'string') {
+            var div = document.createElement('div');
+            div.innerHTML = content;
+            root = div;
+          } else if (content && content instanceof HTMLElement) {
+            root = content;
+          } else if (content && content.innerHTML) {
+            var d2 = document.createElement('div');
+            d2.innerHTML = content.innerHTML;
+            root = d2;
+          }
+          if (!root) return { dta:null, dth:null, hic:'', hcn:'' };
+          var meta = root.querySelector('.city-meta');
+          if (!meta) return { dta:null, dth:null, hic:'', hcn:'' };
+          var dta = meta.getAttribute('data-dta');
+          var dth = meta.getAttribute('data-dth');
+          var hic = (meta.getAttribute('data-hic') || '').toLowerCase();
+          var hcn = (meta.getAttribute('data-hcn') || '').toLowerCase();
+          var dtaNum = (dta !== null && dta !== '') ? Number(dta) : null;
+          var dthNum = (dth !== null && dth !== '') ? Number(dth) : null;
+          if (isNaN(dtaNum)) dtaNum = null;
+          if (isNaN(dthNum)) dthNum = null;
+          return { dta: dtaNum, dth: dthNum, hic: hic, hcn: hcn };
+        } catch (e) {
+          return { dta:null, dth:null, hic:'', hcn:'' };
+        }
+      }
+
+      var state = window.__popFilterState || { indexBuilt:false, markerToOwners:{}, markers:[], clusters:[] };
+      function buildIndex(){
+        var map = getMap();
+        state.markers = [];
+        state.clusters = [];
+        map.eachLayer(function(l){ collectMarkers(l, state.markers); });
+        map.eachLayer(function(l){ collectClusters(l, state.clusters); });
+        state.markerToOwners = {};
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var owners = [];
+          for (var j=0;j<state.clusters.length;j++){
+            var c = state.clusters[j];
+            if (c.hasLayer && c.hasLayer(m)) owners.push(c);
+          }
+          state.markerToOwners[m._leaflet_id] = owners;
+        }
+        state.indexBuilt = true;
+        window.__popFilterState = state;
+      }
+
+      function showMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (!c.hasLayer(m)) c.addLayer(m);
+          }
+        } else {
+          if (!map.hasLayer(m)) map.addLayer(m);
+        }
+        if (m._icon) m._icon.style.display = '';
+        if (m._path) m._path.style.display = '';
+      }
+
+      function hideMarker(m){
+        var map = getMap();
+        var owners = state.markerToOwners[m._leaflet_id] || [];
+        if (owners.length > 0){
+          for (var i=0;i<owners.length;i++){
+            var c = owners[i];
+            if (c.hasLayer(m)) c.removeLayer(m);
+          }
+        } else {
+          if (map.hasLayer(m)) map.removeLayer(m);
+        }
+        if (m._icon) m._icon.style.display = 'none';
+        if (m._path) m._path.style.display = 'none';
+      }
+
+      function applyFilter(minPop, maxAirportMins, maxHospitalMins, hospitalInCity, hospitalInCityNearby){
+        if (!state.indexBuilt) buildIndex();
+        for (var i=0;i<state.markers.length;i++){
+          var m = state.markers[i];
+          var p = readPopulation(m);
+          var show = (p >= minPop);
+          var meta = readMeta(m);
+          if (show && maxAirportMins != null){
+            if (meta.dta == null) { show = false; } else { show = show && (meta.dta <= maxAirportMins); }
+          }
+          if (show && maxHospitalMins != null){
+            if (meta.dth == null) { show = false; } else { show = show && (meta.dth <= maxHospitalMins); }
+          }
+          if (show && hospitalInCity && hospitalInCity !== 'any'){
+            show = show && (meta.hic === hospitalInCity);
+          }
+          if (show && hospitalInCityNearby && hospitalInCityNearby !== 'any'){
+            show = show && (meta.hcn === hospitalInCityNearby);
+          }
+          if (show) showMarker(m); else hideMarker(m);
+        }
+      }
+
+      function ensureUI(){
+        // If control already present, skip
+        if (document.getElementById('pop-filter')) return;
+        var map = getMap();
+        var ctrl = L.control({position: 'topleft'});
+        ctrl.onAdd = function(map){
+          var container = L.DomUtil.create('div');
+          container.innerHTML = `
+    <div id="pop-filter" style="background: white; padding: 8px 10px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); max-width: 260px;">
+  <div style="font-size:12px; margin-bottom:6px;"><b>Filters</b></div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Min population</label><br/>
+    <input id="pop-threshold" type="number" min="0" step="1000" value="0" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to airport (min)</label><br/>
+    <input id="max-airport-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Max driving time to hospital (min)</label><br/>
+    <input id="max-hospital-mins" type="number" min="0" step="5" placeholder="" style="width:120px;"/>
+  </div>
+  <div style="font-size:12px; margin-bottom:6px;">
+    <label>Hospital in city?</label><br/>
+    <select id="hospital-in-city" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div style="font-size:12px; margin-bottom:8px;">
+    <label>Hospital in city or nearby?</label><br/>
+    <select id="hospital-in-city-or-nearby" style="width:140px;">
+      <option value="any" selected>any</option>
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+  </div>
+  <div>
+    <button id="apply-pop-filter" style="margin-right:6px;">Apply</button>
+    <button id="reset-pop-filter">Reset</button>
+  </div>
+</div>
+          `;
+          L.DomEvent.disableClickPropagation(container);
+          return container;
+        };
+        ctrl.addTo(map);
+      }
+
+      function hookUI(){
+        ensureUI();
+        var btn = document.getElementById('apply-pop-filter');
+        var reset = document.getElementById('reset-pop-filter');
+        var input = document.getElementById('pop-threshold');
+        var maxA = document.getElementById('max-airport-mins');
+        var maxH = document.getElementById('max-hospital-mins');
+        var hic = document.getElementById('hospital-in-city');
+        var hcn = document.getElementById('hospital-in-city-or-nearby');
+        if (!btn || !input) return;
+        btn.addEventListener('click', function(){
+          var v = Number(input.value || 0) || 0;
+          var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+          var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+          var ic = (hic && hic.value) ? hic.value : 'any';
+          var cn = (hcn && hcn.value) ? hcn.value : 'any';
+          applyFilter(v, a, h, ic, cn);
+        });
+        input.addEventListener('keypress', function(e){
+          if (e.key === 'Enter') {
+            var v = Number(input.value || 0) || 0;
+            var a = (maxA && maxA.value !== '') ? (Number(maxA.value)) : null;
+            var h = (maxH && maxH.value !== '') ? (Number(maxH.value)) : null;
+            var ic = (hic && hic.value) ? hic.value : 'any';
+            var cn = (hcn && hcn.value) ? hcn.value : 'any';
+            applyFilter(v, a, h, ic, cn);
+          }
+        });
+        if (reset){
+          reset.addEventListener('click', function(){
+            if (input) input.value = 0;
+            if (maxA) maxA.value = '';
+            if (maxH) maxH.value = '';
+            if (hic) hic.value = 'any';
+            if (hcn) hcn.value = 'any';
+            applyFilter(0, null, null, 'any', 'any');
+          });
+        }
+      }
+
+      function whenMapReady(fn){
+        if (getMap()) { fn(); return; }
+        var tries = 0; var maxTries = 200; // ~10s
+        var iv = setInterval(function(){
+          if (getMap()){ clearInterval(iv); fn(); }
+          else if (++tries >= maxTries){ clearInterval(iv); }
+        }, 50);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function(){ whenMapReady(hookUI); });
+      } else {
+        whenMapReady(hookUI);
+      }
+    })();
+    </script>
+    
+            <div class="folium-map" id="map_9640fc6e707642ab07a3b32152d4a41d" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_9640fc6e707642ab07a3b32152d4a41d = L.map(
+                "map_9640fc6e707642ab07a3b32152d4a41d",
+                {
+                    center: [50.848535, -125.031582],
+                    crs: L.CRS.EPSG3857,
+                    
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+
+
+                }
+            );
+            L.control.scale().addTo(map_9640fc6e707642ab07a3b32152d4a41d);
+
+            
+
+        
+    
+            var tile_layer_d015992321afada28c3d72d1f64aa226 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_d015992321afada28c3d72d1f64aa226.addTo(map_9640fc6e707642ab07a3b32152d4a41d);
+        
+    
+            var marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352 = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_c47148fdd816e22f9794389a6fae2d2d = L.circleMarker(
+                [49.3286, -123.16019],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_2e7f882f8a42917f3ef8692cbc7a4a19 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_4cf730e3f062b68f0de98f4a75586b31 = $(`<div id="html_4cf730e3f062b68f0de98f4a75586b31" style="width: 100.0%; height: 100.0%;"><b>West Vancouver</b>(CA)<br/>Population: 45,487<br/>Elevation: 13 m / 43 ft<br/>Nearest airport: Vancouver International Airport<br/>Drive to nearest airport: 35 min<br/>Drive to nearest hospital: 12 min<br/>Nearest hospital: St. Paul's Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=West+Vancouver" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="34.6" data-dth="11.9" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_2e7f882f8a42917f3ef8692cbc7a4a19.setContent(html_4cf730e3f062b68f0de98f4a75586b31);
+            
+        
+
+        circle_marker_c47148fdd816e22f9794389a6fae2d2d.bindPopup(popup_2e7f882f8a42917f3ef8692cbc7a4a19)
+        ;
+
+        
+    
+    
+            var circle_marker_4c1e6917ad87adc1274a2f3c66736dd0 = L.circleMarker(
+                [49.28124, -122.82457],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_52c15381dc23cec786683d91bb75f69f = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_fa855920405494657a5310087cec6d56 = $(`<div id="html_fa855920405494657a5310087cec6d56" style="width: 100.0%; height: 100.0%;"><b>Port Moody</b>(CA)<br/>Population: 27,512<br/>Elevation: 37 m / 121 ft<br/>Nearest airport: Pitt Meadows Airport<br/>Drive to nearest airport: 21 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Eagle Ridge Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Port+Moody" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="21.1" data-dth="1.8" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_52c15381dc23cec786683d91bb75f69f.setContent(html_fa855920405494657a5310087cec6d56);
+            
+        
+
+        circle_marker_4c1e6917ad87adc1274a2f3c66736dd0.bindPopup(popup_52c15381dc23cec786683d91bb75f69f)
+        ;
+
+        
+    
+    
+            var circle_marker_1fc971690221e70853a8d2801f8eefd2 = L.circleMarker(
+                [58.30194, -134.41972],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_2fb79e74bc2462e892c1b605a48a6694 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_589d616c351b9707fd2e648f035e3e96 = $(`<div id="html_589d616c351b9707fd2e648f035e3e96" style="width: 100.0%; height: 100.0%;"><b>Juneau</b>(US)<br/>Population: 31,555<br/>Elevation: 13 m / 43 ft<br/>Nearest airport: Juneau International Airport<br/>Drive to nearest airport: 23 min<br/>Drive to nearest hospital: 6 min<br/>Nearest hospital: Bartlett Regional Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Juneau" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="22.8" data-dth="5.8" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_2fb79e74bc2462e892c1b605a48a6694.setContent(html_589d616c351b9707fd2e648f035e3e96);
+            
+        
+
+        circle_marker_1fc971690221e70853a8d2801f8eefd2.bindPopup(popup_2fb79e74bc2462e892c1b605a48a6694)
+        ;
+
+        
+    
+    
+            var circle_marker_6665c64606ed416bdb4bed65e18b25cc = L.circleMarker(
+                [49.30461, -122.79338],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_3d0406f268dc11af2b074904622a3cf4 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_edb45d1d45ed890d2c4d7632b7e746ad = $(`<div id="html_edb45d1d45ed890d2c4d7632b7e746ad" style="width: 100.0%; height: 100.0%;"><b>Westwood Plateau</b>(CA)<br/>Population: 19,776<br/>Elevation: 216 m / 709 ft<br/>Nearest airport: Pitt Meadows Airport<br/>Drive to nearest airport: 22 min<br/>Drive to nearest hospital: 8 min<br/>Nearest hospital: Eagle Ridge Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Westwood+Plateau" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="22.3" data-dth="7.7" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_3d0406f268dc11af2b074904622a3cf4.setContent(html_edb45d1d45ed890d2c4d7632b7e746ad);
+            
+        
+
+        circle_marker_6665c64606ed416bdb4bed65e18b25cc.bindPopup(popup_3d0406f268dc11af2b074904622a3cf4)
+        ;
+
+        
+    
+    
+            var circle_marker_504b05fc3515cd73b3d5dbf85aef8042 = L.circleMarker(
+                [49.32574, -123.07234],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_e48244cd06ad724e1ef8a98c73fc877b = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_4af02f8de630ef1aa57f44c8292ee6ab = $(`<div id="html_4af02f8de630ef1aa57f44c8292ee6ab" style="width: 100.0%; height: 100.0%;"><b>Central Lonsdale</b>(CA)<br/>Population: 18,485<br/>Elevation: 99 m / 325 ft<br/>Nearest airport: Vancouver International Airport<br/>Drive to nearest airport: 39 min<br/>Drive to nearest hospital: 2 min<br/>Nearest hospital: Lions Gate Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Central+Lonsdale" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="39.1" data-dth="2.3" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_e48244cd06ad724e1ef8a98c73fc877b.setContent(html_4af02f8de630ef1aa57f44c8292ee6ab);
+            
+        
+
+        circle_marker_504b05fc3515cd73b3d5dbf85aef8042.bindPopup(popup_e48244cd06ad724e1ef8a98c73fc877b)
+        ;
+
+        
+    
+    
+            var circle_marker_cc90c7232fb4bef7f4f416e03cec9839 = L.circleMarker(
+                [49.29363, -122.75613],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_f51d83e0ec6bebe0cf683f28dc29822c = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_d4c655f91ebc26b7ebac5c9e7713ba84 = $(`<div id="html_d4c655f91ebc26b7ebac5c9e7713ba84" style="width: 100.0%; height: 100.0%;"><b>Burke Mountain</b>(CA)<br/>Population: 12,100<br/>Elevation: 98 m / 322 ft<br/>Nearest airport: Pitt Meadows Airport<br/>Drive to nearest airport: 18 min<br/>Drive to nearest hospital: 9 min<br/>Nearest hospital: Redfish Healing Centre for Mental Health and Addiction<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Burke+Mountain" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="17.9" data-dth="9.1" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_f51d83e0ec6bebe0cf683f28dc29822c.setContent(html_d4c655f91ebc26b7ebac5c9e7713ba84);
+            
+        
+
+        circle_marker_cc90c7232fb4bef7f4f416e03cec9839.bindPopup(popup_f51d83e0ec6bebe0cf683f28dc29822c)
+        ;
+
+        
+    
+    
+            var circle_marker_beb2fb5b49e935b1c3cf59441d39da01 = L.circleMarker(
+                [50.11817, -122.95396],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_a88a6e60f9332a83a6151962f205be61 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_9f1ea7827b9a6535d263185547d16cf2 = $(`<div id="html_9f1ea7827b9a6535d263185547d16cf2" style="width: 100.0%; height: 100.0%;"><b>Whistler</b>(CA)<br/>Population: 8,713<br/>Elevation: 673 m / 2,208 ft<br/>Nearest airport: Vancouver International Airport<br/>Drive to nearest airport: 142 min<br/>Drive to nearest hospital: 36 min<br/>Nearest hospital: Pemberton Health Centre<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Whistler" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="141.9" data-dth="35.6" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_a88a6e60f9332a83a6151962f205be61.setContent(html_9f1ea7827b9a6535d263185547d16cf2);
+            
+        
+
+        circle_marker_beb2fb5b49e935b1c3cf59441d39da01.bindPopup(popup_a88a6e60f9332a83a6151962f205be61)
+        ;
+
+        
+    
+    
+            var circle_marker_864ccef32f21a8dc7d505a3f43c2a92e = L.circleMarker(
+                [55.3418, -131.64757],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_bf9d50f8073d69bd8bdf89c16de597b9 = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_56805e581b31cd1a55ca92aa09c8403d = $(`<div id="html_56805e581b31cd1a55ca92aa09c8403d" style="width: 100.0%; height: 100.0%;"><b>Ketchikan</b>(US)<br/>Population: 8,197<br/>Elevation: 7 m / 23 ft<br/>Nearest airport: Ketchikan International Airport<br/>Drive to nearest airport: 22 min<br/>Drive to nearest hospital: 4 min<br/>Nearest hospital: Peace Health Ketchikan Medical Ceneter<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Ketchikan" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="21.5" data-dth="3.6" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_bf9d50f8073d69bd8bdf89c16de597b9.setContent(html_56805e581b31cd1a55ca92aa09c8403d);
+            
+        
+
+        circle_marker_864ccef32f21a8dc7d505a3f43c2a92e.bindPopup(popup_bf9d50f8073d69bd8bdf89c16de597b9)
+        ;
+
+        
+    
+    
+            var circle_marker_56f8df59bfe5509a277759ba63f83396 = L.circleMarker(
+                [48.85342, -123.50032],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_fe1e41bb9b2d93f9f7c1d44a83e7e5dc = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_6d57dc3f76a443710841fd458e99fb10 = $(`<div id="html_6d57dc3f76a443710841fd458e99fb10" style="width: 100.0%; height: 100.0%;"><b>Ganges</b>(CA)<br/>Population: 6,000<br/>Elevation: 5 m / 16 ft<br/>Nearest airport: Victoria International Airport<br/>Drive to nearest airport: 64 min<br/>Drive to nearest hospital: 3 min<br/>Nearest hospital: Lady Minto Hospital<br/>Source: geonames <i>(open_elevation)</i><br/><a href="https://www.google.com/search?q=Ganges" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="63.8" data-dth="3.1" data-hic="yes" data-hcn="yes"></span></div>`)[0];
+                popup_fe1e41bb9b2d93f9f7c1d44a83e7e5dc.setContent(html_6d57dc3f76a443710841fd458e99fb10);
+            
+        
+
+        circle_marker_56f8df59bfe5509a277759ba63f83396.bindPopup(popup_fe1e41bb9b2d93f9f7c1d44a83e7e5dc)
+        ;
+
+        
+    
+    
+            var circle_marker_b02807aaed3dea4fe00e74e9125668a7 = L.circleMarker(
+                [49.3362, -123.18764],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352);
+        
+    
+        var popup_d0cf0553ee92a16c686c79c954b5d77c = L.popup({
+  "maxWidth": 350,
+});
+
+        
+            
+                var html_fe02634ed53d85b23321e258d2373626 = $(`<div id="html_fe02634ed53d85b23321e258d2373626" style="width: 100.0%; height: 100.0%;"><b>Dundarave</b>(CA)<br/>Population: 5,350<br/>Elevation: 26 m / 85 ft<br/>Nearest airport: Vancouver International Airport<br/>Drive to nearest airport: 37 min<br/>Drive to nearest hospital: 15 min<br/>Nearest hospital: St. Paul's Hospital<br/>Source: geonames <i>(opentopo)</i><br/><a href="https://www.google.com/search?q=Dundarave" target="_blank" rel="noopener noreferrer">Search on Google</a><span class="city-meta" style="display:none" data-dta="37.3" data-dth="14.6" data-hic="no" data-hcn="yes"></span></div>`)[0];
+                popup_d0cf0553ee92a16c686c79c954b5d77c.setContent(html_fe02634ed53d85b23321e258d2373626);
+            
+        
+
+        circle_marker_b02807aaed3dea4fe00e74e9125668a7.bindPopup(popup_d0cf0553ee92a16c686c79c954b5d77c)
+        ;
+
+        
+    
+    
+            marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352.addTo(map_9640fc6e707642ab07a3b32152d4a41d);
+        
+    
+            var layer_control_34480b23318473d22e9fe4b0be6afa0b_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_d015992321afada28c3d72d1f64aa226,
+                },
+                overlays :  {
+                    "Cities" : marker_cluster_66ebda2ad07ce3b1f043a0a2d4a7b352,
+                },
+            };
+            let layer_control_34480b23318473d22e9fe4b0be6afa0b = L.control.layers(
+                layer_control_34480b23318473d22e9fe4b0be6afa0b_layers.base_layers,
+                layer_control_34480b23318473d22e9fe4b0be6afa0b_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_9640fc6e707642ab07a3b32152d4a41d);
+
+        
+</script>
+</html>

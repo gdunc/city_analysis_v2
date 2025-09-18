@@ -48,6 +48,11 @@ def _fallback_bbox_for_slug(slug: str) -> Optional[Polygon]:
         # Approximate Sierra Nevada (California/Nevada, USA). Conservative bounds.
         # West near Central Valley; east near Nevada border; spans roughly Tehachapi to Lassen.
         return box(-122.5, 35.0, -117.0, 40.8)
+    if s == "coast_mountains":
+        # Approximate Coast Mountains envelope (primarily British Columbia into SE Alaska)
+        # Conservative bounds to avoid Vancouver Island and inland Cariboo/Columbia ranges
+        # Lon: -138 to -122, Lat: 49 to 60
+        return box(-138.0, 49.0, -122.0, 60.0)
     return None
 
 

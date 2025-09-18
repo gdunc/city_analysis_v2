@@ -1,0 +1,655 @@
+2025-09-18 19:41:47,680 - root - INFO - Overpass tiling: bbox=(48.53736111111114, -137.29268411982343, 60.86152086046006, -121.38996808716395) tile_size=1.0 approx_tiles=208
+2025-09-18 19:41:47,680 - root - INFO - Overpass tile 1/208: (48.53736111111114, -137.29268411982343, 49.53736111111114, -136.29268411982343)
+2025-09-18 19:41:47,681 - root - INFO - Overpass tile 1: loaded 0 from cache
+2025-09-18 19:41:47,681 - root - INFO - Overpass tile 1: received 0 elements
+2025-09-18 19:41:48,185 - root - INFO - Overpass tile 2/208: (48.53736111111114, -136.29268411982343, 49.53736111111114, -135.29268411982343)
+2025-09-18 19:41:48,186 - root - INFO - Overpass tile 2: loaded 0 from cache
+2025-09-18 19:41:48,187 - root - INFO - Overpass tile 2: received 0 elements
+2025-09-18 19:41:48,691 - root - INFO - Overpass tile 3/208: (48.53736111111114, -135.29268411982343, 49.53736111111114, -134.29268411982343)
+2025-09-18 19:41:48,693 - root - INFO - Overpass tile 3: loaded 0 from cache
+2025-09-18 19:41:48,693 - root - INFO - Overpass tile 3: received 0 elements
+2025-09-18 19:41:49,198 - root - INFO - Overpass tile 4/208: (48.53736111111114, -134.29268411982343, 49.53736111111114, -133.29268411982343)
+2025-09-18 19:41:49,200 - root - INFO - Overpass tile 4: loaded 0 from cache
+2025-09-18 19:41:49,200 - root - INFO - Overpass tile 4: received 0 elements
+2025-09-18 19:41:49,706 - root - INFO - Overpass tile 5/208: (48.53736111111114, -133.29268411982343, 49.53736111111114, -132.29268411982343)
+2025-09-18 19:41:49,708 - root - INFO - Overpass tile 5: loaded 0 from cache
+2025-09-18 19:41:49,708 - root - INFO - Overpass tile 5: received 0 elements
+2025-09-18 19:41:50,211 - root - INFO - Overpass tile 6/208: (48.53736111111114, -132.29268411982343, 49.53736111111114, -131.29268411982343)
+2025-09-18 19:41:50,213 - root - INFO - Overpass tile 6: loaded 0 from cache
+2025-09-18 19:41:50,213 - root - INFO - Overpass tile 6: received 0 elements
+2025-09-18 19:41:50,717 - root - INFO - Overpass tile 7/208: (48.53736111111114, -131.29268411982343, 49.53736111111114, -130.29268411982343)
+2025-09-18 19:41:50,719 - root - INFO - Overpass tile 7: loaded 0 from cache
+2025-09-18 19:41:50,719 - root - INFO - Overpass tile 7: received 0 elements
+2025-09-18 19:41:51,224 - root - INFO - Overpass tile 8/208: (48.53736111111114, -130.29268411982343, 49.53736111111114, -129.29268411982343)
+2025-09-18 19:41:51,226 - root - INFO - Overpass tile 8: loaded 0 from cache
+2025-09-18 19:41:51,226 - root - INFO - Overpass tile 8: received 0 elements
+2025-09-18 19:41:51,731 - root - INFO - Overpass tile 9/208: (48.53736111111114, -129.29268411982343, 49.53736111111114, -128.29268411982343)
+2025-09-18 19:41:51,733 - root - INFO - Overpass tile 9: loaded 0 from cache
+2025-09-18 19:41:51,733 - root - INFO - Overpass tile 9: received 0 elements
+2025-09-18 19:41:52,238 - root - INFO - Overpass tile 10/208: (48.53736111111114, -128.29268411982343, 49.53736111111114, -127.29268411982343)
+2025-09-18 19:41:52,240 - root - INFO - Overpass tile 10: loaded 0 from cache
+2025-09-18 19:41:52,240 - root - INFO - Overpass tile 10: received 0 elements
+2025-09-18 19:41:52,745 - root - INFO - Overpass tile 11/208: (48.53736111111114, -127.29268411982343, 49.53736111111114, -126.29268411982343)
+2025-09-18 19:41:52,746 - root - INFO - Overpass tile 11: loaded 0 from cache
+2025-09-18 19:41:52,747 - root - INFO - Overpass tile 11: received 0 elements
+2025-09-18 19:41:53,252 - root - INFO - Overpass tile 12/208: (48.53736111111114, -126.29268411982343, 49.53736111111114, -125.29268411982343)
+2025-09-18 19:41:53,254 - root - INFO - Overpass tile 12: loaded 7 from cache
+2025-09-18 19:41:53,254 - root - INFO - Overpass tile 12: received 7 elements
+2025-09-18 19:41:53,754 - root - INFO - Overpass tile 13/208: (48.53736111111114, -125.29268411982343, 49.53736111111114, -124.29268411982343)
+2025-09-18 19:41:53,756 - root - INFO - Overpass tile 13: loaded 10 from cache
+2025-09-18 19:41:53,756 - root - INFO - Overpass tile 13: received 10 elements
+2025-09-18 19:41:54,261 - root - INFO - Overpass tile 14/208: (48.53736111111114, -124.29268411982343, 49.53736111111114, -123.29268411982343)
+2025-09-18 19:41:54,263 - root - INFO - Overpass tile 14: loaded 36 from cache
+2025-09-18 19:41:54,263 - root - INFO - Overpass tile 14: received 36 elements
+2025-09-18 19:41:54,768 - root - INFO - Overpass tile 15/208: (48.53736111111114, -123.29268411982343, 49.53736111111114, -122.29268411982343)
+2025-09-18 19:41:54,771 - root - INFO - Overpass tile 15: loaded 42 from cache
+2025-09-18 19:41:54,771 - root - INFO - Overpass tile 15: received 42 elements
+2025-09-18 19:41:55,276 - root - INFO - Overpass tile 16/208: (48.53736111111114, -122.29268411982343, 49.53736111111114, -121.38996808716395)
+2025-09-18 19:41:55,278 - root - INFO - Overpass tile 16: loaded 32 from cache
+2025-09-18 19:41:55,278 - root - INFO - Overpass tile 16: received 32 elements
+2025-09-18 19:41:55,779 - root - INFO - Overpass tile 17/208: (49.53736111111114, -137.29268411982343, 50.53736111111114, -136.29268411982343)
+2025-09-18 19:41:55,780 - root - INFO - Overpass tile 17: loaded 0 from cache
+2025-09-18 19:41:55,780 - root - INFO - Overpass tile 17: received 0 elements
+2025-09-18 19:41:56,284 - root - INFO - Overpass tile 18/208: (49.53736111111114, -136.29268411982343, 50.53736111111114, -135.29268411982343)
+2025-09-18 19:41:56,286 - root - INFO - Overpass tile 18: loaded 0 from cache
+2025-09-18 19:41:56,286 - root - INFO - Overpass tile 18: received 0 elements
+2025-09-18 19:41:56,792 - root - INFO - Overpass tile 19/208: (49.53736111111114, -135.29268411982343, 50.53736111111114, -134.29268411982343)
+2025-09-18 19:41:56,794 - root - INFO - Overpass tile 19: loaded 0 from cache
+2025-09-18 19:41:56,794 - root - INFO - Overpass tile 19: received 0 elements
+2025-09-18 19:41:57,296 - root - INFO - Overpass tile 20/208: (49.53736111111114, -134.29268411982343, 50.53736111111114, -133.29268411982343)
+2025-09-18 19:41:57,298 - root - INFO - Overpass tile 20: loaded 0 from cache
+2025-09-18 19:41:57,298 - root - INFO - Overpass tile 20: received 0 elements
+2025-09-18 19:41:57,799 - root - INFO - Overpass tile 21/208: (49.53736111111114, -133.29268411982343, 50.53736111111114, -132.29268411982343)
+2025-09-18 19:41:57,802 - root - INFO - Overpass tile 21: loaded 0 from cache
+2025-09-18 19:41:57,802 - root - INFO - Overpass tile 21: received 0 elements
+2025-09-18 19:41:58,307 - root - INFO - Overpass tile 22/208: (49.53736111111114, -132.29268411982343, 50.53736111111114, -131.29268411982343)
+2025-09-18 19:41:58,309 - root - INFO - Overpass tile 22: loaded 0 from cache
+2025-09-18 19:41:58,309 - root - INFO - Overpass tile 22: received 0 elements
+2025-09-18 19:41:58,819 - root - INFO - Overpass tile 23/208: (49.53736111111114, -131.29268411982343, 50.53736111111114, -130.29268411982343)
+2025-09-18 19:41:58,821 - root - INFO - Overpass tile 23: loaded 0 from cache
+2025-09-18 19:41:58,821 - root - INFO - Overpass tile 23: received 0 elements
+2025-09-18 19:41:59,328 - root - INFO - Overpass tile 24/208: (49.53736111111114, -130.29268411982343, 50.53736111111114, -129.29268411982343)
+2025-09-18 19:41:59,328 - root - INFO - Overpass tile 24: loaded 0 from cache
+2025-09-18 19:41:59,329 - root - INFO - Overpass tile 24: received 0 elements
+2025-09-18 19:41:59,832 - root - INFO - Overpass tile 25/208: (49.53736111111114, -129.29268411982343, 50.53736111111114, -128.29268411982343)
+2025-09-18 19:41:59,834 - root - INFO - Overpass tile 25: loaded 0 from cache
+2025-09-18 19:41:59,834 - root - INFO - Overpass tile 25: received 0 elements
+2025-09-18 19:42:00,341 - root - INFO - Overpass tile 26/208: (49.53736111111114, -128.29268411982343, 50.53736111111114, -127.29268411982343)
+2025-09-18 19:42:00,343 - root - INFO - Overpass tile 26: loaded 3 from cache
+2025-09-18 19:42:00,343 - root - INFO - Overpass tile 26: received 3 elements
+2025-09-18 19:42:00,848 - root - INFO - Overpass tile 27/208: (49.53736111111114, -127.29268411982343, 50.53736111111114, -126.29268411982343)
+2025-09-18 19:42:00,852 - root - INFO - Overpass tile 27: loaded 3 from cache
+2025-09-18 19:42:00,852 - root - INFO - Overpass tile 27: received 3 elements
+2025-09-18 19:42:01,355 - root - INFO - Overpass tile 28/208: (49.53736111111114, -126.29268411982343, 50.53736111111114, -125.29268411982343)
+2025-09-18 19:42:01,356 - root - INFO - Overpass tile 28: loaded 2 from cache
+2025-09-18 19:42:01,356 - root - INFO - Overpass tile 28: received 2 elements
+2025-09-18 19:42:01,863 - root - INFO - Overpass tile 29/208: (49.53736111111114, -125.29268411982343, 50.53736111111114, -124.29268411982343)
+2025-09-18 19:42:01,865 - root - INFO - Overpass tile 29: loaded 17 from cache
+2025-09-18 19:42:01,865 - root - INFO - Overpass tile 29: received 17 elements
+2025-09-18 19:42:02,369 - root - INFO - Overpass tile 30/208: (49.53736111111114, -124.29268411982343, 50.53736111111114, -123.29268411982343)
+2025-09-18 19:42:02,370 - root - INFO - Overpass tile 30: loaded 1 from cache
+2025-09-18 19:42:02,370 - root - INFO - Overpass tile 30: received 1 elements
+2025-09-18 19:42:02,872 - root - INFO - Overpass tile 31/208: (49.53736111111114, -123.29268411982343, 50.53736111111114, -122.29268411982343)
+2025-09-18 19:42:02,873 - root - INFO - Overpass tile 31: loaded 9 from cache
+2025-09-18 19:42:02,873 - root - INFO - Overpass tile 31: received 9 elements
+2025-09-18 19:42:03,386 - root - INFO - Overpass tile 32/208: (49.53736111111114, -122.29268411982343, 50.53736111111114, -121.38996808716395)
+2025-09-18 19:42:03,388 - root - INFO - Overpass tile 32: loaded 10 from cache
+2025-09-18 19:42:03,388 - root - INFO - Overpass tile 32: received 10 elements
+2025-09-18 19:42:03,893 - root - INFO - Overpass tile 33/208: (50.53736111111114, -137.29268411982343, 51.53736111111114, -136.29268411982343)
+2025-09-18 19:42:03,894 - root - INFO - Overpass tile 33: loaded 0 from cache
+2025-09-18 19:42:03,894 - root - INFO - Overpass tile 33: received 0 elements
+2025-09-18 19:42:04,401 - root - INFO - Overpass tile 34/208: (50.53736111111114, -136.29268411982343, 51.53736111111114, -135.29268411982343)
+2025-09-18 19:42:04,401 - root - INFO - Overpass tile 34: loaded 0 from cache
+2025-09-18 19:42:04,401 - root - INFO - Overpass tile 34: received 0 elements
+2025-09-18 19:42:04,903 - root - INFO - Overpass tile 35/208: (50.53736111111114, -135.29268411982343, 51.53736111111114, -134.29268411982343)
+2025-09-18 19:42:04,904 - root - INFO - Overpass tile 35: loaded 0 from cache
+2025-09-18 19:42:04,904 - root - INFO - Overpass tile 35: received 0 elements
+2025-09-18 19:42:05,414 - root - INFO - Overpass tile 36/208: (50.53736111111114, -134.29268411982343, 51.53736111111114, -133.29268411982343)
+2025-09-18 19:42:05,415 - root - INFO - Overpass tile 36: loaded 0 from cache
+2025-09-18 19:42:05,415 - root - INFO - Overpass tile 36: received 0 elements
+2025-09-18 19:42:05,925 - root - INFO - Overpass tile 37/208: (50.53736111111114, -133.29268411982343, 51.53736111111114, -132.29268411982343)
+2025-09-18 19:42:05,926 - root - INFO - Overpass tile 37: loaded 0 from cache
+2025-09-18 19:42:05,926 - root - INFO - Overpass tile 37: received 0 elements
+2025-09-18 19:42:06,432 - root - INFO - Overpass tile 38/208: (50.53736111111114, -132.29268411982343, 51.53736111111114, -131.29268411982343)
+2025-09-18 19:42:06,436 - root - INFO - Overpass tile 38: loaded 0 from cache
+2025-09-18 19:42:06,436 - root - INFO - Overpass tile 38: received 0 elements
+2025-09-18 19:42:06,936 - root - INFO - Overpass tile 39/208: (50.53736111111114, -131.29268411982343, 51.53736111111114, -130.29268411982343)
+2025-09-18 19:42:06,937 - root - INFO - Overpass tile 39: loaded 0 from cache
+2025-09-18 19:42:06,937 - root - INFO - Overpass tile 39: received 0 elements
+2025-09-18 19:42:07,445 - root - INFO - Overpass tile 40/208: (50.53736111111114, -130.29268411982343, 51.53736111111114, -129.29268411982343)
+2025-09-18 19:42:07,447 - root - INFO - Overpass tile 40: loaded 0 from cache
+2025-09-18 19:42:07,447 - root - INFO - Overpass tile 40: received 0 elements
+2025-09-18 19:42:07,956 - root - INFO - Overpass tile 41/208: (50.53736111111114, -129.29268411982343, 51.53736111111114, -128.29268411982343)
+2025-09-18 19:42:07,958 - root - INFO - Overpass tile 41: loaded 0 from cache
+2025-09-18 19:42:07,958 - root - INFO - Overpass tile 41: received 0 elements
+2025-09-18 19:42:08,467 - root - INFO - Overpass tile 42/208: (50.53736111111114, -128.29268411982343, 51.53736111111114, -127.29268411982343)
+2025-09-18 19:42:08,468 - root - INFO - Overpass tile 42: loaded 1 from cache
+2025-09-18 19:42:08,468 - root - INFO - Overpass tile 42: received 1 elements
+2025-09-18 19:42:08,969 - root - INFO - Overpass tile 43/208: (50.53736111111114, -127.29268411982343, 51.53736111111114, -126.29268411982343)
+2025-09-18 19:42:08,970 - root - INFO - Overpass tile 43: loaded 4 from cache
+2025-09-18 19:42:08,970 - root - INFO - Overpass tile 43: received 4 elements
+2025-09-18 19:42:09,474 - root - INFO - Overpass tile 44/208: (50.53736111111114, -126.29268411982343, 51.53736111111114, -125.29268411982343)
+2025-09-18 19:42:09,475 - root - INFO - Overpass tile 44: loaded 1 from cache
+2025-09-18 19:42:09,475 - root - INFO - Overpass tile 44: received 1 elements
+2025-09-18 19:42:09,982 - root - INFO - Overpass tile 45/208: (50.53736111111114, -125.29268411982343, 51.53736111111114, -124.29268411982343)
+2025-09-18 19:42:09,984 - root - INFO - Overpass tile 45: loaded 0 from cache
+2025-09-18 19:42:09,984 - root - INFO - Overpass tile 45: received 0 elements
+2025-09-18 19:42:10,488 - root - INFO - Overpass tile 46/208: (50.53736111111114, -124.29268411982343, 51.53736111111114, -123.29268411982343)
+2025-09-18 19:42:10,490 - root - INFO - Overpass tile 46: loaded 1 from cache
+2025-09-18 19:42:10,490 - root - INFO - Overpass tile 46: received 1 elements
+2025-09-18 19:42:10,995 - root - INFO - Overpass tile 47/208: (50.53736111111114, -123.29268411982343, 51.53736111111114, -122.29268411982343)
+2025-09-18 19:42:10,996 - root - INFO - Overpass tile 47: loaded 1 from cache
+2025-09-18 19:42:10,996 - root - INFO - Overpass tile 47: received 1 elements
+2025-09-18 19:42:11,497 - root - INFO - Overpass tile 48/208: (50.53736111111114, -122.29268411982343, 51.53736111111114, -121.38996808716395)
+2025-09-18 19:42:11,500 - root - INFO - Overpass tile 48: loaded 5 from cache
+2025-09-18 19:42:11,500 - root - INFO - Overpass tile 48: received 5 elements
+2025-09-18 19:42:12,010 - root - INFO - Overpass tile 49/208: (51.53736111111114, -137.29268411982343, 52.53736111111114, -136.29268411982343)
+2025-09-18 19:42:12,011 - root - INFO - Overpass tile 49: loaded 0 from cache
+2025-09-18 19:42:12,011 - root - INFO - Overpass tile 49: received 0 elements
+2025-09-18 19:42:12,521 - root - INFO - Overpass tile 50/208: (51.53736111111114, -136.29268411982343, 52.53736111111114, -135.29268411982343)
+2025-09-18 19:42:12,522 - root - INFO - Overpass tile 50: loaded 0 from cache
+2025-09-18 19:42:12,522 - root - INFO - Overpass tile 50: received 0 elements
+2025-09-18 19:42:13,032 - root - INFO - Overpass tile 51/208: (51.53736111111114, -135.29268411982343, 52.53736111111114, -134.29268411982343)
+2025-09-18 19:42:13,033 - root - INFO - Overpass tile 51: loaded 0 from cache
+2025-09-18 19:42:13,033 - root - INFO - Overpass tile 51: received 0 elements
+2025-09-18 19:42:13,536 - root - INFO - Overpass tile 52/208: (51.53736111111114, -134.29268411982343, 52.53736111111114, -133.29268411982343)
+2025-09-18 19:42:13,536 - root - INFO - Overpass tile 52: loaded 0 from cache
+2025-09-18 19:42:13,536 - root - INFO - Overpass tile 52: received 0 elements
+2025-09-18 19:42:14,047 - root - INFO - Overpass tile 53/208: (51.53736111111114, -133.29268411982343, 52.53736111111114, -132.29268411982343)
+2025-09-18 19:42:14,048 - root - INFO - Overpass tile 53: loaded 0 from cache
+2025-09-18 19:42:14,049 - root - INFO - Overpass tile 53: received 0 elements
+2025-09-18 19:42:14,556 - root - INFO - Overpass tile 54/208: (51.53736111111114, -132.29268411982343, 52.53736111111114, -131.29268411982343)
+2025-09-18 19:42:14,557 - root - INFO - Overpass tile 54: loaded 0 from cache
+2025-09-18 19:42:14,557 - root - INFO - Overpass tile 54: received 0 elements
+2025-09-18 19:42:15,063 - root - INFO - Overpass tile 55/208: (51.53736111111114, -131.29268411982343, 52.53736111111114, -130.29268411982343)
+2025-09-18 19:42:15,064 - root - INFO - Overpass tile 55: loaded 0 from cache
+2025-09-18 19:42:15,064 - root - INFO - Overpass tile 55: received 0 elements
+2025-09-18 19:42:15,571 - root - INFO - Overpass tile 56/208: (51.53736111111114, -130.29268411982343, 52.53736111111114, -129.29268411982343)
+2025-09-18 19:42:15,572 - root - INFO - Overpass tile 56: loaded 0 from cache
+2025-09-18 19:42:15,572 - root - INFO - Overpass tile 56: received 0 elements
+2025-09-18 19:42:16,081 - root - INFO - Overpass tile 57/208: (51.53736111111114, -129.29268411982343, 52.53736111111114, -128.29268411982343)
+2025-09-18 19:42:16,083 - root - INFO - Overpass tile 57: loaded 0 from cache
+2025-09-18 19:42:16,083 - root - INFO - Overpass tile 57: received 0 elements
+2025-09-18 19:42:16,586 - root - INFO - Overpass tile 58/208: (51.53736111111114, -128.29268411982343, 52.53736111111114, -127.29268411982343)
+2025-09-18 19:42:16,587 - root - INFO - Overpass tile 58: loaded 4 from cache
+2025-09-18 19:42:16,587 - root - INFO - Overpass tile 58: received 4 elements
+2025-09-18 19:42:17,097 - root - INFO - Overpass tile 59/208: (51.53736111111114, -127.29268411982343, 52.53736111111114, -126.29268411982343)
+2025-09-18 19:42:17,098 - root - INFO - Overpass tile 59: loaded 3 from cache
+2025-09-18 19:42:17,098 - root - INFO - Overpass tile 59: received 3 elements
+2025-09-18 19:42:17,601 - root - INFO - Overpass tile 60/208: (51.53736111111114, -126.29268411982343, 52.53736111111114, -125.29268411982343)
+2025-09-18 19:42:17,602 - root - INFO - Overpass tile 60: loaded 1 from cache
+2025-09-18 19:42:17,602 - root - INFO - Overpass tile 60: received 1 elements
+2025-09-18 19:42:18,113 - root - INFO - Overpass tile 61/208: (51.53736111111114, -125.29268411982343, 52.53736111111114, -124.29268411982343)
+2025-09-18 19:42:18,115 - root - INFO - Overpass tile 61: loaded 0 from cache
+2025-09-18 19:42:18,115 - root - INFO - Overpass tile 61: received 0 elements
+2025-09-18 19:42:18,625 - root - INFO - Overpass tile 62/208: (51.53736111111114, -124.29268411982343, 52.53736111111114, -123.29268411982343)
+2025-09-18 19:42:18,627 - root - INFO - Overpass tile 62: loaded 0 from cache
+2025-09-18 19:42:18,627 - root - INFO - Overpass tile 62: received 0 elements
+2025-09-18 19:42:19,136 - root - INFO - Overpass tile 63/208: (51.53736111111114, -123.29268411982343, 52.53736111111114, -122.29268411982343)
+2025-09-18 19:42:19,140 - root - INFO - Overpass tile 63: loaded 7 from cache
+2025-09-18 19:42:19,140 - root - INFO - Overpass tile 63: received 7 elements
+2025-09-18 19:42:19,650 - root - INFO - Overpass tile 64/208: (51.53736111111114, -122.29268411982343, 52.53736111111114, -121.38996808716395)
+2025-09-18 19:42:19,651 - root - INFO - Overpass tile 64: loaded 10 from cache
+2025-09-18 19:42:19,651 - root - INFO - Overpass tile 64: received 10 elements
+2025-09-18 19:42:20,162 - root - INFO - Overpass tile 65/208: (52.53736111111114, -137.29268411982343, 53.53736111111114, -136.29268411982343)
+2025-09-18 19:42:20,163 - root - INFO - Overpass tile 65: loaded 0 from cache
+2025-09-18 19:42:20,163 - root - INFO - Overpass tile 65: received 0 elements
+2025-09-18 19:42:20,666 - root - INFO - Overpass tile 66/208: (52.53736111111114, -136.29268411982343, 53.53736111111114, -135.29268411982343)
+2025-09-18 19:42:20,670 - root - INFO - Overpass tile 66: loaded 0 from cache
+2025-09-18 19:42:20,670 - root - INFO - Overpass tile 66: received 0 elements
+2025-09-18 19:42:21,179 - root - INFO - Overpass tile 67/208: (52.53736111111114, -135.29268411982343, 53.53736111111114, -134.29268411982343)
+2025-09-18 19:42:21,182 - root - INFO - Overpass tile 67: loaded 0 from cache
+2025-09-18 19:42:21,182 - root - INFO - Overpass tile 67: received 0 elements
+2025-09-18 19:42:21,692 - root - INFO - Overpass tile 68/208: (52.53736111111114, -134.29268411982343, 53.53736111111114, -133.29268411982343)
+2025-09-18 19:42:21,695 - root - INFO - Overpass tile 68: loaded 0 from cache
+2025-09-18 19:42:21,695 - root - INFO - Overpass tile 68: received 0 elements
+2025-09-18 19:42:22,205 - root - INFO - Overpass tile 69/208: (52.53736111111114, -133.29268411982343, 53.53736111111114, -132.29268411982343)
+2025-09-18 19:42:22,208 - root - INFO - Overpass tile 69: loaded 1 from cache
+2025-09-18 19:42:22,208 - root - INFO - Overpass tile 69: received 1 elements
+2025-09-18 19:42:22,712 - root - INFO - Overpass tile 70/208: (52.53736111111114, -132.29268411982343, 53.53736111111114, -131.29268411982343)
+2025-09-18 19:42:22,713 - root - INFO - Overpass tile 70: loaded 3 from cache
+2025-09-18 19:42:22,713 - root - INFO - Overpass tile 70: received 3 elements
+2025-09-18 19:42:23,222 - root - INFO - Overpass tile 71/208: (52.53736111111114, -131.29268411982343, 53.53736111111114, -130.29268411982343)
+2025-09-18 19:42:23,225 - root - INFO - Overpass tile 71: loaded 0 from cache
+2025-09-18 19:42:23,225 - root - INFO - Overpass tile 71: received 0 elements
+2025-09-18 19:42:23,726 - root - INFO - Overpass tile 72/208: (52.53736111111114, -130.29268411982343, 53.53736111111114, -129.29268411982343)
+2025-09-18 19:42:23,729 - root - INFO - Overpass tile 72: loaded 0 from cache
+2025-09-18 19:42:23,729 - root - INFO - Overpass tile 72: received 0 elements
+2025-09-18 19:42:24,240 - root - INFO - Overpass tile 73/208: (52.53736111111114, -129.29268411982343, 53.53736111111114, -128.29268411982343)
+2025-09-18 19:42:24,243 - root - INFO - Overpass tile 73: loaded 4 from cache
+2025-09-18 19:42:24,243 - root - INFO - Overpass tile 73: received 4 elements
+2025-09-18 19:42:24,753 - root - INFO - Overpass tile 74/208: (52.53736111111114, -128.29268411982343, 53.53736111111114, -127.29268411982343)
+2025-09-18 19:42:24,757 - root - INFO - Overpass tile 74: loaded 0 from cache
+2025-09-18 19:42:24,757 - root - INFO - Overpass tile 74: received 0 elements
+2025-09-18 19:42:25,267 - root - INFO - Overpass tile 75/208: (52.53736111111114, -127.29268411982343, 53.53736111111114, -126.29268411982343)
+2025-09-18 19:42:25,269 - root - INFO - Overpass tile 75: loaded 0 from cache
+2025-09-18 19:42:25,269 - root - INFO - Overpass tile 75: received 0 elements
+2025-09-18 19:42:25,770 - root - INFO - Overpass tile 76/208: (52.53736111111114, -126.29268411982343, 53.53736111111114, -125.29268411982343)
+2025-09-18 19:42:25,772 - root - INFO - Overpass tile 76: loaded 0 from cache
+2025-09-18 19:42:25,772 - root - INFO - Overpass tile 76: received 0 elements
+2025-09-18 19:42:26,279 - root - INFO - Overpass tile 77/208: (52.53736111111114, -125.29268411982343, 53.53736111111114, -124.29268411982343)
+2025-09-18 19:42:26,281 - root - INFO - Overpass tile 77: loaded 0 from cache
+2025-09-18 19:42:26,281 - root - INFO - Overpass tile 77: received 0 elements
+2025-09-18 19:42:26,791 - root - INFO - Overpass tile 78/208: (52.53736111111114, -124.29268411982343, 53.53736111111114, -123.29268411982343)
+2025-09-18 19:42:26,792 - root - INFO - Overpass tile 78: loaded 1 from cache
+2025-09-18 19:42:26,792 - root - INFO - Overpass tile 78: received 1 elements
+2025-09-18 19:42:27,302 - root - INFO - Overpass tile 79/208: (52.53736111111114, -123.29268411982343, 53.53736111111114, -122.29268411982343)
+2025-09-18 19:42:27,304 - root - INFO - Overpass tile 79: loaded 6 from cache
+2025-09-18 19:42:27,304 - root - INFO - Overpass tile 79: received 6 elements
+2025-09-18 19:42:27,815 - root - INFO - Overpass tile 80/208: (52.53736111111114, -122.29268411982343, 53.53736111111114, -121.38996808716395)
+2025-09-18 19:42:27,817 - root - INFO - Overpass tile 80: loaded 3 from cache
+2025-09-18 19:42:27,817 - root - INFO - Overpass tile 80: received 3 elements
+2025-09-18 19:42:28,327 - root - INFO - Overpass tile 81/208: (53.53736111111114, -137.29268411982343, 54.53736111111114, -136.29268411982343)
+2025-09-18 19:42:28,328 - root - INFO - Overpass tile 81: loaded 0 from cache
+2025-09-18 19:42:28,328 - root - INFO - Overpass tile 81: received 0 elements
+2025-09-18 19:42:28,838 - root - INFO - Overpass tile 82/208: (53.53736111111114, -136.29268411982343, 54.53736111111114, -135.29268411982343)
+2025-09-18 19:42:28,840 - root - INFO - Overpass tile 82: loaded 0 from cache
+2025-09-18 19:42:28,840 - root - INFO - Overpass tile 82: received 0 elements
+2025-09-18 19:42:29,343 - root - INFO - Overpass tile 83/208: (53.53736111111114, -135.29268411982343, 54.53736111111114, -134.29268411982343)
+2025-09-18 19:42:29,345 - root - INFO - Overpass tile 83: loaded 0 from cache
+2025-09-18 19:42:29,345 - root - INFO - Overpass tile 83: received 0 elements
+2025-09-18 19:42:29,855 - root - INFO - Overpass tile 84/208: (53.53736111111114, -134.29268411982343, 54.53736111111114, -133.29268411982343)
+2025-09-18 19:42:29,857 - root - INFO - Overpass tile 84: loaded 0 from cache
+2025-09-18 19:42:29,857 - root - INFO - Overpass tile 84: received 0 elements
+2025-09-18 19:42:30,366 - root - INFO - Overpass tile 85/208: (53.53736111111114, -133.29268411982343, 54.53736111111114, -132.29268411982343)
+2025-09-18 19:42:30,368 - root - INFO - Overpass tile 85: loaded 0 from cache
+2025-09-18 19:42:30,368 - root - INFO - Overpass tile 85: received 0 elements
+2025-09-18 19:42:30,871 - root - INFO - Overpass tile 86/208: (53.53736111111114, -132.29268411982343, 54.53736111111114, -131.29268411982343)
+2025-09-18 19:42:30,874 - root - INFO - Overpass tile 86: loaded 3 from cache
+2025-09-18 19:42:30,874 - root - INFO - Overpass tile 86: received 3 elements
+2025-09-18 19:42:31,384 - root - INFO - Overpass tile 87/208: (53.53736111111114, -131.29268411982343, 54.53736111111114, -130.29268411982343)
+2025-09-18 19:42:31,386 - root - INFO - Overpass tile 87: loaded 6 from cache
+2025-09-18 19:42:31,387 - root - INFO - Overpass tile 87: received 6 elements
+2025-09-18 19:42:31,897 - root - INFO - Overpass tile 88/208: (53.53736111111114, -130.29268411982343, 54.53736111111114, -129.29268411982343)
+2025-09-18 19:42:31,899 - root - INFO - Overpass tile 88: loaded 6 from cache
+2025-09-18 19:42:31,899 - root - INFO - Overpass tile 88: received 6 elements
+2025-09-18 19:42:32,406 - root - INFO - Overpass tile 89/208: (53.53736111111114, -129.29268411982343, 54.53736111111114, -128.29268411982343)
+2025-09-18 19:42:32,409 - root - INFO - Overpass tile 89: loaded 12 from cache
+2025-09-18 19:42:32,409 - root - INFO - Overpass tile 89: received 12 elements
+2025-09-18 19:42:32,917 - root - INFO - Overpass tile 90/208: (53.53736111111114, -128.29268411982343, 54.53736111111114, -127.29268411982343)
+2025-09-18 19:42:32,920 - root - INFO - Overpass tile 90: loaded 1 from cache
+2025-09-18 19:42:32,920 - root - INFO - Overpass tile 90: received 1 elements
+2025-09-18 19:42:33,430 - root - INFO - Overpass tile 91/208: (53.53736111111114, -127.29268411982343, 54.53736111111114, -126.29268411982343)
+2025-09-18 19:42:33,433 - root - INFO - Overpass tile 91: loaded 2 from cache
+2025-09-18 19:42:33,433 - root - INFO - Overpass tile 91: received 2 elements
+2025-09-18 19:42:33,943 - root - INFO - Overpass tile 92/208: (53.53736111111114, -126.29268411982343, 54.53736111111114, -125.29268411982343)
+2025-09-18 19:42:33,946 - root - INFO - Overpass tile 92: loaded 5 from cache
+2025-09-18 19:42:33,946 - root - INFO - Overpass tile 92: received 5 elements
+2025-09-18 19:42:34,456 - root - INFO - Overpass tile 93/208: (53.53736111111114, -125.29268411982343, 54.53736111111114, -124.29268411982343)
+2025-09-18 19:42:34,459 - root - INFO - Overpass tile 93: loaded 4 from cache
+2025-09-18 19:42:34,459 - root - INFO - Overpass tile 93: received 4 elements
+2025-09-18 19:42:34,969 - root - INFO - Overpass tile 94/208: (53.53736111111114, -124.29268411982343, 54.53736111111114, -123.29268411982343)
+2025-09-18 19:42:34,971 - root - INFO - Overpass tile 94: loaded 2 from cache
+2025-09-18 19:42:34,971 - root - INFO - Overpass tile 94: received 2 elements
+2025-09-18 19:42:35,480 - root - INFO - Overpass tile 95/208: (53.53736111111114, -123.29268411982343, 54.53736111111114, -122.29268411982343)
+2025-09-18 19:42:35,482 - root - INFO - Overpass tile 95: loaded 10 from cache
+2025-09-18 19:42:35,482 - root - INFO - Overpass tile 95: received 10 elements
+2025-09-18 19:42:35,988 - root - INFO - Overpass tile 96/208: (53.53736111111114, -122.29268411982343, 54.53736111111114, -121.38996808716395)
+2025-09-18 19:42:35,990 - root - INFO - Overpass tile 96: loaded 0 from cache
+2025-09-18 19:42:35,991 - root - INFO - Overpass tile 96: received 0 elements
+2025-09-18 19:42:36,501 - root - INFO - Overpass tile 97/208: (54.53736111111114, -137.29268411982343, 55.53736111111114, -136.29268411982343)
+2025-09-18 19:42:36,503 - root - INFO - Overpass tile 97: loaded 0 from cache
+2025-09-18 19:42:36,503 - root - INFO - Overpass tile 97: received 0 elements
+2025-09-18 19:42:37,014 - root - INFO - Overpass tile 98/208: (54.53736111111114, -136.29268411982343, 55.53736111111114, -135.29268411982343)
+2025-09-18 19:42:37,016 - root - INFO - Overpass tile 98: loaded 0 from cache
+2025-09-18 19:42:37,016 - root - INFO - Overpass tile 98: received 0 elements
+2025-09-18 19:42:37,524 - root - INFO - Overpass tile 99/208: (54.53736111111114, -135.29268411982343, 55.53736111111114, -134.29268411982343)
+2025-09-18 19:42:37,526 - root - INFO - Overpass tile 99: loaded 0 from cache
+2025-09-18 19:42:37,527 - root - INFO - Overpass tile 99: received 0 elements
+2025-09-18 19:42:38,031 - root - INFO - Overpass tile 100/208: (54.53736111111114, -134.29268411982343, 55.53736111111114, -133.29268411982343)
+2025-09-18 19:42:38,032 - root - INFO - Overpass tile 100: loaded 0 from cache
+2025-09-18 19:42:38,032 - root - INFO - Overpass tile 100: received 0 elements
+2025-09-18 19:42:38,539 - root - INFO - Overpass tile 101/208: (54.53736111111114, -133.29268411982343, 55.53736111111114, -132.29268411982343)
+2025-09-18 19:42:38,541 - root - INFO - Overpass tile 101: loaded 2 from cache
+2025-09-18 19:42:38,541 - root - INFO - Overpass tile 101: received 2 elements
+2025-09-18 19:42:39,048 - root - INFO - Overpass tile 102/208: (54.53736111111114, -132.29268411982343, 55.53736111111114, -131.29268411982343)
+2025-09-18 19:42:39,050 - root - INFO - Overpass tile 102: loaded 3 from cache
+2025-09-18 19:42:39,050 - root - INFO - Overpass tile 102: received 3 elements
+2025-09-18 19:42:39,559 - root - INFO - Overpass tile 103/208: (54.53736111111114, -131.29268411982343, 55.53736111111114, -130.29268411982343)
+2025-09-18 19:42:39,561 - root - INFO - Overpass tile 103: loaded 1 from cache
+2025-09-18 19:42:39,562 - root - INFO - Overpass tile 103: received 1 elements
+2025-09-18 19:42:40,072 - root - INFO - Overpass tile 104/208: (54.53736111111114, -130.29268411982343, 55.53736111111114, -129.29268411982343)
+2025-09-18 19:42:40,074 - root - INFO - Overpass tile 104: loaded 2 from cache
+2025-09-18 19:42:40,074 - root - INFO - Overpass tile 104: received 2 elements
+2025-09-18 19:42:40,585 - root - INFO - Overpass tile 105/208: (54.53736111111114, -129.29268411982343, 55.53736111111114, -128.29268411982343)
+2025-09-18 19:42:40,588 - root - INFO - Overpass tile 105: loaded 6 from cache
+2025-09-18 19:42:40,588 - root - INFO - Overpass tile 105: received 6 elements
+2025-09-18 19:42:41,099 - root - INFO - Overpass tile 106/208: (54.53736111111114, -128.29268411982343, 55.53736111111114, -127.29268411982343)
+2025-09-18 19:42:41,101 - root - INFO - Overpass tile 106: loaded 12 from cache
+2025-09-18 19:42:41,101 - root - INFO - Overpass tile 106: received 12 elements
+2025-09-18 19:42:41,611 - root - INFO - Overpass tile 107/208: (54.53736111111114, -127.29268411982343, 55.53736111111114, -126.29268411982343)
+2025-09-18 19:42:41,613 - root - INFO - Overpass tile 107: loaded 4 from cache
+2025-09-18 19:42:41,613 - root - INFO - Overpass tile 107: received 4 elements
+2025-09-18 19:42:42,117 - root - INFO - Overpass tile 108/208: (54.53736111111114, -126.29268411982343, 55.53736111111114, -125.29268411982343)
+2025-09-18 19:42:42,119 - root - INFO - Overpass tile 108: loaded 3 from cache
+2025-09-18 19:42:42,119 - root - INFO - Overpass tile 108: received 3 elements
+2025-09-18 19:42:42,624 - root - INFO - Overpass tile 109/208: (54.53736111111114, -125.29268411982343, 55.53736111111114, -124.29268411982343)
+2025-09-18 19:42:42,626 - root - INFO - Overpass tile 109: loaded 1 from cache
+2025-09-18 19:42:42,626 - root - INFO - Overpass tile 109: received 1 elements
+2025-09-18 19:42:43,133 - root - INFO - Overpass tile 110/208: (54.53736111111114, -124.29268411982343, 55.53736111111114, -123.29268411982343)
+2025-09-18 19:42:43,135 - root - INFO - Overpass tile 110: loaded 0 from cache
+2025-09-18 19:42:43,135 - root - INFO - Overpass tile 110: received 0 elements
+2025-09-18 19:42:43,641 - root - INFO - Overpass tile 111/208: (54.53736111111114, -123.29268411982343, 55.53736111111114, -122.29268411982343)
+2025-09-18 19:42:43,642 - root - INFO - Overpass tile 111: loaded 2 from cache
+2025-09-18 19:42:43,642 - root - INFO - Overpass tile 111: received 2 elements
+2025-09-18 19:42:44,143 - root - INFO - Overpass tile 112/208: (54.53736111111114, -122.29268411982343, 55.53736111111114, -121.38996808716395)
+2025-09-18 19:42:44,145 - root - INFO - Overpass tile 112: loaded 1 from cache
+2025-09-18 19:42:44,145 - root - INFO - Overpass tile 112: received 1 elements
+2025-09-18 19:42:44,655 - root - INFO - Overpass tile 113/208: (55.53736111111114, -137.29268411982343, 56.53736111111114, -136.29268411982343)
+2025-09-18 19:42:44,656 - root - INFO - Overpass tile 113: loaded 0 from cache
+2025-09-18 19:42:44,656 - root - INFO - Overpass tile 113: received 0 elements
+2025-09-18 19:42:45,166 - root - INFO - Overpass tile 114/208: (55.53736111111114, -136.29268411982343, 56.53736111111114, -135.29268411982343)
+2025-09-18 19:42:45,167 - root - INFO - Overpass tile 114: loaded 0 from cache
+2025-09-18 19:42:45,167 - root - INFO - Overpass tile 114: received 0 elements
+2025-09-18 19:42:45,670 - root - INFO - Overpass tile 115/208: (55.53736111111114, -135.29268411982343, 56.53736111111114, -134.29268411982343)
+2025-09-18 19:42:45,672 - root - INFO - Overpass tile 115: loaded 1 from cache
+2025-09-18 19:42:45,672 - root - INFO - Overpass tile 115: received 1 elements
+2025-09-18 19:42:46,174 - root - INFO - Overpass tile 116/208: (55.53736111111114, -134.29268411982343, 56.53736111111114, -133.29268411982343)
+2025-09-18 19:42:46,176 - root - INFO - Overpass tile 116: loaded 0 from cache
+2025-09-18 19:42:46,176 - root - INFO - Overpass tile 116: received 0 elements
+2025-09-18 19:42:46,681 - root - INFO - Overpass tile 117/208: (55.53736111111114, -133.29268411982343, 56.53736111111114, -132.29268411982343)
+2025-09-18 19:42:46,683 - root - INFO - Overpass tile 117: loaded 4 from cache
+2025-09-18 19:42:46,683 - root - INFO - Overpass tile 117: received 4 elements
+2025-09-18 19:42:47,189 - root - INFO - Overpass tile 118/208: (55.53736111111114, -132.29268411982343, 56.53736111111114, -131.29268411982343)
+2025-09-18 19:42:47,191 - root - INFO - Overpass tile 118: loaded 0 from cache
+2025-09-18 19:42:47,191 - root - INFO - Overpass tile 118: received 0 elements
+2025-09-18 19:42:47,702 - root - INFO - Overpass tile 119/208: (55.53736111111114, -131.29268411982343, 56.53736111111114, -130.29268411982343)
+2025-09-18 19:42:47,704 - root - INFO - Overpass tile 119: loaded 0 from cache
+2025-09-18 19:42:47,704 - root - INFO - Overpass tile 119: received 0 elements
+2025-09-18 19:42:48,208 - root - INFO - Overpass tile 120/208: (55.53736111111114, -130.29268411982343, 56.53736111111114, -129.29268411982343)
+2025-09-18 19:42:48,210 - root - INFO - Overpass tile 120: loaded 2 from cache
+2025-09-18 19:42:48,210 - root - INFO - Overpass tile 120: received 2 elements
+2025-09-18 19:42:48,712 - root - INFO - Overpass tile 121/208: (55.53736111111114, -129.29268411982343, 56.53736111111114, -128.29268411982343)
+2025-09-18 19:42:48,714 - root - INFO - Overpass tile 121: loaded 0 from cache
+2025-09-18 19:42:48,714 - root - INFO - Overpass tile 121: received 0 elements
+2025-09-18 19:42:49,216 - root - INFO - Overpass tile 122/208: (55.53736111111114, -128.29268411982343, 56.53736111111114, -127.29268411982343)
+2025-09-18 19:42:49,218 - root - INFO - Overpass tile 122: loaded 0 from cache
+2025-09-18 19:42:49,218 - root - INFO - Overpass tile 122: received 0 elements
+2025-09-18 19:42:49,727 - root - INFO - Overpass tile 123/208: (55.53736111111114, -127.29268411982343, 56.53736111111114, -126.29268411982343)
+2025-09-18 19:42:49,729 - root - INFO - Overpass tile 123: loaded 0 from cache
+2025-09-18 19:42:49,729 - root - INFO - Overpass tile 123: received 0 elements
+2025-09-18 19:42:50,236 - root - INFO - Overpass tile 124/208: (55.53736111111114, -126.29268411982343, 56.53736111111114, -125.29268411982343)
+2025-09-18 19:42:50,237 - root - INFO - Overpass tile 124: loaded 0 from cache
+2025-09-18 19:42:50,237 - root - INFO - Overpass tile 124: received 0 elements
+2025-09-18 19:42:50,743 - root - INFO - Overpass tile 125/208: (55.53736111111114, -125.29268411982343, 56.53736111111114, -124.29268411982343)
+2025-09-18 19:42:50,745 - root - INFO - Overpass tile 125: loaded 0 from cache
+2025-09-18 19:42:50,745 - root - INFO - Overpass tile 125: received 0 elements
+2025-09-18 19:42:51,255 - root - INFO - Overpass tile 126/208: (55.53736111111114, -124.29268411982343, 56.53736111111114, -123.29268411982343)
+2025-09-18 19:42:51,257 - root - INFO - Overpass tile 126: loaded 0 from cache
+2025-09-18 19:42:51,258 - root - INFO - Overpass tile 126: received 0 elements
+2025-09-18 19:42:51,768 - root - INFO - Overpass tile 127/208: (55.53736111111114, -123.29268411982343, 56.53736111111114, -122.29268411982343)
+2025-09-18 19:42:51,770 - root - INFO - Overpass tile 127: loaded 0 from cache
+2025-09-18 19:42:51,770 - root - INFO - Overpass tile 127: received 0 elements
+2025-09-18 19:42:52,281 - root - INFO - Overpass tile 128/208: (55.53736111111114, -122.29268411982343, 56.53736111111114, -121.38996808716395)
+2025-09-18 19:42:52,283 - root - INFO - Overpass tile 128: loaded 2 from cache
+2025-09-18 19:42:52,283 - root - INFO - Overpass tile 128: received 2 elements
+2025-09-18 19:42:52,789 - root - INFO - Overpass tile 129/208: (56.53736111111114, -137.29268411982343, 57.53736111111114, -136.29268411982343)
+2025-09-18 19:42:52,791 - root - INFO - Overpass tile 129: loaded 0 from cache
+2025-09-18 19:42:52,791 - root - INFO - Overpass tile 129: received 0 elements
+2025-09-18 19:42:53,296 - root - INFO - Overpass tile 130/208: (56.53736111111114, -136.29268411982343, 57.53736111111114, -135.29268411982343)
+2025-09-18 19:42:53,298 - root - INFO - Overpass tile 130: loaded 1 from cache
+2025-09-18 19:42:53,299 - root - INFO - Overpass tile 130: received 1 elements
+2025-09-18 19:42:53,809 - root - INFO - Overpass tile 131/208: (56.53736111111114, -135.29268411982343, 57.53736111111114, -134.29268411982343)
+2025-09-18 19:42:53,811 - root - INFO - Overpass tile 131: loaded 1 from cache
+2025-09-18 19:42:53,811 - root - INFO - Overpass tile 131: received 1 elements
+2025-09-18 19:42:54,322 - root - INFO - Overpass tile 132/208: (56.53736111111114, -134.29268411982343, 57.53736111111114, -133.29268411982343)
+2025-09-18 19:42:54,324 - root - INFO - Overpass tile 132: loaded 1 from cache
+2025-09-18 19:42:54,324 - root - INFO - Overpass tile 132: received 1 elements
+2025-09-18 19:42:54,834 - root - INFO - Overpass tile 133/208: (56.53736111111114, -133.29268411982343, 57.53736111111114, -132.29268411982343)
+2025-09-18 19:42:54,836 - root - INFO - Overpass tile 133: loaded 1 from cache
+2025-09-18 19:42:54,837 - root - INFO - Overpass tile 133: received 1 elements
+2025-09-18 19:42:55,341 - root - INFO - Overpass tile 134/208: (56.53736111111114, -132.29268411982343, 57.53736111111114, -131.29268411982343)
+2025-09-18 19:42:55,343 - root - INFO - Overpass tile 134: loaded 0 from cache
+2025-09-18 19:42:55,343 - root - INFO - Overpass tile 134: received 0 elements
+2025-09-18 19:42:55,854 - root - INFO - Overpass tile 135/208: (56.53736111111114, -131.29268411982343, 57.53736111111114, -130.29268411982343)
+2025-09-18 19:42:55,856 - root - INFO - Overpass tile 135: loaded 0 from cache
+2025-09-18 19:42:55,856 - root - INFO - Overpass tile 135: received 0 elements
+2025-09-18 19:42:56,366 - root - INFO - Overpass tile 136/208: (56.53736111111114, -130.29268411982343, 57.53736111111114, -129.29268411982343)
+2025-09-18 19:42:56,368 - root - INFO - Overpass tile 136: loaded 0 from cache
+2025-09-18 19:42:56,369 - root - INFO - Overpass tile 136: received 0 elements
+2025-09-18 19:42:56,878 - root - INFO - Overpass tile 137/208: (56.53736111111114, -129.29268411982343, 57.53736111111114, -128.29268411982343)
+2025-09-18 19:42:56,880 - root - INFO - Overpass tile 137: loaded 0 from cache
+2025-09-18 19:42:56,880 - root - INFO - Overpass tile 137: received 0 elements
+2025-09-18 19:42:57,391 - root - INFO - Overpass tile 138/208: (56.53736111111114, -128.29268411982343, 57.53736111111114, -127.29268411982343)
+2025-09-18 19:42:57,393 - root - INFO - Overpass tile 138: loaded 0 from cache
+2025-09-18 19:42:57,393 - root - INFO - Overpass tile 138: received 0 elements
+2025-09-18 19:42:57,898 - root - INFO - Overpass tile 139/208: (56.53736111111114, -127.29268411982343, 57.53736111111114, -126.29268411982343)
+2025-09-18 19:42:57,900 - root - INFO - Overpass tile 139: loaded 1 from cache
+2025-09-18 19:42:57,900 - root - INFO - Overpass tile 139: received 1 elements
+2025-09-18 19:42:58,403 - root - INFO - Overpass tile 140/208: (56.53736111111114, -126.29268411982343, 57.53736111111114, -125.29268411982343)
+2025-09-18 19:42:58,406 - root - INFO - Overpass tile 140: loaded 0 from cache
+2025-09-18 19:42:58,406 - root - INFO - Overpass tile 140: received 0 elements
+2025-09-18 19:42:58,912 - root - INFO - Overpass tile 141/208: (56.53736111111114, -125.29268411982343, 57.53736111111114, -124.29268411982343)
+2025-09-18 19:42:58,914 - root - INFO - Overpass tile 141: loaded 1 from cache
+2025-09-18 19:42:58,914 - root - INFO - Overpass tile 141: received 1 elements
+2025-09-18 19:42:59,415 - root - INFO - Overpass tile 142/208: (56.53736111111114, -124.29268411982343, 57.53736111111114, -123.29268411982343)
+2025-09-18 19:42:59,416 - root - INFO - Overpass tile 142: loaded 0 from cache
+2025-09-18 19:42:59,416 - root - INFO - Overpass tile 142: received 0 elements
+2025-09-18 19:42:59,924 - root - INFO - Overpass tile 143/208: (56.53736111111114, -123.29268411982343, 57.53736111111114, -122.29268411982343)
+2025-09-18 19:42:59,926 - root - INFO - Overpass tile 143: loaded 0 from cache
+2025-09-18 19:42:59,926 - root - INFO - Overpass tile 143: received 0 elements
+2025-09-18 19:43:00,431 - root - INFO - Overpass tile 144/208: (56.53736111111114, -122.29268411982343, 57.53736111111114, -121.38996808716395)
+2025-09-18 19:43:00,433 - root - INFO - Overpass tile 144: loaded 1 from cache
+2025-09-18 19:43:00,433 - root - INFO - Overpass tile 144: received 1 elements
+2025-09-18 19:43:00,944 - root - INFO - Overpass tile 145/208: (57.53736111111114, -137.29268411982343, 58.53736111111114, -136.29268411982343)
+2025-09-18 19:43:00,945 - root - INFO - Overpass tile 145: loaded 0 from cache
+2025-09-18 19:43:00,946 - root - INFO - Overpass tile 145: received 0 elements
+2025-09-18 19:43:01,456 - root - INFO - Overpass tile 146/208: (57.53736111111114, -136.29268411982343, 58.53736111111114, -135.29268411982343)
+2025-09-18 19:43:01,458 - root - INFO - Overpass tile 146: loaded 3 from cache
+2025-09-18 19:43:01,458 - root - INFO - Overpass tile 146: received 3 elements
+2025-09-18 19:43:01,966 - root - INFO - Overpass tile 147/208: (57.53736111111114, -135.29268411982343, 58.53736111111114, -134.29268411982343)
+2025-09-18 19:43:01,968 - root - INFO - Overpass tile 147: loaded 3 from cache
+2025-09-18 19:43:01,968 - root - INFO - Overpass tile 147: received 3 elements
+2025-09-18 19:43:02,472 - root - INFO - Overpass tile 148/208: (57.53736111111114, -134.29268411982343, 58.53736111111114, -133.29268411982343)
+2025-09-18 19:43:02,474 - root - INFO - Overpass tile 148: loaded 0 from cache
+2025-09-18 19:43:02,474 - root - INFO - Overpass tile 148: received 0 elements
+2025-09-18 19:43:02,984 - root - INFO - Overpass tile 149/208: (57.53736111111114, -133.29268411982343, 58.53736111111114, -132.29268411982343)
+2025-09-18 19:43:02,987 - root - INFO - Overpass tile 149: loaded 0 from cache
+2025-09-18 19:43:02,987 - root - INFO - Overpass tile 149: received 0 elements
+2025-09-18 19:43:03,488 - root - INFO - Overpass tile 150/208: (57.53736111111114, -132.29268411982343, 58.53736111111114, -131.29268411982343)
+2025-09-18 19:43:03,492 - root - INFO - Overpass tile 150: loaded 0 from cache
+2025-09-18 19:43:03,494 - root - INFO - Overpass tile 150: received 0 elements
+2025-09-18 19:43:04,004 - root - INFO - Overpass tile 151/208: (57.53736111111114, -131.29268411982343, 58.53736111111114, -130.29268411982343)
+2025-09-18 19:43:04,006 - root - INFO - Overpass tile 151: loaded 1 from cache
+2025-09-18 19:43:04,007 - root - INFO - Overpass tile 151: received 1 elements
+2025-09-18 19:43:04,514 - root - INFO - Overpass tile 152/208: (57.53736111111114, -130.29268411982343, 58.53736111111114, -129.29268411982343)
+2025-09-18 19:43:04,516 - root - INFO - Overpass tile 152: loaded 2 from cache
+2025-09-18 19:43:04,517 - root - INFO - Overpass tile 152: received 2 elements
+2025-09-18 19:43:05,027 - root - INFO - Overpass tile 153/208: (57.53736111111114, -129.29268411982343, 58.53736111111114, -128.29268411982343)
+2025-09-18 19:43:05,029 - root - INFO - Overpass tile 153: loaded 0 from cache
+2025-09-18 19:43:05,029 - root - INFO - Overpass tile 153: received 0 elements
+2025-09-18 19:43:05,531 - root - INFO - Overpass tile 154/208: (57.53736111111114, -128.29268411982343, 58.53736111111114, -127.29268411982343)
+2025-09-18 19:43:05,533 - root - INFO - Overpass tile 154: loaded 0 from cache
+2025-09-18 19:43:05,533 - root - INFO - Overpass tile 154: received 0 elements
+2025-09-18 19:43:06,043 - root - INFO - Overpass tile 155/208: (57.53736111111114, -127.29268411982343, 58.53736111111114, -126.29268411982343)
+2025-09-18 19:43:06,045 - root - INFO - Overpass tile 155: loaded 0 from cache
+2025-09-18 19:43:06,045 - root - INFO - Overpass tile 155: received 0 elements
+2025-09-18 19:43:06,556 - root - INFO - Overpass tile 156/208: (57.53736111111114, -126.29268411982343, 58.53736111111114, -125.29268411982343)
+2025-09-18 19:43:06,558 - root - INFO - Overpass tile 156: loaded 0 from cache
+2025-09-18 19:43:06,558 - root - INFO - Overpass tile 156: received 0 elements
+2025-09-18 19:43:07,068 - root - INFO - Overpass tile 157/208: (57.53736111111114, -125.29268411982343, 58.53736111111114, -124.29268411982343)
+2025-09-18 19:43:07,070 - root - INFO - Overpass tile 157: loaded 0 from cache
+2025-09-18 19:43:07,070 - root - INFO - Overpass tile 157: received 0 elements
+2025-09-18 19:43:07,575 - root - INFO - Overpass tile 158/208: (57.53736111111114, -124.29268411982343, 58.53736111111114, -123.29268411982343)
+2025-09-18 19:43:07,577 - root - INFO - Overpass tile 158: loaded 0 from cache
+2025-09-18 19:43:07,577 - root - INFO - Overpass tile 158: received 0 elements
+2025-09-18 19:43:08,081 - root - INFO - Overpass tile 159/208: (57.53736111111114, -123.29268411982343, 58.53736111111114, -122.29268411982343)
+2025-09-18 19:43:08,083 - root - INFO - Overpass tile 159: loaded 0 from cache
+2025-09-18 19:43:08,083 - root - INFO - Overpass tile 159: received 0 elements
+2025-09-18 19:43:08,588 - root - INFO - Overpass tile 160/208: (57.53736111111114, -122.29268411982343, 58.53736111111114, -121.38996808716395)
+2025-09-18 19:43:08,590 - root - INFO - Overpass tile 160: loaded 0 from cache
+2025-09-18 19:43:08,591 - root - INFO - Overpass tile 160: received 0 elements
+2025-09-18 19:43:09,101 - root - INFO - Overpass tile 161/208: (58.53736111111114, -137.29268411982343, 59.53736111111114, -136.29268411982343)
+2025-09-18 19:43:09,103 - root - INFO - Overpass tile 161: loaded 0 from cache
+2025-09-18 19:43:09,103 - root - INFO - Overpass tile 161: received 0 elements
+2025-09-18 19:43:09,614 - root - INFO - Overpass tile 162/208: (58.53736111111114, -136.29268411982343, 59.53736111111114, -135.29268411982343)
+2025-09-18 19:43:09,616 - root - INFO - Overpass tile 162: loaded 5 from cache
+2025-09-18 19:43:09,616 - root - INFO - Overpass tile 162: received 5 elements
+2025-09-18 19:43:10,121 - root - INFO - Overpass tile 163/208: (58.53736111111114, -135.29268411982343, 59.53736111111114, -134.29268411982343)
+2025-09-18 19:43:10,123 - root - INFO - Overpass tile 163: loaded 2 from cache
+2025-09-18 19:43:10,123 - root - INFO - Overpass tile 163: received 2 elements
+2025-09-18 19:43:10,627 - root - INFO - Overpass tile 164/208: (58.53736111111114, -134.29268411982343, 59.53736111111114, -133.29268411982343)
+2025-09-18 19:43:10,629 - root - INFO - Overpass tile 164: loaded 2 from cache
+2025-09-18 19:43:10,629 - root - INFO - Overpass tile 164: received 2 elements
+2025-09-18 19:43:11,138 - root - INFO - Overpass tile 165/208: (58.53736111111114, -133.29268411982343, 59.53736111111114, -132.29268411982343)
+2025-09-18 19:43:11,140 - root - INFO - Overpass tile 165: loaded 1 from cache
+2025-09-18 19:43:11,140 - root - INFO - Overpass tile 165: received 1 elements
+2025-09-18 19:43:11,641 - root - INFO - Overpass tile 166/208: (58.53736111111114, -132.29268411982343, 59.53736111111114, -131.29268411982343)
+2025-09-18 19:43:11,643 - root - INFO - Overpass tile 166: loaded 1 from cache
+2025-09-18 19:43:11,643 - root - INFO - Overpass tile 166: received 1 elements
+2025-09-18 19:43:12,143 - root - INFO - Overpass tile 167/208: (58.53736111111114, -131.29268411982343, 59.53736111111114, -130.29268411982343)
+2025-09-18 19:43:12,145 - root - INFO - Overpass tile 167: loaded 0 from cache
+2025-09-18 19:43:12,145 - root - INFO - Overpass tile 167: received 0 elements
+2025-09-18 19:43:12,656 - root - INFO - Overpass tile 168/208: (58.53736111111114, -130.29268411982343, 59.53736111111114, -129.29268411982343)
+2025-09-18 19:43:12,658 - root - INFO - Overpass tile 168: loaded 0 from cache
+2025-09-18 19:43:12,658 - root - INFO - Overpass tile 168: received 0 elements
+2025-09-18 19:43:13,168 - root - INFO - Overpass tile 169/208: (58.53736111111114, -129.29268411982343, 59.53736111111114, -128.29268411982343)
+2025-09-18 19:43:13,171 - root - INFO - Overpass tile 169: loaded 0 from cache
+2025-09-18 19:43:13,171 - root - INFO - Overpass tile 169: received 0 elements
+2025-09-18 19:43:13,681 - root - INFO - Overpass tile 170/208: (58.53736111111114, -128.29268411982343, 59.53736111111114, -127.29268411982343)
+2025-09-18 19:43:13,684 - root - INFO - Overpass tile 170: loaded 0 from cache
+2025-09-18 19:43:13,684 - root - INFO - Overpass tile 170: received 0 elements
+2025-09-18 19:43:14,186 - root - INFO - Overpass tile 171/208: (58.53736111111114, -127.29268411982343, 59.53736111111114, -126.29268411982343)
+2025-09-18 19:43:14,188 - root - INFO - Overpass tile 171: loaded 0 from cache
+2025-09-18 19:43:14,188 - root - INFO - Overpass tile 171: received 0 elements
+2025-09-18 19:43:14,695 - root - INFO - Overpass tile 172/208: (58.53736111111114, -126.29268411982343, 59.53736111111114, -125.29268411982343)
+2025-09-18 19:43:14,696 - root - INFO - Overpass tile 172: loaded 0 from cache
+2025-09-18 19:43:14,696 - root - INFO - Overpass tile 172: received 0 elements
+2025-09-18 19:43:15,198 - root - INFO - Overpass tile 173/208: (58.53736111111114, -125.29268411982343, 59.53736111111114, -124.29268411982343)
+2025-09-18 19:43:15,201 - root - INFO - Overpass tile 173: loaded 1 from cache
+2025-09-18 19:43:15,201 - root - INFO - Overpass tile 173: received 1 elements
+2025-09-18 19:43:15,712 - root - INFO - Overpass tile 174/208: (58.53736111111114, -124.29268411982343, 59.53736111111114, -123.29268411982343)
+2025-09-18 19:43:15,714 - root - INFO - Overpass tile 174: loaded 1 from cache
+2025-09-18 19:43:15,714 - root - INFO - Overpass tile 174: received 1 elements
+2025-09-18 19:43:16,225 - root - INFO - Overpass tile 175/208: (58.53736111111114, -123.29268411982343, 59.53736111111114, -122.29268411982343)
+2025-09-18 19:43:16,226 - root - INFO - Overpass tile 175: loaded 2 from cache
+2025-09-18 19:43:16,226 - root - INFO - Overpass tile 175: received 2 elements
+2025-09-18 19:43:16,736 - root - INFO - Overpass tile 176/208: (58.53736111111114, -122.29268411982343, 59.53736111111114, -121.38996808716395)
+2025-09-18 19:43:16,738 - root - INFO - Overpass tile 176: loaded 0 from cache
+2025-09-18 19:43:16,738 - root - INFO - Overpass tile 176: received 0 elements
+2025-09-18 19:43:17,248 - root - INFO - Overpass tile 177/208: (59.53736111111114, -137.29268411982343, 60.53736111111114, -136.29268411982343)
+2025-09-18 19:43:17,249 - root - INFO - Overpass tile 177: loaded 0 from cache
+2025-09-18 19:43:17,250 - root - INFO - Overpass tile 177: received 0 elements
+2025-09-18 19:43:17,752 - root - INFO - Overpass tile 178/208: (59.53736111111114, -136.29268411982343, 60.53736111111114, -135.29268411982343)
+2025-09-18 19:43:17,753 - root - INFO - Overpass tile 178: loaded 0 from cache
+2025-09-18 19:43:17,753 - root - INFO - Overpass tile 178: received 0 elements
+2025-09-18 19:43:18,263 - root - INFO - Overpass tile 179/208: (59.53736111111114, -135.29268411982343, 60.53736111111114, -134.29268411982343)
+2025-09-18 19:43:18,264 - root - INFO - Overpass tile 179: loaded 2 from cache
+2025-09-18 19:43:18,265 - root - INFO - Overpass tile 179: received 2 elements
+2025-09-18 19:43:18,767 - root - INFO - Overpass tile 180/208: (59.53736111111114, -134.29268411982343, 60.53736111111114, -133.29268411982343)
+2025-09-18 19:43:18,770 - root - INFO - Overpass tile 180: loaded 3 from cache
+2025-09-18 19:43:18,770 - root - INFO - Overpass tile 180: received 3 elements
+2025-09-18 19:43:19,279 - root - INFO - Overpass tile 181/208: (59.53736111111114, -133.29268411982343, 60.53736111111114, -132.29268411982343)
+2025-09-18 19:43:19,281 - root - INFO - Overpass tile 181: loaded 2 from cache
+2025-09-18 19:43:19,282 - root - INFO - Overpass tile 181: received 2 elements
+2025-09-18 19:43:19,792 - root - INFO - Overpass tile 182/208: (59.53736111111114, -132.29268411982343, 60.53736111111114, -131.29268411982343)
+2025-09-18 19:43:19,793 - root - INFO - Overpass tile 182: loaded 0 from cache
+2025-09-18 19:43:19,793 - root - INFO - Overpass tile 182: received 0 elements
+2025-09-18 19:43:20,296 - root - INFO - Overpass tile 183/208: (59.53736111111114, -131.29268411982343, 60.53736111111114, -130.29268411982343)
+2025-09-18 19:43:20,297 - root - INFO - Overpass tile 183: loaded 0 from cache
+2025-09-18 19:43:20,298 - root - INFO - Overpass tile 183: received 0 elements
+2025-09-18 19:43:20,802 - root - INFO - Overpass tile 184/208: (59.53736111111114, -130.29268411982343, 60.53736111111114, -129.29268411982343)
+2025-09-18 19:43:20,803 - root - INFO - Overpass tile 184: loaded 0 from cache
+2025-09-18 19:43:20,803 - root - INFO - Overpass tile 184: received 0 elements
+2025-09-18 19:43:21,306 - root - INFO - Overpass tile 185/208: (59.53736111111114, -129.29268411982343, 60.53736111111114, -128.29268411982343)
+2025-09-18 19:43:21,308 - root - INFO - Overpass tile 185: loaded 2 from cache
+2025-09-18 19:43:21,308 - root - INFO - Overpass tile 185: received 2 elements
+2025-09-18 19:43:21,816 - root - INFO - Overpass tile 186/208: (59.53736111111114, -128.29268411982343, 60.53736111111114, -127.29268411982343)
+2025-09-18 19:43:21,817 - root - INFO - Overpass tile 186: loaded 0 from cache
+2025-09-18 19:43:21,817 - root - INFO - Overpass tile 186: received 0 elements
+2025-09-18 19:43:22,328 - root - INFO - Overpass tile 187/208: (59.53736111111114, -127.29268411982343, 60.53736111111114, -126.29268411982343)
+2025-09-18 19:43:22,329 - root - INFO - Overpass tile 187: loaded 1 from cache
+2025-09-18 19:43:22,329 - root - INFO - Overpass tile 187: received 1 elements
+2025-09-18 19:43:22,837 - root - INFO - Overpass tile 188/208: (59.53736111111114, -126.29268411982343, 60.53736111111114, -125.29268411982343)
+2025-09-18 19:43:22,839 - root - INFO - Overpass tile 188: loaded 0 from cache
+2025-09-18 19:43:22,839 - root - INFO - Overpass tile 188: received 0 elements
+2025-09-18 19:43:23,345 - root - INFO - Overpass tile 189/208: (59.53736111111114, -125.29268411982343, 60.53736111111114, -124.29268411982343)
+2025-09-18 19:43:23,347 - root - INFO - Overpass tile 189: loaded 0 from cache
+2025-09-18 19:43:23,347 - root - INFO - Overpass tile 189: received 0 elements
+2025-09-18 19:43:23,856 - root - INFO - Overpass tile 190/208: (59.53736111111114, -124.29268411982343, 60.53736111111114, -123.29268411982343)
+2025-09-18 19:43:23,857 - root - INFO - Overpass tile 190: loaded 1 from cache
+2025-09-18 19:43:23,858 - root - INFO - Overpass tile 190: received 1 elements
+2025-09-18 19:43:24,368 - root - INFO - Overpass tile 191/208: (59.53736111111114, -123.29268411982343, 60.53736111111114, -122.29268411982343)
+2025-09-18 19:43:24,371 - root - INFO - Overpass tile 191: loaded 0 from cache
+2025-09-18 19:43:24,371 - root - INFO - Overpass tile 191: received 0 elements
+2025-09-18 19:43:24,872 - root - INFO - Overpass tile 192/208: (59.53736111111114, -122.29268411982343, 60.53736111111114, -121.38996808716395)
+2025-09-18 19:43:24,873 - root - INFO - Overpass tile 192: loaded 0 from cache
+2025-09-18 19:43:24,873 - root - INFO - Overpass tile 192: received 0 elements
+2025-09-18 19:43:25,377 - root - INFO - Overpass tile 193/208: (60.53736111111114, -137.29268411982343, 60.86152086046006, -136.29268411982343)
+2025-09-18 19:43:25,379 - root - INFO - Overpass tile 193: loaded 0 from cache
+2025-09-18 19:43:25,379 - root - INFO - Overpass tile 193: received 0 elements
+2025-09-18 19:43:25,884 - root - INFO - Overpass tile 194/208: (60.53736111111114, -136.29268411982343, 60.86152086046006, -135.29268411982343)
+2025-09-18 19:43:25,886 - root - INFO - Overpass tile 194: loaded 0 from cache
+2025-09-18 19:43:25,886 - root - INFO - Overpass tile 194: received 0 elements
+2025-09-18 19:43:26,389 - root - INFO - Overpass tile 195/208: (60.53736111111114, -135.29268411982343, 60.86152086046006, -134.29268411982343)
+2025-09-18 19:43:26,390 - root - INFO - Overpass tile 195: loaded 1 from cache
+2025-09-18 19:43:26,391 - root - INFO - Overpass tile 195: received 1 elements
+2025-09-18 19:43:26,892 - root - INFO - Overpass tile 196/208: (60.53736111111114, -134.29268411982343, 60.86152086046006, -133.29268411982343)
+2025-09-18 19:43:26,894 - root - INFO - Overpass tile 196: loaded 0 from cache
+2025-09-18 19:43:26,894 - root - INFO - Overpass tile 196: received 0 elements
+2025-09-18 19:43:27,404 - root - INFO - Overpass tile 197/208: (60.53736111111114, -133.29268411982343, 60.86152086046006, -132.29268411982343)
+2025-09-18 19:43:27,406 - root - INFO - Overpass tile 197: loaded 0 from cache
+2025-09-18 19:43:27,406 - root - INFO - Overpass tile 197: received 0 elements
+2025-09-18 19:43:27,914 - root - INFO - Overpass tile 198/208: (60.53736111111114, -132.29268411982343, 60.86152086046006, -131.29268411982343)
+2025-09-18 19:43:27,916 - root - INFO - Overpass tile 198: loaded 0 from cache
+2025-09-18 19:43:27,916 - root - INFO - Overpass tile 198: received 0 elements
+2025-09-18 19:43:28,426 - root - INFO - Overpass tile 199/208: (60.53736111111114, -131.29268411982343, 60.86152086046006, -130.29268411982343)
+2025-09-18 19:43:28,428 - root - INFO - Overpass tile 199: loaded 0 from cache
+2025-09-18 19:43:28,428 - root - INFO - Overpass tile 199: received 0 elements
+2025-09-18 19:43:28,937 - root - INFO - Overpass tile 200/208: (60.53736111111114, -130.29268411982343, 60.86152086046006, -129.29268411982343)
+2025-09-18 19:43:28,938 - root - INFO - Overpass tile 200: loaded 0 from cache
+2025-09-18 19:43:28,938 - root - INFO - Overpass tile 200: received 0 elements
+2025-09-18 19:43:29,444 - root - INFO - Overpass tile 201/208: (60.53736111111114, -129.29268411982343, 60.86152086046006, -128.29268411982343)
+2025-09-18 19:43:29,445 - root - INFO - Overpass tile 201: loaded 0 from cache
+2025-09-18 19:43:29,446 - root - INFO - Overpass tile 201: received 0 elements
+2025-09-18 19:43:29,951 - root - INFO - Overpass tile 202/208: (60.53736111111114, -128.29268411982343, 60.86152086046006, -127.29268411982343)
+2025-09-18 19:43:29,953 - root - INFO - Overpass tile 202: loaded 0 from cache
+2025-09-18 19:43:29,953 - root - INFO - Overpass tile 202: received 0 elements
+2025-09-18 19:43:30,457 - root - INFO - Overpass tile 203/208: (60.53736111111114, -127.29268411982343, 60.86152086046006, -126.29268411982343)
+2025-09-18 19:43:30,459 - root - INFO - Overpass tile 203: loaded 0 from cache
+2025-09-18 19:43:30,459 - root - INFO - Overpass tile 203: received 0 elements
+2025-09-18 19:43:30,965 - root - INFO - Overpass tile 204/208: (60.53736111111114, -126.29268411982343, 60.86152086046006, -125.29268411982343)
+2025-09-18 19:43:30,966 - root - INFO - Overpass tile 204: loaded 0 from cache
+2025-09-18 19:43:30,966 - root - INFO - Overpass tile 204: received 0 elements
+2025-09-18 19:43:31,469 - root - INFO - Overpass tile 205/208: (60.53736111111114, -125.29268411982343, 60.86152086046006, -124.29268411982343)
+2025-09-18 19:43:31,470 - root - INFO - Overpass tile 205: loaded 0 from cache
+2025-09-18 19:43:31,471 - root - INFO - Overpass tile 205: received 0 elements
+2025-09-18 19:43:31,981 - root - INFO - Overpass tile 206/208: (60.53736111111114, -124.29268411982343, 60.86152086046006, -123.29268411982343)
+2025-09-18 19:43:31,982 - root - INFO - Overpass tile 206: loaded 0 from cache
+2025-09-18 19:43:31,983 - root - INFO - Overpass tile 206: received 0 elements
+2025-09-18 19:43:32,489 - root - INFO - Overpass tile 207/208: (60.53736111111114, -123.29268411982343, 60.86152086046006, -122.29268411982343)
+2025-09-18 19:43:32,491 - root - INFO - Overpass tile 207: loaded 0 from cache
+2025-09-18 19:43:32,491 - root - INFO - Overpass tile 207: received 0 elements
+2025-09-18 19:43:32,997 - root - INFO - Overpass tile 208/208: (60.53736111111114, -122.29268411982343, 60.86152086046006, -121.38996808716395)
+2025-09-18 19:43:32,999 - root - INFO - Overpass tile 208: loaded 0 from cache
+2025-09-18 19:43:32,999 - root - INFO - Overpass tile 208: received 0 elements
+2025-09-18 19:43:33,507 - root - INFO - Overpass complete: total unique places 368
+2025-09-18 19:43:33,993 - city_analysis.distance - INFO - Fixed invalid polygon geometry
+2025-09-18 19:43:33,994 - city_analysis.distance - INFO - Calculating distances using perimeter with bounds: (-137.29268411982343, 48.53736111111114, -121.38996808716395, 60.86152086046006)
+2025-09-18 19:43:33,994 - city_analysis.distance - INFO - Distance calculation complete: 10 successful, 0 fallbacks, 0 errors
+Enriching places with elevation data...
+2025-09-18 19:43:33,994 - city_analysis.elevation - INFO - Fetching elevation data for 10 places...
+2025-09-18 19:43:37,508 - city_analysis.elevation - INFO - Elevation enrichment complete. Stats: {'total_requests': 10, 'cache_hits': 0, 'cache_size': 10, 'opentopo': 6, 'google': 0, 'open_elevation': 4}
+Checking hospital presence via OSM (default)
+Checking hospitals (OSM):   0%|          | 0/10 [00:00<?, ?city/s]Checking hospitals (OSM):  20%|██        | 2/10 [00:01<00:04,  1.84city/s]Checking hospitals (OSM):  30%|███       | 3/10 [00:02<00:05,  1.29city/s]Checking hospitals (OSM):  40%|████      | 4/10 [00:03<00:04,  1.22city/s]Checking hospitals (OSM):  50%|█████     | 5/10 [00:04<00:04,  1.11city/s]Checking hospitals (OSM):  60%|██████    | 6/10 [00:05<00:03,  1.06city/s]Checking hospitals (OSM):  70%|███████   | 7/10 [00:06<00:02,  1.07city/s]Checking hospitals (OSM):  80%|████████  | 8/10 [00:07<00:01,  1.04city/s]Checking hospitals (OSM):  90%|█████████ | 9/10 [00:08<00:00,  1.03city/s]Checking hospitals (OSM): 100%|██████████| 10/10 [00:09<00:00,  1.00city/s]Checking hospitals (OSM): 100%|██████████| 10/10 [00:09<00:00,  1.09city/s]
+Finding nearest international airports and driving metrics...
+Using offline dataset mode (default; no OpenAI)
+Nearest airports (offline):   0%|          | 0/10 [00:00<?, ?city/s]Nearest airports (offline):  10%|█         | 1/10 [00:02<00:25,  2.83s/city]Nearest airports (offline):  20%|██        | 2/10 [00:05<00:23,  2.97s/city]Nearest airports (offline):  30%|███       | 3/10 [00:08<00:20,  2.94s/city]Nearest airports (offline):  40%|████      | 4/10 [00:11<00:17,  2.96s/city]Nearest airports (offline):  50%|█████     | 5/10 [00:14<00:14,  2.98s/city]Nearest airports (offline):  60%|██████    | 6/10 [00:17<00:11,  2.98s/city]Nearest airports (offline):  70%|███████   | 7/10 [00:20<00:09,  3.01s/city]Nearest airports (offline):  80%|████████  | 8/10 [00:23<00:05,  2.99s/city]Nearest airports (offline):  90%|█████████ | 9/10 [00:26<00:02,  2.99s/city]Nearest airports (offline): 100%|██████████| 10/10 [00:29<00:00,  2.99s/city]Nearest airports (offline): 100%|██████████| 10/10 [00:29<00:00,  2.98s/city]
+Wrote interactive map to /Users/grantduncan/Documents/coding/city_analysis_v2/outputs/coast_mountains/coast_mountains_cities_map.html
+Wrote country-colored map to /Users/grantduncan/Documents/coding/city_analysis_v2/outputs/coast_mountains/coast_mountains_cities_country_map.html
+Summary:
+  total_places: 10
+  with_population: 10
+  missing_population: 0
+
+Top 20 by population:
+  West Vancouver (CA) — pop 45,487 @ (49.3286,-123.1602) [geonames], elev 13.0m [opentopo:0.9], 0.0 km to Coast Mountains
+  Juneau (US) — pop 31,555 @ (58.3019,-134.4197) [geonames], elev 13.0m [opentopo:0.9], 0.0 km to Coast Mountains
+  Port Moody (CA) — pop 27,512 @ (49.2812,-122.8246) [geonames], elev 37.0m [opentopo:0.9], 0.0 km to Coast Mountains
+  Westwood Plateau (CA) — pop 19,776 @ (49.3046,-122.7934) [geonames], elev 216.0m [open_elevation:0.8], 0.0 km to Coast Mountains
+  Central Lonsdale (CA) — pop 18,485 @ (49.3257,-123.0723) [geonames], elev 99.0m [opentopo:0.9], 0.0 km to Coast Mountains
+  Burke Mountain (CA) — pop 12,100 @ (49.2936,-122.7561) [geonames], elev 98.0m [open_elevation:0.8], 0.0 km to Coast Mountains
+  Whistler (CA) — pop 8,713 @ (50.1182,-122.9540) [geonames], elev 673.0m [open_elevation:0.8], 0.0 km to Coast Mountains
+  Ketchikan (US) — pop 8,197 @ (55.3418,-131.6476) [geonames], elev 7.0m [opentopo:0.9], 0.0 km to Coast Mountains
+  Ganges (CA) — pop 6,000 @ (48.8534,-123.5003) [geonames], elev 5.0m [open_elevation:0.8], 0.0 km to Coast Mountains
+  Dundarave (CA) — pop 5,350 @ (49.3362,-123.1876) [geonames], elev 26.0m [opentopo:0.9], 0.0 km to Coast Mountains

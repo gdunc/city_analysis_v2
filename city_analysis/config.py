@@ -93,6 +93,15 @@ REGIONS: dict[str, RegionSettings] = {
         excluded_countries=[],
         map_tiles="CartoDB positron",
     ),
+    "coast_mountains": RegionSettings(
+        name="Coast Mountains",
+        slug="coast_mountains",
+        countries=["US", "CA"],
+        # Expect perimeter at data/regions/coast_mountains/perimeter.geojson if present
+        perimeter_geojson=None,
+        excluded_countries=[],
+        map_tiles="CartoDB positron",
+    ),
 }
 
 
