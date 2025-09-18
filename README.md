@@ -11,8 +11,8 @@ Minimal toolchain to fetch and analyze cities in and near mountain regions (Alps
 - **Interactive maps**:
   - Standard clustered map with color by population tier and a built-in client-side filter UI (min population, max driving times, hospital presence)
   - Country-colored, population-sized map
-- **Hospital presence check (optional)** via OSM by default (OpenAI only if explicitly enabled); adds `hospital_*` columns (incl. nearest hospital and driving-to-hospital metrics) to CSV
-- **Nearest international airport + driving (optional)** offline-first using OurAirports dataset + OSRM; optional OpenAI web search mode; adds `airport_*` and `driving_*` columns to CSV
+- **Hospital presence check** via OSM by default; OpenAI mode only when explicitly enabled
+- **Nearest international airport + driving** offline-first using OurAirports dataset + OSRM; OpenAI web search mode can be explicitly enabled
 - **CSV-to-map mode**: build maps directly from an existing CSV without refetching data
 
 ## Architecture (CTO-level overview)
@@ -58,11 +58,11 @@ pip install -r requirements.txt
 ```
 
 ## Configuration
-- **GeoNames** username (free). Set `GEONAMES_USERNAME` env var or pass `--geonames-username`.
+- **GeoNames (required)**: Set `GEONAMES_USERNAME` env var or pass `--geonames-username`. The run aborts if GeoNames cannot be fetched.
 - **Google Elevation API** (optional): Set `GOOGLE_API_KEY` or pass `--google-api-key`.
 - **OpenAI (optional)**: Set `OPENAI_API_KEY` only if you explicitly enable OpenAI modes. Optional `--openai-model` (default `gpt-5`) and `--openai-timeout`.
 - **OSRM routing** (optional for airports): Default public server is used. Override with `--osrm-base-url` if you have your own OSRM instance.
-- **Perimeter**: Provide a GeoJSON polygon/multipolygon of the target region if available; otherwise, a realistic default polygon/bbox is used.
+- **Region & Perimeter**: Prefer `--region` to pick a built-in region (auto-resolves perimeters under `data/regions/<region>/perimeter.geojson` when present). You can override with `--perimeter PATH`.
 
 The CLI auto-loads a `.env` file if present (via `python-dotenv`). Example:
 ```bash
@@ -76,6 +76,20 @@ The repo includes example perimeter files:
 - `data/regions/pyrenees/perimeter.geojson` - Pyrenees region  
 - `data/regions/rockies/perimeter.geojson` - Rockies region
 
+### Built-in regions
+Use `--region` to select one of the built-in configurations (defaults in parentheses):
+
+- `alps` (countries: AT, FR, IT, DE; excludes CH, SI, LI)
+- `pyrenees` (FR, ES, AD)
+- `rockies` (US, CA)
+- `sierra_nevada` (US, MX)
+- `cascade_range` (US, CA)
+- `coast_mountains` (US, CA)
+
+Region defaults can be overridden via `--region-config <file.yaml>`.
+
+Example region YAML keys: `name, slug, countries, perimeter_geojson, excluded_countries, map_tiles, min_population, require_osm_population`.
+
 ## Usage
 
 ### Alps Analysis (default)
@@ -86,7 +100,7 @@ Example using the included Alps perimeter file and generating both maps:
 ```bash
 python -m city_analysis.cli \
   --geonames-username YOUR_GEONAMES_USER \
-  --perimeter alps_perimeter.geojson \
+  --region alps \
   --make-map \
   --make-country-map \
   --out-dir outputs
@@ -96,64 +110,58 @@ python -m city_analysis.cli \
 ```bash
 python -m city_analysis.cli \
   --geonames-username YOUR_GEONAMES_USER \
-  --perimeter data/regions/pyrenees/perimeter.geojson \
-  --countries ES FR AD \
+  --region pyrenees \
   --make-map \
   --make-country-map \
-  --out-dir outputs/pyrenees
+  --out-dir outputs
 ```
 
 ### Rockies Analysis
 ```bash
 python -m city_analysis.cli \
   --geonames-username YOUR_GEONAMES_USER \
-  --perimeter data/regions/rockies/perimeter.geojson \
-  --countries US CA \
+  --region rockies \
   --make-map \
   --make-country-map \
-  --out-dir outputs/rockies
+  --out-dir outputs
 ```
 
+Notes:
+- Outputs are written under `outputs/<region>/...` automatically. Keep `--out-dir` as a base like `outputs` to avoid double nesting.
+
 ### CLI options: what they do and when to use them
-- **--geonames-username USER**: Enables GeoNames fetching (more complete populations). Use when you want broader coverage; omit to run OSM-only (faster, fewer dependencies).
-- **--perimeter FILE.geojson**: Custom region perimeter or other region. Use to change study area; omit to use the built-in Alps polygon.
-- **--countries CODES...**: Restrict GeoNames/OSM queries to listed country codes (default: AT FR IT DE; CH/SI/LI are removed later). For Pyrenees use ES FR AD, for Rockies use US CA. Narrow for speed or broader for coverage.
-- **--min-population N**: Minimum population filter for GeoNames and final output. Increase for performance/"bigger places" focus; decrease to include smaller towns (slower, noisier).
-- **--require-osm-population**: Only include OSM places that explicitly have a `population` tag. Use for stricter data quality; omit to keep more places (may lack population values).
-- **--include-villages**: Include OSM `place=village` in addition to `city`/`town`. Use to capture small settlements; omit to focus on larger urban areas.
-- **--tile-size DEG**: Overpass tiling size in degrees. Decrease to avoid API timeouts on large queries (more requests); increase to reduce requests when area is small/reliable.
-- **--out-dir PATH**: Where outputs are written. Use a dedicated directory when testing.
-- **--top N**: How many top-by-population entries to print to the console. Cosmetic; no effect on outputs.
+- **--region SLUG**: Select a built-in region (default `alps`).
+- **--region-config FILE.yaml**: Provide a YAML to override region defaults.
+- **--geonames-username USER**: GeoNames username (required).
+- **--perimeter FILE.geojson**: Override region perimeter with a custom GeoJSON.
+- **--countries CODES...**: Restrict to specific countries; defaults to the region settings.
+- **--min-population N**: Minimum population filter for GeoNames and final output.
+- **--tile-size DEG**: Overpass tiling size in degrees.
+- **--out-dir PATH**: Base output directory (actual outputs go under `<out-dir>/<region>`).
+- **--top N**: How many top-by-population entries to print to the console.
 
-- **--google-api-key KEY**: Enables Google Elevation fallback (paid). Use for best elevation completeness; omit to avoid costs.
-- **--elevation-batch-size N**: Batch size for elevation requests. Increase for speed if your quota allows; decrease if you hit rate limits.
-- **--skip-elevation**: Skip elevation enrichment. Use to save time/cost when elevation is not needed.
+- **--google-api-key KEY**: Enables Google Elevation fallback (paid).
+- **--elevation-batch-size N**: Batch size for elevation requests.
+- **--skip-elevation**: Skip elevation enrichment.
 
-- **--make-map**: Generate the standard clustered map. Include if you want a general-purpose interactive map.
-- **--map-file PATH**: Custom path for the standard map HTML. Use to organize outputs.
-- **--map-tiles NAME|URL**: Folium tileset. Change for visual preference or offline tiles.
-- **--make-country-map**: Generate the country-colored, population-sized map. Include for comparative visual analysis by country.
+- **--make-map**: Generate the standard clustered map.
+- **--map-file PATH**: Custom path for the standard map HTML.
+- **--map-tiles NAME|URL**: Folium tiles name/URL (overrides region default).
+- **--make-country-map**: Generate the country-colored, population-sized map.
 - **--country-map-file PATH**: Custom path for the country map HTML.
 
-- **--check-hospitals**: Use OpenAI web search to determine if each city has a hospital; writes `hospital_*` columns. Include when assessing local healthcare presence; omit to save API calls/time.
-- **--openai-model MODEL**: OpenAI model for hospital/airport checks (default `gpt-5`). Use a different model if you have constraints or preferences.
-- **--openai-timeout SECS**: Per-request timeout for OpenAI calls. Increase if you see timeouts; decrease to fail fast in testing.
-- **--hospital-no-openai-fallback**: In `hybrid` mode, disable OpenAI fallback (stay OSM-only).
+- **--from-csv FILE.csv**: Build maps and/or run optional enrichments from an existing CSV.
 
-- **--check-airports**: Find nearest international airport and driving via OSRM. Defaults to offline OurAirports dataset (no OpenAI). Use with `--airports-use-openai` to opt into OpenAI web search mode.
-- **--airports-use-openai**: Opt-in to OpenAI web search mode (requires `OPENAI_API_KEY`).
-- **--airports-dataset PATH**: Path to OurAirports CSV. If omitted, auto-downloads and caches to `ignore/airports_ourairports.csv`.
-- **--airports-topk N**: Offline mode: consider top‑K nearest airports by crow‑flies before OSRM refinement (default 3).
-- **--airports-max-radius-km KM**: Offline mode: only attempt OSRM for airports within this radius (default 400 km).
-- **--osrm-base-url URL**: OSRM routing endpoint. Use your own OSRM for reliability/privacy; omit to use the public server.
-- **--airports-limit N**: Process only N rows for airport enrichment. Use for quick tests or cost control.
-- **--airports-resume-missing**: Only process rows that are missing airport data or had prior errors. Use to resume/continue long runs without redoing successful rows.
-- **--airports-max-retries N**: OpenAI mode: max retries for airport lookup.
-- **--airports-initial-backoff SECS**: OpenAI mode: initial backoff before retry.
-- **--airports-backoff-multiplier X**: OpenAI mode: exponential factor for backoff.
-- **--airports-jitter SECS**: OpenAI mode: random jitter added/subtracted to backoff.
+- Advanced/CSV-only enrichments:
+  - **--check-hospitals**: Add hospital presence columns (OSM by default; OpenAI if enabled).
+  - **--hospital-mode [osm|openai|hybrid]** and related tuning flags.
+  - **--check-airports**: Add nearest airport + driving columns (offline by default; OpenAI mode opt-in).
+  - **--airports-***: Dataset, radius/top‑K, retries/backoff, limits, resume.
+  - **--osrm-base-url URL**: Routing backend for driving metrics.
 
-- **--from-csv FILE.csv**: Build maps and/or run optional enrichments from an existing CSV (skips fetching/processing). Use to iterate quickly, resume runs, or enrich third-party CSVs.
+- Pipeline controls:
+  - **--stage [fetch|filter|dedupe|enrich_elevation|enrich_hospitals|enrich_airports|maps|all]**
+  - **--resume**: Reuse cached tiles/intermediate files when available
 
 ### Generate interactive maps
 Create a standard clustered map and/or a country-colored, population-sized map:
@@ -167,8 +175,8 @@ python -m city_analysis.cli --make-map \
   --map-tiles OpenStreetMap
 ```
 Defaults:
-- Standard map: `outputs/alps_cities_map.html`
-- Country map: `outputs/alps_cities_country_map.html`
+- Standard map: `outputs/alps/alps_cities_map.html`
+- Country map: `outputs/alps/alps_cities_country_map.html`
 
 ### Map details
 - **Marker colors (standard map):**
@@ -181,7 +189,7 @@ Defaults:
   - City name, country, population
   - Elevation formatted as `Elevation: XXX m / X,XXX ft` (with source tag)
   - Nearest airport name (when available)
-  - Note: Distance to Alps remains in CSV but is not shown in the popup
+  - Note: Distance to region remains in CSV but is not shown in the popup
 - **Filters (top-left):**
   - Min population
   - Max driving time to airport (minutes)
@@ -197,8 +205,8 @@ python -m city_analysis.cli --from-csv outputs/alps_cities.csv --make-map --make
 ```
 If `--make-map`/`--make-country-map` are omitted with `--from-csv`, both maps are generated by default.
 
-### Hospital presence check (optional)
-Default mode uses OSM hospitals with a radius test; OpenAI can be explicitly enabled. The enrichment writes:
+### Hospital presence check
+Full pipeline (`--stage all`) always enriches hospital presence via OSM by default. In CSV-only mode (`--from-csv`), you can opt in with `--check-hospitals`. The enrichment writes:
 
 - `hospital_in_city` ("yes"|"no")
 - `hospital_confidence_pct` (0–100)
@@ -211,7 +219,7 @@ In OSM and hybrid modes, additional convenience fields are included:
 - `nearest_hospital_km`, `hospital_in_city_or_nearby` ("yes" within 25 km)
 - `driving_km_to_hospital`, `driving_time_minutes_to_hospital`
 
-Usage (default OSM mode):
+Usage (CSV-only, default OSM mode):
 ```bash
 python -m city_analysis.cli --check-hospitals --out-dir outputs
 ```
@@ -221,25 +229,25 @@ Control the radius and tiling:
 python -m city_analysis.cli --check-hospitals --hospital-radius-km 4 --hospital-tile-size 0.5 --out-dir outputs
 ```
 
-Explicitly use OpenAI mode (opt-in):
+Explicitly use OpenAI mode (CSV-only, opt-in):
 ```bash
 OPENAI_API_KEY=sk-... python -m city_analysis.cli --check-hospitals --hospital-mode openai --out-dir outputs
 ```
 
-Hybrid mode (OSM first, then OpenAI only when OSM finds none):
+Hybrid mode (CSV-only; OSM first, then OpenAI only when OSM finds none):
 ```bash
 OPENAI_API_KEY=sk-... python -m city_analysis.cli --check-hospitals --hospital-mode hybrid --out-dir outputs
 ```
 
-### Nearest international airport + driving (optional)
-Adds columns for nearest airport and driving metrics. Defaults to an offline workflow using the OurAirports dataset; OpenAI web search mode is available if explicitly enabled.
+### Nearest international airport + driving
+Full pipeline (`--stage all`) always enriches airports via the offline dataset by default. In CSV-only mode (`--from-csv`), you can opt in with `--check-airports`. Adds columns for nearest airport and driving metrics. Offline by default; OpenAI web search mode is available if explicitly enabled.
 - `airport_nearest_name`, `airport_nearest_iata`, `airport_nearest_icao`
 - `airport_nearest_latitude`, `airport_nearest_longitude`
 - `airport_confidence_pct` (0–100), `airport_reasoning` (brief rationale + links), `airport_error`
 - `driving_km_to_airport`, `driving_time_minutes_to_airport`
 - `driving_confidence_pct`, `driving_reasoning`, `driving_error`
 
-Offline default (from full pipeline results or any existing CSV):
+Offline default (CSV-only from any existing CSV):
 ```bash
 python -m city_analysis.cli \
   --from-csv outputs/alps_cities.csv \
@@ -276,7 +284,7 @@ Where `{region}` is `alps`, `pyrenees`, or `rockies` depending on the analysis.
 ## Notes
 - Licensing: GeoNames (CC BY 4.0), OSM (ODbL). Validate terms before redistribution.
 - Population completeness varies, especially for OSM if `population` tag is missing.
-- If `GEONAMES_USERNAME` is not provided, the tool runs in OSM-only mode (reduced completeness).
+- `GEONAMES_USERNAME` is required; the tool aborts if GeoNames fetch fails.
 - Default countries queried are `AT, FR, IT, DE` for Alps. Switzerland (CH), Slovenia (SI), and Liechtenstein (LI) are excluded by design in post-processing for Alps analysis.
 - For Pyrenees: use `ES, FR, AD` (Spain, France, Andorra)
 - For Rockies: use `US, CA` (United States, Canada)
