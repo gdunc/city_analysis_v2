@@ -15,7 +15,7 @@ from .perimeter_loader import resolve_region_perimeter
 from .geonames import fetch_geonames_cities
 from .overpass import fetch_overpass_bbox_tiled
 from .normalize import filter_within_perimeter, dedupe_places, enforce_min_population
-from .io_utils import write_csv, write_geojson, read_csv_records
+from .io_utils import write_csv, write_geojson, read_csv_records, write_details_json
 from .analysis import top_n_by_population, summarize
 from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
@@ -23,6 +23,7 @@ from .elevation import enrich_places_with_elevation
 from .map_utils import save_map, save_country_map
 from .hospital_check import enrich_records_with_hospital_presence, enrich_records_with_hospital_presence_osm
 from .airport_check import enrich_records_with_nearest_airport, enrich_records_with_nearest_airport_offline
+from .peak_check import enrich_records_with_nearby_higher_peaks
 
 
 def parse_args() -> argparse.Namespace:
@@ -84,9 +85,14 @@ def parse_args() -> argparse.Namespace:
 
     # Build map directly from an existing CSV (skips fetching/processing)
     parser.add_argument("--from-csv", type=str, default=None, help="Path to an existing CSV of cities to build a map from")
+    # Peaks enrichment (optional)
+    parser.add_argument("--check-peaks", action="store_true", help="Compute nearby higher peaks (natural=peak) and add columns")
+    parser.add_argument("--peaks-radius-km", type=float, default=float(os.getenv("PEAKS_RADIUS_KM", "30.0")), help="Radius in km around city centroid to search for peaks (default 30.0)")
+    parser.add_argument("--peaks-min-height-diff-m", type=float, default=float(os.getenv("PEAKS_MIN_HEIGHT_DIFF_M", "1200.0")), help="Only count peaks at least this many meters above the city elevation (default 1200.0)")
+    parser.add_argument("--peaks-tile-size", type=float, default=float(os.getenv("PEAKS_TILE_SIZE_DEG", "1.0")), help="Overpass tile size in degrees for peak fetch (default 1.0)")
     # Pipeline staging / checkpointing
     parser.add_argument("--stage", type=str, choices=[
-        "fetch", "filter", "dedupe", "enrich_elevation", "enrich_hospitals", "enrich_airports", "maps", "all"
+        "fetch", "filter", "dedupe", "enrich_elevation", "enrich_hospitals", "enrich_peaks", "enrich_airports", "maps", "all"
     ], default=os.getenv("STAGE", "all"), help="Run a specific pipeline stage or 'all'")
     parser.add_argument("--resume", action="store_true", help="Resume from cached tiles/intermediate files when available")
     return parser.parse_args()
@@ -143,8 +149,29 @@ def main() -> None:
                     osrm_base_url=args.osrm_base_url,
                 )
             csv_path = out_dir / f"{settings.slug}_cities.csv"
-            write_csv(csv_path, records)
+            write_csv(csv_path, records, delimiter=",")
+            write_details_json(out_dir / f"{settings.slug}_cities_details.json", records)
             print(f"Wrote CSV with hospital columns to {csv_path}")
+        # Optionally enrich CSV with peaks before building maps (defaults: 30km, 1200m)
+        if getattr(args, "check_peaks", False):
+            print("Checking nearby higher peaks via OSM...", file=sys.stderr)
+            records = enrich_records_with_nearby_higher_peaks(
+                records,
+                perimeter_bbox=bbox if 'bbox' in locals() else None,
+                radius_km=args.peaks_radius_km,
+                min_height_diff_m=args.peaks_min_height_diff_m,
+                tile_size_deg=args.peaks_tile_size,
+                sleep_between_tiles=0.5,
+                cache_dir=str(Path(args.cache_dir)),
+                region_slug=settings.slug,
+                resume=args.resume,
+            )
+            csv_path = out_dir / f"{settings.slug}_cities.csv"
+            write_csv(csv_path, records, delimiter=",")
+            # Also write companion details JSON for complex fields
+            details_path = out_dir / f"{settings.slug}_cities_details.json"
+            write_details_json(details_path, records)
+            print(f"Wrote CSV with peaks columns to {csv_path}")
         # Optionally enrich CSV with nearest airport and driving info
         if args.check_airports:
             print("Finding nearest international airports and driving metrics...", file=sys.stderr)
@@ -174,7 +201,8 @@ def main() -> None:
                     resume_missing_only=args.airports_resume_missing,
                 )
             csv_path = out_dir / f"{settings.slug}_cities.csv"
-            write_csv(csv_path, records)
+            write_csv(csv_path, records, delimiter=",")
+            write_details_json(out_dir / f"{settings.slug}_cities_details.json", records)
             print(f"Wrote CSV with airport and driving columns to {csv_path}")
         if args.make_map:
             map_path = Path(args.map_file) if args.map_file else (out_dir / f"{settings.slug}_cities_map.html")
@@ -399,6 +427,30 @@ def main() -> None:
             print("Error: enrich_hospitals stage output missing/unreadable; run that stage first.", file=sys.stderr)
             sys.exit(2)
 
+    # Optional: Peaks enrichment (count/list higher peaks within radius)
+    # Stage: enrich_peaks
+    if args.stage in ("enrich_peaks", "all"):
+        print("Checking nearby higher peaks via OSM...", file=sys.stderr)
+        enriched = enrich_records_with_nearby_higher_peaks(
+            enriched,
+            perimeter_bbox=bbox,
+            radius_km=float(os.getenv("PEAKS_RADIUS_KM", str(getattr(args, "peaks_radius_km", 30.0)))),
+            min_height_diff_m=float(os.getenv("PEAKS_MIN_HEIGHT_DIFF_M", str(getattr(args, "peaks_min_height_diff_m", 1200.0)))),
+            tile_size_deg=float(os.getenv("PEAKS_TILE_SIZE_DEG", str(getattr(args, "peaks_tile_size", 1.0)))),
+            sleep_between_tiles=0.5,
+            cache_dir=str(Path(args.cache_dir)),
+            region_slug=settings.slug,
+            resume=args.resume,
+        )
+        # No dedicated stage file yet; keep in main flow
+        if args.stage == "enrich_peaks":
+            # Ensure output directory
+            out_dir = Path(args.out_dir) / settings.slug
+            out_dir.mkdir(parents=True, exist_ok=True)
+            write_csv(out_dir / f"{settings.slug}_cities.csv", enriched)
+            write_geojson(out_dir / f"{settings.slug}_cities.geojson", enriched)
+            return
+
     # Optional: Nearest international airport + driving time/distance
     # Always enrich with nearest airport via offline dataset by default
     # Stage: enrich_airports
@@ -439,7 +491,8 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Write outputs
-    write_csv(out_dir / f"{settings.slug}_cities.csv", enriched)
+    write_csv(out_dir / f"{settings.slug}_cities.csv", enriched, delimiter=",")
+    write_details_json(out_dir / f"{settings.slug}_cities_details.json", enriched)
     write_geojson(out_dir / f"{settings.slug}_cities.geojson", enriched)
 
     # Optionally write interactive maps

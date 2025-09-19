@@ -82,6 +82,24 @@ def _popup_html(r: Dict) -> str:
                 parts.append(f"<br/>Nearest hospital: {hosp_str}")
         except Exception:
             pass
+    # Peaks summary
+    peaks_count = r.get("peaks_higher1200_within30km_count")
+    peaks_names = r.get("peaks_higher1200_within30km_names")
+    try:
+        if peaks_count not in (None, ""):
+            parts.append(f"<br/>Higher peaks within 30 km (≥1200 m): {int(peaks_count)}")
+    except Exception:
+        pass
+    if peaks_names:
+        try:
+            txt = str(peaks_names)
+            if txt.strip():
+                # show only first few names to keep popup compact
+                short = txt if len(txt) <= 140 else (txt[:137] + "...")
+                parts.append(f"<br/>Peaks: {short}")
+        except Exception:
+            pass
+
     if source:
         parts.append(f"<br/>Source: {source}")
     if elev_src:
@@ -128,6 +146,8 @@ def build_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.M
     fmap = folium.Map(location=center, zoom_start=7, tiles=tiles, control_scale=True)
 
     cluster = MarkerCluster(name="Cities").add_to(fmap)
+    peaks_group = folium.FeatureGroup(name="Peaks (≥1200m over city within 30km)").add_to(fmap)
+    seen_peak_keys: set[tuple[float, float, str]] = set()
 
     for r in records_list:
         try:
@@ -165,6 +185,39 @@ def build_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.M
                 "hospital_in_city_or_nearby": r.get("hospital_in_city_or_nearby", ""),
             }
         ).add_to(cluster)
+
+        # Add peak markers if present
+        peaks_list = r.get("peaks_higher1200_within30km") or []
+        try:
+            for pk in peaks_list:
+                plat = float(pk.get("latitude"))
+                plon = float(pk.get("longitude"))
+                pname = str(pk.get("name") or "Peak")
+                key = (round(plat, 5), round(plon, 5), pname.strip())
+                if key in seen_peak_keys:
+                    continue
+                pelev = pk.get("elevation")
+                if pelev not in (None, ""):
+                    try:
+                        m_val = float(pelev)
+                        ft_val = int(round(m_val * 3.28084))
+                        pelev_str = f" ({int(round(m_val))} m / {ft_val:,} ft)"
+                    except Exception:
+                        pelev_str = f" ({pelev} m)"
+                else:
+                    pelev_str = ""
+                folium.CircleMarker(
+                    location=(plat, plon),
+                    radius=4,
+                    color="black",
+                    fill=True,
+                    fill_color="white",
+                    fill_opacity=0.9,
+                    popup=folium.Popup(f"{pname}{pelev_str}", max_width=220),
+                ).add_to(peaks_group)
+                seen_peak_keys.add(key)
+        except Exception:
+            pass
 
     folium.LayerControl().add_to(fmap)
     # Inject a simple population filter UI and JS
@@ -251,6 +304,8 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
     for country, recs in sorted(by_country.items(), key=lambda kv: kv[0]):
         group = folium.FeatureGroup(name=f"{country} ({len(recs)})")
         cluster = MarkerCluster().add_to(group)
+        peaks_group = folium.FeatureGroup(name=f"Peaks near cities in {country}")
+        seen_peak_keys: set[tuple[float, float, str]] = set()
         color = color_map.get(country, "blue")
         for r in recs:
             try:
@@ -285,7 +340,40 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
                     "hospital_in_city_or_nearby": r.get("hospital_in_city_or_nearby", ""),
                 }
             ).add_to(cluster)
+            # Add peaks for this city to the country-specific peaks layer
+            peaks_list = r.get("peaks_higher1200_within30km") or []
+            try:
+                for pk in peaks_list:
+                    plat = float(pk.get("latitude"))
+                    plon = float(pk.get("longitude"))
+                    pname = str(pk.get("name") or "Peak")
+                    key = (round(plat, 5), round(plon, 5), pname.strip())
+                    if key in seen_peak_keys:
+                        continue
+                    pelev = pk.get("elevation")
+                    if pelev not in (None, ""):
+                        try:
+                            m_val = float(pelev)
+                            ft_val = int(round(m_val * 3.28084))
+                            pelev_str = f" ({int(round(m_val))} m / {ft_val:,} ft)"
+                        except Exception:
+                            pelev_str = f" ({pelev} m)"
+                    else:
+                        pelev_str = ""
+                    folium.CircleMarker(
+                        location=(plat, plon),
+                        radius=4,
+                        color="black",
+                        fill=True,
+                        fill_color="white",
+                        fill_opacity=0.9,
+                        popup=folium.Popup(f"{pname}{pelev_str}", max_width=220),
+                    ).add_to(peaks_group)
+                    seen_peak_keys.add(key)
+            except Exception:
+                pass
         group.add_to(fmap)
+        peaks_group.add_to(fmap)
 
     folium.LayerControl(collapsed=False).add_to(fmap)
     _inject_population_filter(fmap)

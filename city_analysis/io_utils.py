@@ -4,18 +4,27 @@ import csv
 import json
 from pathlib import Path
 from typing import Dict, Iterable, List
+import os
 
 
-def write_csv(path: str | Path, records: Iterable[Dict]) -> None:
+def write_csv(path: str | Path, records: Iterable[Dict], *, delimiter: str | None = None) -> None:
     records_list: List[Dict] = list(records)
     if not records_list:
         Path(path).write_text("")
         return
     
-    # Collect all possible fieldnames from all records
+    # Known complex keys we do not want in CSV
+    complex_keys = {
+        "peaks_higher1200_within30km",
+    }
+
+    # Collect all possible scalar fieldnames from all records (exclude dict/list fields and known complex keys)
     all_fieldnames = set()
     for record in records_list:
-        all_fieldnames.update(record.keys())
+        for k, v in record.items():
+            if k in complex_keys or isinstance(v, (dict, list)):
+                continue
+            all_fieldnames.add(k)
     
     # Use a consistent field order for better readability
     field_order = [
@@ -29,30 +38,90 @@ def write_csv(path: str | Path, records: Iterable[Dict]) -> None:
     remaining_fields = sorted([f for f in all_fieldnames if f not in field_order])
     fieldnames.extend(remaining_fields)
     
+    # Always default to comma; allow explicit override via parameter only
+    csv_delimiter = delimiter if delimiter is not None else ","
+    
     # Write CSV with UTF-8 BOM so spreadsheet apps (e.g., Excel) detect encoding correctly
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=csv_delimiter)
         writer.writeheader()
         for record in records_list:
-            writer.writerow(record)
+            # Only include scalar fields; drop complex structures (saved separately)
+            safe_row: Dict = {k: v for k, v in record.items() if k in fieldnames and not isinstance(v, (dict, list))}
+            writer.writerow(safe_row)
 
 
 def write_geojson(path: str | Path, records: Iterable[Dict]) -> None:
     features: List[Dict] = []
     for r in records:
-        features.append(
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [float(r["longitude"]), float(r["latitude"])],
-                },
-                "properties": {k: v for k, v in r.items() if k not in {"longitude", "latitude"}},
-            }
-        )
-    fc = {"type": "FeatureCollection", "features": features}
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(fc, f, ensure_ascii=False)
+        try:
+            lat = float(r.get("latitude"))
+            lon = float(r.get("longitude"))
+        except Exception:
+            continue
+        props = dict(r)
+        props.pop("latitude", None)
+        props.pop("longitude", None)
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [lon, lat]},
+            "properties": props,
+        })
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps({"type": "FeatureCollection", "features": features}, ensure_ascii=False), encoding="utf-8")
+
+
+def write_details_json(path: str | Path, records: Iterable[Dict]) -> None:
+    """Write a companion JSON file with complex per-record details excluded from CSV.
+
+    Structure:
+      [
+        {
+          "key": "<name>|<lat>|<lon>",
+          "name": "...",
+          "country": "...",
+          "latitude": <float>,
+          "longitude": <float>,
+          "details": {  # only dict/list fields from the record
+             "peaks_higher1200_within30km": [...],
+             ...
+          }
+        },
+        ...
+      ]
+    """
+    out: List[Dict] = []
+    for r in records:
+        try:
+            lat = float(r.get("latitude"))
+            lon = float(r.get("longitude"))
+        except Exception:
+            continue
+        name = str(r.get("name") or "").strip()
+        details: Dict = {}
+        for k, v in r.items():
+            if isinstance(v, (dict, list)):
+                details[k] = v
+            elif isinstance(v, str) and (v.strip().startswith("[") or v.strip().startswith("{")):
+                # Try to parse JSON-like strings (e.g., peaks lists loaded from a CSV)
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, (dict, list)):
+                        details[k] = parsed
+                except Exception:
+                    pass
+        if not details:
+            continue
+        out.append({
+            "key": f"{name}|{lat}|{lon}",
+            "name": name,
+            "country": r.get("country"),
+            "latitude": lat,
+            "longitude": lon,
+            "details": details,
+        })
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
 
 
 def read_csv_records(path: str | Path) -> List[Dict]:
@@ -61,7 +130,15 @@ def read_csv_records(path: str | Path) -> List[Dict]:
     """
     records: List[Dict] = []
     with open(path, "r", newline="", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
+        # Auto-detect delimiter for robustness (supports "," and ";")
+        sample = f.read(4096)
+        f.seek(0)
+        try:
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+        except Exception:
+            class _D: delimiter = ','
+            dialect = _D()
+        reader = csv.DictReader(f, delimiter=dialect.delimiter)
         for row in reader:
             records.append(dict(row))
     return records

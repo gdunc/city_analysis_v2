@@ -36,7 +36,7 @@ class RegionSettings:
     countries: List[str]
     perimeter_geojson: Optional[Path] = None
     excluded_countries: List[str] = field(default_factory=list)
-    map_tiles: str = "OpenStreetMap"
+    map_tiles: str = "OpenTopoMap"
     min_population: int = DEFAULT_MIN_POPULATION
     require_osm_population: bool = DEFAULT_REQUIRE_OSM_POPULATION
 
@@ -55,7 +55,7 @@ REGIONS: dict[str, RegionSettings] = {
         perimeter_geojson=(_project_root() / "alps_perimeter.geojson"),
         # Preserve legacy exclusion of CH/SI/LI from results
         excluded_countries=["CH", "SI", "LI"],
-        map_tiles="OpenStreetMap",
+        map_tiles="OpenTopoMap",
     ),
     "pyrenees": RegionSettings(
         name="Pyrenees",
@@ -64,7 +64,7 @@ REGIONS: dict[str, RegionSettings] = {
         # Expected future location for curated polygon (optional)
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB positron",
+        map_tiles="OpenTopoMap",
     ),
     "rockies": RegionSettings(
         name="Rocky Mountains",
@@ -73,7 +73,7 @@ REGIONS: dict[str, RegionSettings] = {
         # Perimeter discovered at data/regions/rockies/perimeter.geojson if present
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB positron",
+        map_tiles="OpenTopoMap",
     ),
     "sierra_nevada": RegionSettings(
         name="Sierra Nevada",
@@ -82,7 +82,7 @@ REGIONS: dict[str, RegionSettings] = {
         # Expect perimeter at data/regions/sierra_nevada/perimeter.geojson if present
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB positron",
+        map_tiles="OpenTopoMap",
     ),
     "cascade_range": RegionSettings(
         name="Cascade Range",
@@ -91,7 +91,7 @@ REGIONS: dict[str, RegionSettings] = {
         # Expect perimeter at data/regions/cascade_range/perimeter.geojson if present
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB positron",
+        map_tiles="OpenTopoMap",
     ),
     "coast_mountains": RegionSettings(
         name="Coast Mountains",
@@ -100,7 +100,7 @@ REGIONS: dict[str, RegionSettings] = {
         # Expect perimeter at data/regions/coast_mountains/perimeter.geojson if present
         perimeter_geojson=None,
         excluded_countries=[],
-        map_tiles="CartoDB positron",
+        map_tiles="OpenTopoMap",
     ),
 }
 

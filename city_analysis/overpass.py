@@ -352,3 +352,158 @@ def fetch_overpass_hospitals_bbox_tiled(
             lon = next_lon
         lat = next_lat
     return results
+
+
+# --- Mountain peaks (natural=peak) ---
+
+def build_overpass_peaks_query(
+    bbox: Tuple[float, float, float, float],
+) -> str:
+    """Build an Overpass QL query for mountain peaks within a bounding box.
+
+    Args:
+        bbox: (south, west, north, east)
+    """
+    bbox_str = ",".join(str(x) for x in bbox)
+    # Query natural=peak nodes/ways/relations; include name and elevation tags when present
+    query = f"""
+    [out:json][timeout:120];
+    (
+      node["natural"="peak"]({bbox_str});
+      way["natural"="peak"]({bbox_str});
+      relation["natural"="peak"]({bbox_str});
+    );
+    out center tags;
+    """
+    return query
+
+
+def _try_overpass_peaks(endpoint: str, query: str) -> List[Dict]:
+    resp = requests.post(endpoint, data={"data": query}, headers=DEFAULT_HEADERS, timeout=180)
+    resp.raise_for_status()
+    resp.encoding = 'utf-8'
+    payload = resp.json()
+    elements = payload.get("elements", [])
+    results: List[Dict] = []
+    for el in elements:
+        tags = el.get("tags", {})
+        name = tags.get("name") or ""
+        # center for ways/relations, lat/lon for nodes
+        lat, lon = None, None
+        if el.get("type") == "node":
+            lat = el.get("lat")
+            lon = el.get("lon")
+        else:
+            center = el.get("center") or {}
+            lat = center.get("lat")
+            lon = center.get("lon")
+        if lat is None or lon is None:
+            continue
+        # parse elevation if present
+        elevation_m = None
+        for key in ("ele", "elevation"):
+            if key in tags and tags.get(key) not in (None, ""):
+                try:
+                    # Strip potential units like "1234 m"
+                    import re
+                    m = re.search(r"(-?\d+(?:\.\d+)?)", str(tags.get(key)))
+                    if m:
+                        elevation_m = float(m.group(1))
+                        break
+                except Exception:
+                    elevation_m = None
+        results.append(
+            {
+                "name": name,
+                "latitude": float(lat),
+                "longitude": float(lon),
+                "elevation": elevation_m,  # meters if available
+                "source": "osm",
+                "_tags": tags,
+            }
+        )
+    return results
+
+
+def fetch_overpass_peaks(query: str, max_retries_per_endpoint: int = 2) -> List[Dict]:
+    last_error: Exception | None = None
+    for endpoint in OVERPASS_ENDPOINTS:
+        for attempt in range(max_retries_per_endpoint):
+            try:
+                return _try_overpass_peaks(endpoint, query)
+            except Exception as e:
+                last_error = e
+                time.sleep(1.5 * (attempt + 1))
+    if last_error:
+        raise last_error
+    return []
+
+
+def fetch_overpass_peaks_bbox_tiled(
+    bbox: Tuple[float, float, float, float],
+    tile_size_deg: float = 1.0,
+    sleep_between: float = 0.5,
+    cache_dir: Optional[str] = None,
+    region_slug: Optional[str] = None,
+    resume: bool = False,
+) -> List[Dict]:
+    """Split a bbox into tiles and aggregate Overpass results for peaks.
+
+    Dedupe across tiles by rounded lat/lon/name.
+    """
+    south, west, north, east = bbox
+    results: List[Dict] = []
+    seen_keys = set()
+
+    # Prepare cache directory if enabled
+    cache_path: Optional[Path] = None
+    if cache_dir:
+        region_key = (region_slug or "default").strip().lower() or "default"
+        cache_path = Path(cache_dir) / "overpass" / region_key / f"peaks_tiles_{tile_size_deg}deg"
+        cache_path.mkdir(parents=True, exist_ok=True)
+
+    def _tile_fname(s: float, w: float, n: float, e: float) -> str:
+        return f"s_{s:.4f}_w_{w:.4f}_n_{n:.4f}_e_{e:.4f}.json"
+
+    lat = south
+    while lat < north:
+        next_lat = min(north, lat + tile_size_deg)
+        lon = west
+        while lon < east:
+            next_lon = min(east, lon + tile_size_deg)
+            tile_bbox = (lat, lon, next_lat, next_lon)
+            q = build_overpass_peaks_query(tile_bbox)
+            try:
+                # Resume/read cache if available
+                cached_chunk: Optional[List[Dict]] = None
+                cache_file: Optional[Path] = None
+                if cache_path is not None:
+                    cache_file = cache_path / _tile_fname(lat, lon, next_lat, next_lon)
+                    if resume and cache_file.exists():
+                        try:
+                            cached_chunk = json.loads(cache_file.read_text(encoding="utf-8"))
+                        except Exception:
+                            cached_chunk = None
+                chunk = cached_chunk if cached_chunk is not None else fetch_overpass_peaks(q)
+                if cache_file is not None and cached_chunk is None:
+                    try:
+                        cache_file.write_text(json.dumps(chunk, ensure_ascii=False), encoding="utf-8")
+                    except Exception:
+                        pass
+                for r in chunk:
+                    key = (
+                        (r.get("name") or ""),
+                        round(float(r["latitude"]), 4),
+                        round(float(r["longitude"]), 4),
+                    )
+                    if key in seen_keys:
+                        continue
+                    seen_keys.add(key)
+                    results.append(r)
+            except Exception:
+                # Skip failing tile and continue
+                pass
+            time.sleep(sleep_between)
+            lon = next_lon
+        lat = next_lat
+    return results
