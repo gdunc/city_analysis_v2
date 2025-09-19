@@ -83,6 +83,9 @@ def make_plots(df: pd.DataFrame, out_dir: Path) -> None:
     import seaborn as sns
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Exclude aggregate folders to avoid duplicated points in plots
+    if "region" in df.columns:
+        df = df[~df["region"].isin({"all_mountains", "combined"})].copy()
     plot_style = {
         "s": 30,
         "alpha": 0.7,
@@ -155,6 +158,9 @@ def make_plots_interactive(df: pd.DataFrame, out_dir: Path) -> None:
     import plotly.express as px
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Exclude aggregate folders to avoid duplicated points in plots
+    if "region" in df.columns:
+        df = df[~df["region"].isin({"all_mountains", "combined"})].copy()
 
     common_hover = {
         "hover_name": "name",
