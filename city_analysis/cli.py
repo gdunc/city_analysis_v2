@@ -15,7 +15,7 @@ from .perimeter_loader import resolve_region_perimeter
 from .geonames import fetch_geonames_cities
 from .overpass import fetch_overpass_bbox_tiled
 from .normalize import filter_within_perimeter, dedupe_places, enforce_min_population
-from .io_utils import write_csv, write_geojson, read_csv_records, write_details_json
+from .io_utils import write_csv, write_geojson, read_csv_records, write_details_json, read_details_json
 from .analysis import top_n_by_population, summarize
 from .country_filters import filter_excluded_countries, fill_missing_country
 from .distance import add_distance_to_perimeter_km
@@ -95,6 +95,13 @@ def parse_args() -> argparse.Namespace:
         "fetch", "filter", "dedupe", "enrich_elevation", "enrich_hospitals", "enrich_peaks", "enrich_airports", "maps", "all"
     ], default=os.getenv("STAGE", "all"), help="Run a specific pipeline stage or 'all'")
     parser.add_argument("--resume", action="store_true", help="Resume from cached tiles/intermediate files when available")
+
+    # Combine existing region outputs
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--combine-regions", nargs="*", default=None, help="Combine maps from the listed region slugs (e.g., alps pyrenees rockies)")
+    group.add_argument("--combine-all", action="store_true", help="Combine maps from all known regions with outputs present")
+    parser.add_argument("--combined-slug", type=str, default="all_regions", help="Slug for combined output folder under --out-dir")
+    parser.add_argument("--combined-name", type=str, default="All Regions", help="Display name for the combined output")
     return parser.parse_args()
 
 
@@ -107,7 +114,88 @@ def main() -> None:
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
-    # Resolve region settings
+    # Fast path: combine existing region outputs into a single map
+    if args.combine_regions is not None or args.combine_all:
+        # Determine which regions to include
+        from .config import REGIONS
+        if args.combine_all:
+            candidate_slugs = list(REGIONS.keys())
+        else:
+            candidate_slugs = [s.strip().lower() for s in (args.combine_regions or []) if s and s.strip()]
+        # Collect CSV paths that exist
+        base_out = Path(args.out_dir)
+        records: list[dict] = []
+        details_by_key: dict[str, dict] = {}
+        for slug in candidate_slugs:
+            csv_path = base_out / slug / f"{slug}_cities.csv"
+            if not csv_path.exists():
+                continue
+            # Read CSV records
+            recs = read_csv_records(csv_path)
+            # Attach region for traceability
+            for r in recs:
+                if "region" not in r:
+                    r["region"] = slug
+            records.extend(recs)
+            # Load optional details JSON to reattach complex fields if present
+            details_path = base_out / slug / f"{slug}_cities_details.json"
+            details_list = read_details_json(details_path)
+            for d in details_list:
+                key = str(d.get("key") or "")
+                if key:
+                    details_by_key[key] = d
+
+        # Rehydrate complex details onto records (best-effort by key)
+        def _make_key(r: dict) -> str:
+            try:
+                name = str(r.get("name") or "").strip()
+                lat = float(r.get("latitude")) if r.get("latitude") not in (None, "") else None
+                lon = float(r.get("longitude")) if r.get("longitude") not in (None, "") else None
+                if name and lat is not None and lon is not None:
+                    return f"{name}|{lat}|{lon}"
+            except Exception:
+                pass
+            return ""
+
+        enriched_records: list[dict] = []
+        for r in records:
+            key = _make_key(r)
+            if key and key in details_by_key:
+                det = details_by_key[key]
+                dets = det.get("details") or {}
+                # Merge known complex fields back
+                new_r = {**r}
+                for k, v in dets.items():
+                    new_r[k] = v
+                enriched_records.append(new_r)
+            else:
+                enriched_records.append(r)
+
+        if not enriched_records:
+            print("No existing region CSVs found to combine. Ensure per-region runs are completed.", file=sys.stderr)
+            return
+
+        # Build combined output directory
+        combined_slug = args.combined_slug.strip() or "all_regions"
+        combined_dir = base_out / combined_slug
+        combined_dir.mkdir(parents=True, exist_ok=True)
+
+        # Write convenience combined CSV/GeoJSON
+        write_csv(combined_dir / f"{combined_slug}_cities.csv", enriched_records)
+        write_geojson(combined_dir / f"{combined_slug}_cities.geojson", enriched_records)
+
+        # Produce maps (both styles by default)
+        from .map_utils import save_map, save_country_map
+        tiles = args.map_tiles or "OpenTopoMap"
+        map_path = combined_dir / f"{combined_slug}_cities_map.html"
+        save_map(enriched_records, map_path, tiles=tiles)
+        print(f"Wrote combined interactive map to {map_path}")
+        cpath = combined_dir / f"{combined_slug}_cities_country_map.html"
+        save_country_map(enriched_records, cpath, tiles=tiles)
+        print(f"Wrote combined country-colored map to {cpath}")
+        return
+
+    # Resolve region settings (non-combine flow)
     if args.region_config:
         settings = load_region_settings_from_yaml(args.region_config)
     else:

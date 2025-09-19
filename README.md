@@ -15,6 +15,9 @@ Minimal toolchain to fetch and analyze cities in and near mountain regions (Alps
 - **Nearest international airport + driving** offline-first using OurAirports dataset + OSRM; OpenAI web search mode can be explicitly enabled
 - **CSV-to-map mode**: build maps directly from an existing CSV without refetching data
 - **Nearby higher peaks**: counts and lists OSM `natural=peak` within a radius that are at least a specified elevation above the city (defaults: ≥1200 m within 30 km)
+- **Multi-region analysis**: combine data from multiple regions into unified maps and analyses
+- **Interactive Dash app**: web-based filtering and visualization tool for exploring city data across regions
+- **Statistical analysis**: automated generation of correlation plots, scatter plots, and summary statistics
 
 ## Architecture (CTO-level overview)
 - `city_analysis/geometry.py`: Perimeter handling (load GeoJSON, default region polygons/bbox, Overpass bbox conversion)
@@ -30,8 +33,10 @@ Minimal toolchain to fetch and analyze cities in and near mountain regions (Alps
 - `city_analysis/airport_check.py`: Optional nearest international airport enrichment via OpenAI web search + OSRM driving metrics
 - `city_analysis/peak_check.py`: Nearby higher peaks enrichment using OSM `natural=peak` and `ele` tags
 - `city_analysis/extract_rockies.py`: Rockies region perimeter extraction from GMBA dataset
-- `city_analysis/cli.py`: CLI orchestration
+- `city_analysis/cli.py`: CLI orchestration with multi-region combine functionality
 - `city_analysis/map_utils.py`: Folium map builders and savers (standard and country-colored)
+- `city_analysis/combine_analyze.py`: Multi-region data combination and statistical analysis
+- `city_analysis/dash_app.py`: Interactive Dash web application for data exploration
 
 ## Data Sources
 - **GeoNames**: Population, coordinates, country codes (requires free account)
@@ -59,6 +64,11 @@ Multi-source enrichment can significantly improve elevation coverage:
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+**New dependencies for analysis and visualization:**
+- `matplotlib` and `seaborn` for statistical plotting
+- `plotly` and `dash` for interactive web applications
+- `dash-bootstrap-components` for enhanced UI components
 
 ## Configuration
 - **GeoNames (required)**: Set `GEONAMES_USERNAME` env var or pass `--geonames-username`. The run aborts if GeoNames cannot be fetched.
@@ -172,6 +182,12 @@ Notes:
   - **--stage [fetch|filter|dedupe|enrich_elevation|enrich_hospitals|enrich_peaks|enrich_airports|maps|all]**
   - **--resume**: Reuse cached tiles/intermediate files when available
 
+- Multi-region combination:
+  - **--combine-regions SLUGS...**: Combine specific regions into unified maps
+  - **--combine-all**: Automatically combine all available regions
+  - **--combined-slug SLUG**: Custom slug for combined output folder (default: "all_regions")
+  - **--combined-name NAME**: Display name for combined output (default: "All Regions")
+
 ### Generate interactive maps
 Create a standard clustered map and/or a country-colored, population-sized map:
 ```bash
@@ -222,6 +238,62 @@ python -m city_analysis.cli \
   --peaks-radius-km 30 \
   --peaks-min-height-diff-m 1200 \
   --out-dir outputs
+```
+
+### Multi-region analysis and visualization
+
+#### Combine multiple regions into unified maps
+Combine specific regions into a single map:
+```bash
+python -m city_analysis.cli --combine-regions alps pyrenees rockies --out-dir outputs
+```
+
+Combine all available regions automatically:
+```bash
+python -m city_analysis.cli --combine-all --out-dir outputs
+```
+
+Customize the combined output:
+```bash
+python -m city_analysis.cli \
+  --combine-regions alps pyrenees \
+  --combined-slug alps_pyrenees \
+  --combined-name "Alps & Pyrenees" \
+  --out-dir outputs
+```
+
+#### Statistical analysis and plotting
+Generate comprehensive analysis plots from combined regional data:
+```bash
+python -m city_analysis.combine_analyze --outputs-dir outputs --out-dir outputs/combined
+```
+
+This creates:
+- **Static plots**: Scatter plots for hospital vs airport time, peaks vs airport time, population vs peaks
+- **Interactive plots**: HTML versions with hover details and zoom capabilities  
+- **Summary statistics**: CSV with regional breakdowns and correlation analysis
+- **Combined dataset**: Single CSV with all regional data
+
+#### Interactive Dash web application
+Launch an interactive web app for exploring city data across regions:
+```bash
+python -m city_analysis.dash_app --outputs-dir outputs --out-dir outputs/combined
+```
+
+Access at `http://127.0.0.1:8050` with features:
+- **Multi-dimensional filtering**: Region, country, population, elevation, driving times, peaks count
+- **Real-time plots**: Three synchronized scatter plots update based on filters
+- **Hover details**: City names, countries, and key metrics on hover
+- **Responsive design**: Sidebar filters with main plotting area
+
+Customize the web app:
+```bash
+python -m city_analysis.dash_app \
+  --outputs-dir outputs \
+  --out-dir outputs/combined \
+  --host 0.0.0.0 \
+  --port 8080 \
+  --debug
 ```
 
 ### Hospital presence check
@@ -310,6 +382,8 @@ python -m city_analysis.cli --stage enrich_peaks --out-dir outputs
 CSV-only mode (no refetch): see example above under “Build maps directly from an existing CSV”.
 
 ## Outputs
+
+### Per-region outputs
 - `{region}_cities.csv` — Columns include: `name, country, latitude, longitude, population, elevation, elevation_feet, elevation_source, elevation_confidence, source, distance_km_to_region`.
   - If hospital presence is enabled: `hospital_in_city, hospital_confidence_pct, hospital_reasoning, hospital_error, hospital_nearest_name, hospital_nearest_latitude, hospital_nearest_longitude, nearest_hospital_km, hospital_in_city_or_nearby, driving_km_to_hospital, driving_time_minutes_to_hospital`
   - If nearest airport is enabled: `airport_nearest_name, airport_nearest_iata, airport_nearest_icao, airport_nearest_latitude, airport_nearest_longitude, airport_confidence_pct, airport_reasoning, airport_error, driving_km_to_airport, driving_time_minutes_to_airport, driving_confidence_pct, driving_reasoning, driving_error`
@@ -319,6 +393,26 @@ CSV-only mode (no refetch): see example above under “Build maps directly from 
 - `{region}_cities_country_map.html` — Country-colored, population-sized map (when `--make-country-map` is used)
 
 Where `{region}` is `alps`, `pyrenees`, or `rockies` depending on the analysis.
+
+### Multi-region analysis outputs
+When using `--combine-regions` or `--combine-all`:
+- `{combined_slug}_cities.csv` — Combined dataset with all regions and `region` column for identification
+- `{combined_slug}_cities.geojson` — Combined GeoJSON with all regional data
+- `{combined_slug}_cities_map.html` — Unified interactive map showing all regions
+- `{combined_slug}_cities_country_map.html` — Unified country-colored map
+
+When running `city_analysis.combine_analyze`:
+- `all_regions_cities.csv` — Combined dataset from all available regions
+- **Static plots** (PNG format):
+  - `scatter_hospital_time_vs_airport_time.png` — Hospital vs airport driving time correlation
+  - `scatter_peaks_count_vs_airport_time.png` — Peaks count vs airport accessibility
+  - `scatter_population_vs_peaks_count.png` — Population vs nearby peaks relationship
+  - `correlation_heatmap.png` — Full correlation matrix of numeric variables
+- **Interactive plots** (HTML format):
+  - `scatter_hospital_time_vs_airport_time.html` — Interactive version with hover details
+  - `scatter_peaks_count_vs_airport_time.html` — Interactive version with hover details
+  - `scatter_population_vs_peaks_count.html` — Interactive version with hover details
+- `summary_by_region.csv` — Statistical summary by region (count, mean, median, min, max)
 
 ## Notes
 - Licensing: GeoNames (CC BY 4.0), OSM (ODbL). Validate terms before redistribution.

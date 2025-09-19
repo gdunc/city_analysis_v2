@@ -142,3 +142,26 @@ def read_csv_records(path: str | Path) -> List[Dict]:
         for row in reader:
             records.append(dict(row))
     return records
+
+
+def read_details_json(path: str | Path) -> List[Dict]:
+    """Read details JSON created by write_details_json.
+
+    Returns a list of objects with keys: key, name, country, latitude, longitude, details.
+    If the file does not exist or is unreadable, returns an empty list.
+    """
+    p = Path(path)
+    if not p.exists():
+        return []
+    try:
+        text = p.read_text(encoding="utf-8")
+        data = json.loads(text)
+        if isinstance(data, list):
+            out: List[Dict] = []
+            for item in data:
+                if isinstance(item, dict):
+                    out.append(item)
+            return out
+        return []
+    except Exception:
+        return []
