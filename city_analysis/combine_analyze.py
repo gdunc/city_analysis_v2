@@ -67,14 +67,43 @@ def load_and_standardize_csv(csv_path: Path, region_slug: Optional[str] = None) 
 
 
 def discover_csvs(outputs_dir: Path) -> List[Path]:
-    """Find all *_cities.csv files under outputs_dir, excluding caches and test runs."""
+    """Find regional *_cities.csv files under outputs_dir.
+
+    Excludes:
+    - cache folders
+    - ignore_test_run
+    - aggregate/combined folders such as all_mountains, all_regions, combined
+    - any folder not in the known region registry
+    """
+    from .config import REGIONS
+
+    known_region_slugs = set(REGIONS.keys())
+    aggregate_folders = {"all_mountains", "all_regions", "combined"}
+
     candidates: List[Path] = []
     # Recurse and collect
     for path in outputs_dir.rglob("*_cities.csv"):
-        parts_lower = [p.lower() for p in path.parts]
+        parts = list(path.parts)
+        parts_lower = [p.lower() for p in parts]
         if any(seg in parts_lower for seg in ("cache", "ignore_test_run")):
             continue
+
+        # Identify folder directly under outputs
+        try:
+            outputs_idx = parts_lower.index("outputs")
+        except ValueError:
+            # Not under outputs; skip
+            continue
+        region_folder = parts_lower[outputs_idx + 1] if outputs_idx + 1 < len(parts_lower) else path.parent.name.lower()
+
+        # Skip aggregate folders and non-region folders
+        if region_folder in aggregate_folders:
+            continue
+        if region_folder not in known_region_slugs:
+            continue
+
         candidates.append(path)
+
     return sorted(candidates)
 
 
@@ -266,6 +295,21 @@ def combine(outputs_dir: Path, out_dir: Path) -> Path:
         frames.append(load_and_standardize_csv(path, region_slug))
 
     combined = pd.concat(frames, ignore_index=True, sort=False)
+
+    # Guard: drop duplicates that might arise from overlapping inputs
+    # Use a stable city key based on name and coordinates
+    for col in ("name", "latitude", "longitude"):
+        if col not in combined.columns:
+            combined[col] = combined.get(col, "")
+    combined["__key"] = (
+        combined["name"].astype(str).str.strip()
+        + "|"
+        + combined["latitude"].astype(str).str.strip()
+        + "|"
+        + combined["longitude"].astype(str).str.strip()
+    )
+    before = len(combined)
+    combined = combined.drop_duplicates(subset="__key").drop(columns=["__key"])  # keep first occurrence
 
     out_dir.mkdir(parents=True, exist_ok=True)
     combined_csv = out_dir / "all_regions_cities.csv"

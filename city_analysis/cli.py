@@ -175,9 +175,9 @@ def main() -> None:
             print("No existing region CSVs found to combine. Ensure per-region runs are completed.", file=sys.stderr)
             return
 
-        # Build combined output directory
+        # Build combined output directory (unified location)
         combined_slug = args.combined_slug.strip() or "all_regions"
-        combined_dir = base_out / combined_slug
+        combined_dir = base_out / "combined"
         combined_dir.mkdir(parents=True, exist_ok=True)
 
         # Write convenience combined CSV/GeoJSON
