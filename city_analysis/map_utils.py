@@ -11,8 +11,8 @@ from folium.plugins import MarkerCluster
 def _compute_map_center(records: Iterable[Dict]) -> tuple[float, float]:
     items = list(records)
     if not items:
-        # Fallback center over Europe if no items
-        return (47.0, 8.0)
+        # Fallback center over the Alps if no items
+        return (46.5, 10.0)
     avg_lat = sum(float(r.get("latitude", 0.0) or 0.0) for r in items) / len(items)
     avg_lon = sum(float(r.get("longitude", 0.0) or 0.0) for r in items) / len(items)
     return (avg_lat, avg_lon)
@@ -142,7 +142,8 @@ def _marker_color(population_value: Optional[int | float]) -> str:
 
 def build_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.Map:
     records_list = list(records)
-    center = _compute_map_center(records_list)
+    # Default to Alps center for better initial view
+    center = (46.5, 10.0)  # Alps region
     fmap = folium.Map(location=center, zoom_start=7, tiles=tiles, control_scale=True)
 
     cluster = MarkerCluster(name="Cities").add_to(fmap)
@@ -286,13 +287,18 @@ def _scaled_radius(pop_value: Optional[float | int], min_pop: float, max_pop: fl
 
 def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str = "OpenStreetMap") -> folium.Map:
     items = list(records)
-    center = _compute_map_center(items)
+    # Default to Alps center for better initial view
+    center = (46.5, 10.0)  # Alps region
     fmap = folium.Map(location=center, zoom_start=7, tiles=tiles, control_scale=True)
 
     # Prepare color mapping and population scaling
     countries = [str(r.get("country") or "UNK") for r in items]
     color_map = _country_color_map(countries)
     min_pop, max_pop = _population_bounds(items)
+
+    # Create single peaks group for all peaks
+    all_peaks_group = folium.FeatureGroup(name="Peaks (≥1200m over city within 30km)")
+    all_peaks_seen_keys: set[tuple[float, float, str]] = set()
 
     # Group markers by country with separate clusters for toggling via LayerControl
     from collections import defaultdict
@@ -304,8 +310,6 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
     for country, recs in sorted(by_country.items(), key=lambda kv: kv[0]):
         group = folium.FeatureGroup(name=f"{country} ({len(recs)})")
         cluster = MarkerCluster().add_to(group)
-        peaks_group = folium.FeatureGroup(name=f"Peaks near cities in {country}")
-        seen_peak_keys: set[tuple[float, float, str]] = set()
         color = color_map.get(country, "blue")
         for r in recs:
             try:
@@ -340,7 +344,7 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
                     "hospital_in_city_or_nearby": r.get("hospital_in_city_or_nearby", ""),
                 }
             ).add_to(cluster)
-            # Add peaks for this city to the country-specific peaks layer
+            # Add peaks for this city to the single peaks layer
             peaks_list = r.get("peaks_higher1200_within30km") or []
             try:
                 for pk in peaks_list:
@@ -348,7 +352,7 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
                     plon = float(pk.get("longitude"))
                     pname = str(pk.get("name") or "Peak")
                     key = (round(plat, 5), round(plon, 5), pname.strip())
-                    if key in seen_peak_keys:
+                    if key in all_peaks_seen_keys:
                         continue
                     pelev = pk.get("elevation")
                     if pelev not in (None, ""):
@@ -368,12 +372,14 @@ def build_country_color_population_sized_map(records: Iterable[Dict], tiles: str
                         fill_color="white",
                         fill_opacity=0.9,
                         popup=folium.Popup(f"{pname}{pelev_str}", max_width=220),
-                    ).add_to(peaks_group)
-                    seen_peak_keys.add(key)
+                    ).add_to(all_peaks_group)
+                    all_peaks_seen_keys.add(key)
             except Exception:
                 pass
         group.add_to(fmap)
-        peaks_group.add_to(fmap)
+
+    # Add the single peaks group to the map
+    all_peaks_group.add_to(fmap)
 
     folium.LayerControl(collapsed=False).add_to(fmap)
     _inject_population_filter(fmap)

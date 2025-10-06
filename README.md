@@ -10,7 +10,8 @@ Minimal toolchain to fetch and analyze cities in and near mountain regions (Alps
 - **Population threshold** filtering
 - **Interactive maps**:
   - Standard clustered map with color by population tier and a built-in client-side filter UI (min population, max driving times, hospital presence)
-  - Country-colored, population-sized map
+  - Country-colored, population-sized map with **unified peaks layer** (single checkbox for all peaks instead of per-country peak layers)
+  - **Alps-centered default view** - maps now open centered over the Alpine region (46.5°N, 10°E) instead of random ocean locations
 - **Hospital presence check** via OSM by default; OpenAI mode only when explicitly enabled
 - **Nearest international airport + driving** offline-first using OurAirports dataset + OSRM; OpenAI web search mode can be explicitly enabled
 - **CSV-to-map mode**: build maps directly from an existing CSV without refetching data
@@ -204,6 +205,7 @@ Defaults:
 - Country map: `outputs/alps/alps_cities_country_map.html`
 
 ### Map details
+- **Default view:** Maps now open centered over the Alpine region (46.5°N, 10°E) for better initial user experience
 - **Marker colors (standard map):**
   - darkred: ≥ 100,000
   - red: 50,000–99,999
@@ -222,6 +224,9 @@ Defaults:
   - Hospital in city? any/yes/no
   - Hospital in city or nearby? any/yes/no
   - Applied client-side without reloading
+- **Layer controls (top-right):**
+  - **Standard map:** Cities layer + unified "Peaks (≥1200m over city within 30km)" layer
+  - **Country map:** Individual country layers + unified peaks layer (single checkbox for all peaks)
 - **Country map:** Markers are colored by country and sized by log-scaled population; each country is toggleable in the layer control.
 
 ### Build maps directly from an existing CSV
