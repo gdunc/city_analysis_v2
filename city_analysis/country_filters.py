@@ -5,24 +5,25 @@ from typing import Dict, Iterable, List, Optional, Set
 from shapely.geometry import Point, Polygon, box
 from .country_lookup import infer_country_iso_a2
 
-# Countries to exclude from results
-EXCLUDED_COUNTRY_CODES: Set[str] = {"CH", "SI", "LI"}
+# Countries to exclude from results (Switzerland now included, only SI/LI excluded)
+EXCLUDED_COUNTRY_CODES: Set[str] = {"SI", "LI"}
 
 # Rough bounding boxes for excluded countries
-CH_BOX: Polygon = box(5.96, 45.80, 10.49, 47.81)  # Switzerland
 SI_BOX: Polygon = box(13.37, 45.40, 16.61, 46.88)  # Slovenia
 LI_BOX: Polygon = box(9.47, 47.05, 9.64, 47.27)    # Liechtenstein
 
-EXCLUDED_BOXES: List[Polygon] = [CH_BOX, SI_BOX, LI_BOX]
+EXCLUDED_BOXES: List[Polygon] = [SI_BOX, LI_BOX]
 
 # Rough bounding boxes for included countries to infer missing country codes
 AT_BOX: Polygon = box(9.53, 46.37, 17.16, 49.02)
 DE_BOX: Polygon = box(5.87, 47.27, 15.04, 55.06)
 FR_BOX: Polygon = box(-5.14, 41.33, 9.56, 51.09)
 IT_BOX: Polygon = box(6.62, 35.29, 18.79, 47.09)
+CH_BOX: Polygon = box(5.96, 45.80, 10.49, 47.81)  # Switzerland
 
-# Prioritize countries with higher risk of overlap: DE before AT (Munich), IT before FR (Turin/Milan).
+# Prioritize countries with higher risk of overlap: CH before AT/DE for proper Alpine assignment
 COUNTRY_BBOXES = [
+    ("CH", CH_BOX),
     ("DE", DE_BOX),
     ("IT", IT_BOX),
     ("AT", AT_BOX),
@@ -104,8 +105,9 @@ def infer_country_by_bbox(lat: float, lon: float) -> str:
     Uses an order tuned for Central Europe; works reasonably for Alps and Pyrenees.
     """
     pt = Point(lon, lat)
-    # Conflict-resolution priority for the Alps
+    # Conflict-resolution priority for the Alps (CH first for proper Swiss city assignment)
     resolution_priority = [
+        ("CH", CH_BOX),
         ("AT", AT_BOX),
         ("IT", IT_BOX),
         ("DE", DE_BOX),

@@ -10,6 +10,7 @@ ALPINE_COUNTRIES = [
     "FR",  # France
     "IT",  # Italy
     "DE",  # Germany
+    "CH",  # Switzerland
 ]
 
 DEFAULT_MIN_POPULATION = 5000
@@ -53,8 +54,8 @@ REGIONS: dict[str, RegionSettings] = {
         countries=ALPINE_COUNTRIES,
         # Use existing project-root GeoJSON if present
         perimeter_geojson=(_project_root() / "alps_perimeter.geojson"),
-        # Preserve legacy exclusion of CH/SI/LI from results
-        excluded_countries=["CH", "SI", "LI"],
+        # Exclude only Slovenia and Liechtenstein (Switzerland now included)
+        excluded_countries=["SI", "LI"],
         map_tiles="OpenTopoMap",
     ),
     "pyrenees": RegionSettings(

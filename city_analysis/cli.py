@@ -185,7 +185,6 @@ def main() -> None:
         write_geojson(combined_dir / f"{combined_slug}_cities.geojson", enriched_records)
 
         # Produce maps (both styles by default)
-        from .map_utils import save_map, save_country_map
         tiles = args.map_tiles or "OpenTopoMap"
         map_path = combined_dir / f"{combined_slug}_cities_map.html"
         save_map(enriched_records, map_path, tiles=tiles)
