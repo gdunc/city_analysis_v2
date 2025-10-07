@@ -700,3 +700,672 @@ def _strip_object_spread_in_html(html: str) -> str:
     import re
     # Non-greedy match inside braces; multiple occurrences supported
     return re.sub(r"\.\.\.\{([\s\S]*?)\}", r"\1", html)
+
+
+# --- Optimized map generation with external data ---
+
+def _add_attribution_footer(html: str) -> str:
+    """Add attribution footer to HTML for legal compliance."""
+    footer = """
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); 
+                padding: 8px 15px; font-size: 11px; border-top: 1px solid #ccc; z-index: 9999;
+                box-shadow: 0 -2px 4px rgba(0,0,0,0.1);">
+        <strong>Data Sources:</strong> 
+        City data © <a href="https://www.geonames.org/" target="_blank">GeoNames</a> (CC BY 4.0) | 
+        Hospital data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a> (ODbL) | 
+        Elevation data: SRTM | 
+        Airport data: <a href="https://ourairports.com/" target="_blank">OurAirports</a> (Public Domain) | 
+        <a href="attribution.html" target="_blank">Full Attribution & Legal</a>
+    </div>
+    """
+    # Insert before closing body tag
+    return html.replace("</body>", f"{footer}\n</body>")
+
+
+def build_optimized_map(data_url: str, tiles: str = "OpenTopoMap", map_title: str = "Mountain Cities") -> folium.Map:
+    """Build map that loads data from external JSON file.
+    
+    Args:
+        data_url: URL or path to JSON data file (relative or absolute)
+        tiles: Tile provider (default: OpenTopoMap for topographical maps)
+        map_title: Title for the map
+    """
+    # Create base map with OpenTopoMap tiles for topographical features
+    center = (46.5, 10.0)  # Alps region default
+    
+    if tiles == "OpenTopoMap":
+        # Use OpenTopoMap tiles explicitly for topographical maps
+        fmap = folium.Map(
+            location=center,
+            zoom_start=5,
+            tiles='https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+            attr='Map data: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+            control_scale=True
+        )
+    else:
+        fmap = folium.Map(location=center, zoom_start=5, tiles=tiles, control_scale=True)
+    
+    # Add a dummy MarkerCluster to ensure the library is loaded
+    # The JavaScript will handle actual marker creation
+    MarkerCluster(name="Loading...").add_to(fmap)
+    
+    # Add script to load data and render markers
+    script = """
+    <script>
+    (function(){
+        var dataUrl = '%DATA_URL%';
+        var mapVar = '%MAP%';
+        
+        function getMap(){ return window[mapVar]; }
+        
+        // Check if we're running in file:// protocol (local file)
+        if (window.location.protocol === 'file:') {
+            alert('This map requires a web server to load data. Please serve these files through a local web server (e.g., python -m http.server) or upload to a web hosting service.');
+            return;
+        }
+
+        fetch(dataUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Loaded ' + data.length + ' cities');
+                renderMarkers(data);
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                var errorMsg = 'Error loading map data. ';
+
+                if (window.location.protocol === 'file:') {
+                    errorMsg += 'This map must be served through a web server. Please use: python -m http.server 8000 (or similar) in the directory containing this file.';
+                } else {
+                    errorMsg += 'Please check your internet connection and refresh the page.';
+                }
+
+                alert(errorMsg);
+            });
+        
+        function renderMarkers(records) {
+            var map = getMap();
+            if (!map) {
+                console.error('Map not ready');
+                return;
+            }
+            
+            // Create marker cluster
+            var cluster = L.markerClusterGroup();
+            
+            // Create peaks layer
+            var peaksGroup = L.featureGroup();
+            var seenPeaks = {};
+            
+            records.forEach(function(r) {
+                if (!r.latitude || !r.longitude) return;
+                
+                var lat = parseFloat(r.latitude);
+                var lon = parseFloat(r.longitude);
+                
+                // Build popup
+                var popup = buildPopup(r);
+                
+                // Determine color based on population
+                var color = getMarkerColor(r.population);
+                
+                // Create marker
+                var marker = L.circleMarker([lat, lon], {
+                    radius: 6,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.85,
+                    population: parseInt(r.population) || 0,
+                    driving_time_to_airport_minutes: r.driving_time_minutes_to_airport || '',
+                    driving_time_to_hospital_minutes: r.driving_time_minutes_to_hospital || '',
+                    hospital_in_city: r.hospital_in_city || '',
+                    hospital_in_city_or_nearby: r.hospital_in_city_or_nearby || ''
+                }).bindPopup(popup, {maxWidth: 350});
+                
+                cluster.addLayer(marker);
+                
+                // Add peaks if present
+                if (r.peaks_higher1200_within30km && Array.isArray(r.peaks_higher1200_within30km)) {
+                    r.peaks_higher1200_within30km.forEach(function(pk) {
+                        var plat = parseFloat(pk.latitude);
+                        var plon = parseFloat(pk.longitude);
+                        var pname = pk.name || 'Peak';
+                        var key = plat.toFixed(5) + ',' + plon.toFixed(5) + ',' + pname;
+                        
+                        if (seenPeaks[key]) return;
+                        seenPeaks[key] = true;
+                        
+                        var elevStr = '';
+                        if (pk.elevation) {
+                            var m = parseFloat(pk.elevation);
+                            var ft = Math.round(m * 3.28084);
+                            elevStr = ' (' + Math.round(m) + ' m / ' + ft.toLocaleString() + ' ft)';
+                        }
+                        
+                        L.circleMarker([plat, plon], {
+                            radius: 4,
+                            color: 'black',
+                            fillColor: 'white',
+                            fillOpacity: 0.9
+                        }).bindPopup(pname + elevStr, {maxWidth: 220})
+                          .addTo(peaksGroup);
+                    });
+                }
+            });
+            
+            map.addLayer(cluster);
+            peaksGroup.addTo(map);
+            
+            // Add layer control
+            var overlays = {
+                'Cities': cluster,
+                'Peaks (≥1200m over city within 30km)': peaksGroup
+            };
+            L.control.layers(null, overlays, {collapsed: false}).addTo(map);
+            
+            // Fit bounds to data
+            if (cluster.getLayers().length > 0) {
+                map.fitBounds(cluster.getBounds(), {padding: [50, 50]});
+            }
+        }
+        
+        function getMarkerColor(population) {
+            var pop = parseFloat(population) || 0;
+            if (pop >= 100000) return 'darkred';
+            if (pop >= 50000) return 'red';
+            if (pop >= 20000) return 'orange';
+            if (pop >= 10000) return 'green';
+            return 'blue';
+        }
+        
+        function buildPopup(r) {
+            var parts = [];
+            parts.push('<b>' + (r.name || 'Unknown') + '</b>');
+            if (r.country) parts.push(' (' + r.country + ')');
+            
+            if (r.population) {
+                parts.push('<br/>Population: ' + parseInt(r.population).toLocaleString());
+            }
+            
+            if (r.elevation) {
+                var m = parseFloat(r.elevation);
+                var ft = Math.round(m * 3.28084);
+                parts.push('<br/>Elevation: ' + Math.round(m) + ' m / ' + ft.toLocaleString() + ' ft');
+            }
+            
+            if (r.airport_nearest_name) {
+                parts.push('<br/>Nearest airport: ' + r.airport_nearest_name);
+            }
+            
+            if (r.driving_time_minutes_to_airport) {
+                parts.push('<br/>Drive to nearest airport: ' + Math.round(r.driving_time_minutes_to_airport) + ' min');
+            }
+            
+            if (r.driving_time_minutes_to_hospital) {
+                parts.push('<br/>Drive to nearest hospital: ' + Math.round(r.driving_time_minutes_to_hospital) + ' min');
+            }
+            
+            if (r.hospital_nearest_name) {
+                parts.push('<br/>Nearest hospital: ' + r.hospital_nearest_name);
+            }
+            
+            if (r.peaks_higher1200_within30km_count) {
+                parts.push('<br/>Higher peaks within 30 km (≥1200 m): ' + r.peaks_higher1200_within30km_count);
+            }
+            
+            if (r.peaks_higher1200_within30km_names) {
+                var names = r.peaks_higher1200_within30km_names;
+                if (names.length > 140) names = names.substring(0, 137) + '...';
+                parts.push('<br/>Peaks: ' + names);
+            }
+            
+            if (r.source) {
+                parts.push('<br/>Source: ' + r.source);
+            }
+            
+            if (r.name && r.name.toLowerCase() !== 'unknown') {
+                var q = encodeURIComponent(r.name);
+                parts.push('<br/><a href="https://www.google.com/search?q=' + q + '" target="_blank" rel="noopener noreferrer">Search on Google</a>');
+            }
+            
+            // Hidden metadata for filters
+            parts.push('<span class="city-meta" style="display:none" ' +
+                      'data-dta="' + (r.driving_time_minutes_to_airport || '') + '" ' +
+                      'data-dth="' + (r.driving_time_minutes_to_hospital || '') + '" ' +
+                      'data-hic="' + (r.hospital_in_city || '').toLowerCase() + '" ' +
+                      'data-hcn="' + (r.hospital_in_city_or_nearby || '').toLowerCase() + '"></span>');
+            
+            return parts.join('');
+        }
+    })();
+    </script>
+    """
+    
+    from folium import Element
+    script = script.replace("%DATA_URL%", data_url).replace("%MAP%", fmap.get_name())
+    fmap.get_root().html.add_child(Element(script))
+    
+    # Add population filter
+    _inject_population_filter(fmap)
+    
+    return fmap
+
+
+def save_optimized_map(records: Iterable[Dict], out_path: str | Path, 
+                       tiles: str = "OpenTopoMap", map_title: str = "Mountain Cities") -> tuple[Path, Path]:
+    """Save map with data in separate JSON file for optimization.
+    
+    Returns:
+        Tuple of (html_path, json_path)
+    """
+    import json
+    
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Save data as JSON
+    records_list = list(records)
+    json_path = out_path.with_suffix('.data.json')
+    
+    # Clean records for JSON serialization
+    clean_records = []
+    for r in records_list:
+        clean_r = {}
+        for k, v in r.items():
+            # Skip None values and empty lists
+            if v is None or (isinstance(v, list) and len(v) == 0):
+                continue
+            clean_r[k] = v
+        clean_records.append(clean_r)
+    
+    json_path.write_text(json.dumps(clean_records, indent=2), encoding='utf-8')
+    
+    # Build map pointing to JSON file
+    data_url = json_path.name  # relative path
+    fmap = build_optimized_map(data_url, tiles=tiles, map_title=map_title)
+    
+    html = fmap.get_root().render()
+    html = _strip_object_spread_in_html(html)
+    html = _add_attribution_footer(html)
+    
+    out_path.write_text(html, encoding='utf-8')
+    
+    return out_path, json_path
+
+
+def save_optimized_country_map(records: Iterable[Dict], out_path: str | Path,
+                               tiles: str = "OpenTopoMap", map_title: str = "Mountain Cities") -> tuple[Path, Path]:
+    """Save country-colored map with data in separate JSON file.
+    
+    Returns:
+        Tuple of (html_path, json_path)
+    """
+    import json
+    
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Save data as JSON
+    records_list = list(records)
+    json_path = out_path.with_suffix('.data.json')
+    
+    # Clean records for JSON serialization
+    clean_records = []
+    for r in records_list:
+        clean_r = {}
+        for k, v in r.items():
+            if v is None or (isinstance(v, list) and len(v) == 0):
+                continue
+            clean_r[k] = v
+        clean_records.append(clean_r)
+    
+    json_path.write_text(json.dumps(clean_records, indent=2), encoding='utf-8')
+    
+    # Build optimized country map
+    fmap = _build_optimized_country_map(json_path.name, tiles, map_title, records_list)
+    
+    html = fmap.get_root().render()
+    html = _strip_object_spread_in_html(html)
+    html = _add_attribution_footer(html)
+    
+    out_path.write_text(html, encoding='utf-8')
+    
+    return out_path, json_path
+
+
+def save_wordpress_map(records: Iterable[Dict], out_path: str | Path, 
+                      tiles: str = "OpenTopoMap", map_title: str = "Mountain Cities") -> Path:
+    """Save WordPress-compatible single-file map with embedded data.
+    
+    This creates a single HTML file with all data embedded, perfect for WordPress upload.
+    No external JSON files required.
+    
+    Returns:
+        Path to the HTML file
+    """
+    import json
+    
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Clean records for JSON serialization
+    records_list = list(records)
+    clean_records = []
+    for r in records_list:
+        clean_r = {}
+        for k, v in r.items():
+            if v is None or (isinstance(v, list) and len(v) == 0):
+                continue
+            clean_r[k] = v
+        clean_records.append(clean_r)
+    
+    # Build map with embedded data
+    fmap = _build_wordpress_map(clean_records, tiles, map_title)
+    
+    html = fmap.get_root().render()
+    html = _strip_object_spread_in_html(html)
+    html = _add_attribution_footer(html)
+    
+    out_path.write_text(html, encoding='utf-8')
+    
+    return out_path
+
+
+def save_wordpress_country_map(records: Iterable[Dict], out_path: str | Path,
+                               tiles: str = "OpenTopoMap", map_title: str = "Mountain Cities") -> Path:
+    """Save WordPress-compatible country map with embedded data.
+    
+    This creates a single HTML file with all data embedded, perfect for WordPress upload.
+    No external JSON files required.
+    
+    Returns:
+        Path to the HTML file
+    """
+    import json
+    
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Clean records for JSON serialization
+    records_list = list(records)
+    clean_records = []
+    for r in records_list:
+        clean_r = {}
+        for k, v in r.items():
+            if v is None or (isinstance(v, list) and len(v) == 0):
+                continue
+            clean_r[k] = v
+        clean_records.append(clean_r)
+    
+    # Build country map with embedded data
+    fmap = _build_wordpress_country_map(clean_records, tiles, map_title)
+    
+    html = fmap.get_root().render()
+    html = _strip_object_spread_in_html(html)
+    html = _add_attribution_footer(html)
+    
+    out_path.write_text(html, encoding='utf-8')
+    
+    return out_path
+
+
+def _build_optimized_country_map(data_url: str, tiles: str, map_title: str, sample_records: list) -> folium.Map:
+    """Build country-colored map that loads data externally."""
+    center = (46.5, 10.0)
+    
+    if tiles == "OpenTopoMap":
+        # Use OpenTopoMap tiles explicitly for topographical maps
+        fmap = folium.Map(
+            location=center,
+            zoom_start=5,
+            tiles='https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+            attr='Map data: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+            control_scale=True
+        )
+    else:
+        fmap = folium.Map(location=center, zoom_start=5, tiles=tiles, control_scale=True)
+    
+    # Add a dummy MarkerCluster to ensure the library is loaded
+    MarkerCluster(name="Loading...").add_to(fmap)
+    
+    # Pre-compute color mapping from sample
+    countries = [str(r.get("country") or "UNK") for r in sample_records]
+    color_map = _country_color_map(countries)
+    min_pop, max_pop = _population_bounds(sample_records)
+    
+    script = """
+    <script>
+    (function(){
+        var dataUrl = '%DATA_URL%';
+        var mapVar = '%MAP%';
+        var colorMap = %COLOR_MAP%;
+        var minPop = %MIN_POP%;
+        var maxPop = %MAX_POP%;
+        
+        function getMap(){ return window[mapVar]; }
+        
+        // Check if we're running in file:// protocol (local file)
+        if (window.location.protocol === 'file:') {
+            alert('This map requires a web server to load data. Please serve these files through a local web server (e.g., python -m http.server) or upload to a web hosting service.');
+            return;
+        }
+
+        fetch(dataUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Loaded ' + data.length + ' cities');
+                renderMarkers(data);
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                var errorMsg = 'Error loading map data. ';
+
+                if (window.location.protocol === 'file:') {
+                    errorMsg += 'This map must be served through a web server. Please use: python -m http.server 8000 (or similar) in the directory containing this file.';
+                } else {
+                    errorMsg += 'Please check your internet connection and refresh the page.';
+                }
+
+                alert(errorMsg);
+            });
+        
+        function getScaledRadius(pop) {
+            var p = parseFloat(pop) || 0;
+            if (p <= 0) return 3;
+            if (maxPop <= minPop) return 8.5;
+            var lp = Math.log10(Math.max(p, 1));
+            var lmin = Math.log10(Math.max(minPop, 1));
+            var lmax = Math.log10(Math.max(maxPop, 1));
+            var t = lmax > lmin ? (lp - lmin) / (lmax - lmin) : 0.5;
+            return 3 + t * 11;
+        }
+        
+        function renderMarkers(records) {
+            var map = getMap();
+            if (!map) {
+                console.error('Map not ready');
+                return;
+            }
+            
+            // Group by country
+            var byCountry = {};
+            records.forEach(function(r) {
+                var country = r.country || 'UNK';
+                if (!byCountry[country]) byCountry[country] = [];
+                byCountry[country].push(r);
+            });
+            
+            // Create peaks layer
+            var peaksGroup = L.featureGroup();
+            var seenPeaks = {};
+            
+            var allGroups = {};
+            
+            // Create layer for each country
+            Object.keys(byCountry).sort().forEach(function(country) {
+                var recs = byCountry[country];
+                var group = L.featureGroup();
+                var cluster = L.markerClusterGroup();
+                var color = colorMap[country] || 'blue';
+                
+                recs.forEach(function(r) {
+                    if (!r.latitude || !r.longitude) return;
+                    
+                    var lat = parseFloat(r.latitude);
+                    var lon = parseFloat(r.longitude);
+                    var radius = getScaledRadius(r.population);
+                    var popup = buildPopup(r);
+                    
+                    var marker = L.circleMarker([lat, lon], {
+                        radius: radius,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.85,
+                        population: parseInt(r.population) || 0,
+                        driving_time_to_airport_minutes: r.driving_time_minutes_to_airport || '',
+                        driving_time_to_hospital_minutes: r.driving_time_minutes_to_hospital || '',
+                        hospital_in_city: r.hospital_in_city || '',
+                        hospital_in_city_or_nearby: r.hospital_in_city_or_nearby || ''
+                    }).bindPopup(popup, {maxWidth: 350});
+                    
+                    cluster.addLayer(marker);
+                    
+                    // Add peaks
+                    if (r.peaks_higher1200_within30km && Array.isArray(r.peaks_higher1200_within30km)) {
+                        r.peaks_higher1200_within30km.forEach(function(pk) {
+                            var plat = parseFloat(pk.latitude);
+                            var plon = parseFloat(pk.longitude);
+                            var pname = pk.name || 'Peak';
+                            var key = plat.toFixed(5) + ',' + plon.toFixed(5) + ',' + pname;
+                            
+                            if (seenPeaks[key]) return;
+                            seenPeaks[key] = true;
+                            
+                            var elevStr = '';
+                            if (pk.elevation) {
+                                var m = parseFloat(pk.elevation);
+                                var ft = Math.round(m * 3.28084);
+                                elevStr = ' (' + Math.round(m) + ' m / ' + ft.toLocaleString() + ' ft)';
+                            }
+                            
+                            L.circleMarker([plat, plon], {
+                                radius: 4,
+                                color: 'black',
+                                fillColor: 'white',
+                                fillOpacity: 0.9
+                            }).bindPopup(pname + elevStr, {maxWidth: 220})
+                              .addTo(peaksGroup);
+                        });
+                    }
+                });
+                
+                group.addLayer(cluster);
+                group.addTo(map);
+                allGroups[country + ' (' + recs.length + ')'] = group;
+            });
+            
+            peaksGroup.addTo(map);
+            allGroups['Peaks (≥1200m over city within 30km)'] = peaksGroup;
+            
+            // Add layer control
+            L.control.layers(null, allGroups, {collapsed: false}).addTo(map);
+            
+            // Fit to all markers
+            var allBounds = L.latLngBounds([]);
+            Object.values(byCountry).forEach(function(recs) {
+                recs.forEach(function(r) {
+                    if (r.latitude && r.longitude) {
+                        allBounds.extend([parseFloat(r.latitude), parseFloat(r.longitude)]);
+                    }
+                });
+            });
+            if (allBounds.isValid()) {
+                map.fitBounds(allBounds, {padding: [50, 50]});
+            }
+        }
+        
+        function buildPopup(r) {
+            var parts = [];
+            parts.push('<b>' + (r.name || 'Unknown') + '</b>');
+            if (r.country) parts.push(' (' + r.country + ')');
+            
+            if (r.population) {
+                parts.push('<br/>Population: ' + parseInt(r.population).toLocaleString());
+            }
+            
+            if (r.elevation) {
+                var m = parseFloat(r.elevation);
+                var ft = Math.round(m * 3.28084);
+                parts.push('<br/>Elevation: ' + Math.round(m) + ' m / ' + ft.toLocaleString() + ' ft');
+            }
+            
+            if (r.airport_nearest_name) {
+                parts.push('<br/>Nearest airport: ' + r.airport_nearest_name);
+            }
+            
+            if (r.driving_time_minutes_to_airport) {
+                parts.push('<br/>Drive to nearest airport: ' + Math.round(r.driving_time_minutes_to_airport) + ' min');
+            }
+            
+            if (r.driving_time_minutes_to_hospital) {
+                parts.push('<br/>Drive to nearest hospital: ' + Math.round(r.driving_time_minutes_to_hospital) + ' min');
+            }
+            
+            if (r.hospital_nearest_name) {
+                parts.push('<br/>Nearest hospital: ' + r.hospital_nearest_name);
+            }
+            
+            if (r.peaks_higher1200_within30km_count) {
+                parts.push('<br/>Higher peaks within 30 km (≥1200 m): ' + r.peaks_higher1200_within30km_count);
+            }
+            
+            if (r.peaks_higher1200_within30km_names) {
+                var names = r.peaks_higher1200_within30km_names;
+                if (names.length > 140) names = names.substring(0, 137) + '...';
+                parts.push('<br/>Peaks: ' + names);
+            }
+            
+            if (r.source) {
+                parts.push('<br/>Source: ' + r.source);
+            }
+            
+            if (r.name && r.name.toLowerCase() !== 'unknown') {
+                var q = encodeURIComponent(r.name);
+                parts.push('<br/><a href="https://www.google.com/search?q=' + q + '" target="_blank" rel="noopener noreferrer">Search on Google</a>');
+            }
+            
+            // Hidden metadata for filters
+            parts.push('<span class="city-meta" style="display:none" ' +
+                      'data-dta="' + (r.driving_time_minutes_to_airport || '') + '" ' +
+                      'data-dth="' + (r.driving_time_minutes_to_hospital || '') + '" ' +
+                      'data-hic="' + (r.hospital_in_city || '').toLowerCase() + '" ' +
+                      'data-hcn="' + (r.hospital_in_city_or_nearby || '').toLowerCase() + '"></span>');
+            
+            return parts.join('');
+        }
+    })();
+    </script>
+    """
+    
+    import json
+    from folium import Element
+    script = (script.replace("%DATA_URL%", data_url)
+                    .replace("%MAP%", fmap.get_name())
+                    .replace("%COLOR_MAP%", json.dumps(color_map))
+                    .replace("%MIN_POP%", str(min_pop))
+                    .replace("%MAX_POP%", str(max_pop)))
+    fmap.get_root().html.add_child(Element(script))
+    
+    _inject_population_filter(fmap)
+    
+    return fmap

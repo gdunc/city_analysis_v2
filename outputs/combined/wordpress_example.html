@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountain Cities Analysis - WordPress Integration Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .steps {
+            background: white;
+            padding: 25px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        .step-number {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #dee2e6;
+        }
+        .highlight {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏔️ Mountain Cities Analysis</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            WordPress Integration Guide & Example
+        </p>
+
+        <div class="warning">
+            <strong>✅ Perfect for WordPress!</strong> These maps are designed to work seamlessly with WordPress websites.
+        </div>
+
+        <div class="steps">
+            <h2>📋 WordPress Setup (5 minutes)</h2>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Upload Files to WordPress Media Library</strong><br>
+                Go to your WordPress Admin → Media → Add New<br>
+                Upload these two files:
+                <ul>
+                    <li><code>all_regions_cities_map_optimized.html</code></li>
+                    <li><code>all_regions_cities_map_optimized.data.json</code></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Copy the File URLs</strong><br>
+                After uploading, WordPress will give you URLs like:<br>
+                <code>https://yoursite.com/wp-content/uploads/2025/10/all_regions_cities_map_optimized.html</code>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Create a New WordPress Page</strong><br>
+                Go to Pages → Add New<br>
+                Title: "Mountain Cities Interactive Map" (or whatever you prefer)
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Add the Map Using an iFrame</strong><br>
+                In the WordPress editor, switch to "Text" mode and add:<br>
+                <code>&lt;iframe src="https://yoursite.com/wp-content/uploads/.../map.html" width="100%" height="600"&gt;&lt;/iframe&gt;</code>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Publish and Test!</strong><br>
+                Click "Publish" and visit your new page. The map should load perfectly with all interactive features.
+            </div>
+        </div>
+
+        <div class="highlight">
+            <h3>🎯 What You'll Get</h3>
+            <ul>
+                <li><strong>716 Interactive Cities</strong> across 6 mountain ranges</li>
+                <li><strong>Topographical Terrain</strong> showing elevation and mountain contours</li>
+                <li><strong>Advanced Filters</strong> for population, driving times, hospitals</li>
+                <li><strong>Country Layers</strong> with color-coded markers</li>
+                <li><strong>Mobile Responsive</strong> design that works on all devices</li>
+                <li><strong>Legal Compliance</strong> with proper attribution included</li>
+            </ul>
+        </div>
+
+        <h2>🔧 Alternative WordPress Methods</h2>
+
+        <h3>Method 1: iFrame (Recommended)</h3>
+        <p>Add this to your WordPress page content:</p>
+        <code>&lt;iframe src="https://yoursite.com/wp-content/uploads/all_regions_cities_map_optimized.html" width="100%" height="600" frameborder="0"&gt;&lt;/iframe&gt;</code>
+
+        <h3>Method 2: Direct Link</h3>
+        <p>Link directly to the uploaded file:</p>
+        <p><a href="https://yoursite.com/wp-content/uploads/all_regions_cities_map_optimized.html">View Interactive Mountain Cities Map</a></p>
+
+        <h3>Method 3: Embed in Post/Page</h3>
+        <p>Use WordPress's embed feature by pasting the file URL.</p>
+
+        <h2>📱 Responsive Design</h2>
+        <p>The maps automatically adjust to different screen sizes and work perfectly on:</p>
+        <ul>
+            <li>Desktop computers</li>
+            <li>Tablets</li>
+            <li>Mobile phones</li>
+        </ul>
+
+        <h2>⚡ Performance & SEO</h2>
+        <ul>
+            <li><strong>Fast Loading:</strong> Optimized HTML (~23KB) + Data (~3.5MB)</li>
+            <li><strong>SEO Friendly:</strong> Can be indexed by search engines</li>
+            <li><strong>Bandwidth Efficient:</strong> ~7MB total for 50 users/day</li>
+        </ul>
+
+        <div class="warning">
+            <strong>🔒 Security Note:</strong> These are static HTML files with no server-side code, making them completely safe for WordPress hosting.
+        </div>
+
+        <h2>🛠️ Troubleshooting</h2>
+
+        <p><strong>If the map doesn't load:</strong></p>
+        <ol>
+            <li>Ensure both HTML and JSON files are uploaded to WordPress</li>
+            <li>Check that the file URLs are correct in your iframe/embed</li>
+            <li>Make sure your WordPress site allows iframe embeds (most do by default)</li>
+            <li>Try accessing the HTML file directly to verify it loads</li>
+        </ol>
+
+        <p><strong>Common WordPress iframe code:</strong></p>
+        <code>&lt;iframe src="https://yoursite.com/wp-content/uploads/2025/10/all_regions_cities_map_optimized.html" width="100%" height="600" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</code>
+
+        <h2>🚀 Ready to Publish!</h2>
+        <p>Your WordPress-integrated mountain cities map is ready to share with the world. Users will be able to:</p>
+        <ul>
+            <li>Explore 716 cities across major mountain ranges</li>
+            <li>Filter by population, driving times, and hospital access</li>
+            <li>View topographical terrain with elevation contours</li>
+            <li>Toggle between country layers and peak locations</li>
+            <li>Access all data with proper legal attribution</li>
+        </ul>
+
+        <p style="text-align: center; margin-top: 30px;">
+            <strong>Happy mapping! 🗺️</strong>
+        </p>
+    </div>
+</body>
+</html>
+
