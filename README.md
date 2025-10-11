@@ -19,9 +19,7 @@ Minimal toolchain to fetch and analyze cities in and near mountain regions (Alps
 - **Multi-region analysis**: combine data from multiple regions into unified maps and analyses
 - **Interactive Dash app**: web-based filtering and visualization tool for exploring city data across regions
 - **Statistical analysis**: automated generation of correlation plots, scatter plots, and summary statistics
-- **Optimized maps**: 99% smaller HTML files with external data files for faster loading and better caching
-- **Legal compliance**: Complete attribution, terms of service, privacy policy, and license documentation
-- **WordPress integration**: Ready-to-deploy maps with WordPress compatibility and hosting instructions
+  
 
 ## Architecture (CTO-level overview)
 - `city_analysis/geometry.py`: Perimeter handling (load GeoJSON, default region polygons/bbox, Overpass bbox conversion)
