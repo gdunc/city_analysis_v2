@@ -446,9 +446,7 @@ When running `city_analysis.combine_analyze`:
 
 ### Optimized maps for public deployment
 When running `generate_optimized_maps.py`:
-- `all_regions_cities_map_optimized.html` — Standard map optimized for web hosting (~23 KB)
 - `all_regions_cities_country_map_optimized.html` — Country map optimized for web hosting (~25 KB)
-- `all_regions_cities_map_optimized.data.json` — Shared data file (~3.5 MB)
 - `all_regions_cities_country_map_optimized.data.json` — Shared data file (~3.5 MB)
 - `attribution.html` — Complete attribution and data source licenses
 - `terms.html` — Terms of Service
@@ -457,7 +455,7 @@ When running `generate_optimized_maps.py`:
 - `LICENSES.md` — Full text of all third-party licenses
 
 **Benefits of optimized maps:**
-- 99% smaller HTML files (23KB vs 30-50MB)
+- Much smaller HTML files vs full maps (tens of KB vs tens of MB)
 - Faster initial page load
 - Better browser caching (HTML and data cached separately)
 - Legal compliance for public use

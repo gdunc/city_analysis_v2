@@ -184,11 +184,8 @@ def main() -> None:
         write_csv(combined_dir / f"{combined_slug}_cities.csv", enriched_records)
         write_geojson(combined_dir / f"{combined_slug}_cities.geojson", enriched_records)
 
-        # Produce maps (both styles by default)
+        # Produce combined country-colored map only (drop standard map)
         tiles = args.map_tiles or "OpenTopoMap"
-        map_path = combined_dir / f"{combined_slug}_cities_map.html"
-        save_map(enriched_records, map_path, tiles=tiles)
-        print(f"Wrote combined interactive map to {map_path}")
         cpath = combined_dir / f"{combined_slug}_cities_country_map.html"
         save_country_map(enriched_records, cpath, tiles=tiles)
         print(f"Wrote combined country-colored map to {cpath}")
